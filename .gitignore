@@ -1,0 +1,10 @@
+# Backup en versiehistorie
+Oud/
+versions/
+
+# Lege mappen
+images/
+
+# OS bestanden
+.DS_Store
+Thumbs.db

@@ -1,0 +1,397 @@
+/* ============================================
+   PAGE SHARED — page-shared.css
+   Shared layout patterns for over-ons and
+   de-boerderij pages (grouped selectors).
+   ============================================ */
+
+/* ==================== INTRO SPLIT ==================== */
+
+.about-intro,
+.boerderij-intro {
+  background-color: var(--white);
+  padding: 120px 60px 96px;
+}
+
+.about-intro-inner,
+.boerderij-intro-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.about-intro-text,
+.boerderij-intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Page title — font-size overridden per page */
+.about-title,
+.boerderij-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.about-lead,
+.boerderij-lead {
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text);
+  max-width: 52ch;
+}
+
+.about-intro-meta,
+.boerderij-intro-meta {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.about-intro-meta li,
+.boerderij-intro-meta li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green-light);
+  letter-spacing: 0.03em;
+}
+
+.about-intro-meta svg,
+.boerderij-intro-meta svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* --- Photo column --- */
+.about-photo-wrap,
+.boerderij-photo-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.about-photo-wrap::before,
+.boerderij-photo-wrap::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: -20px;
+  bottom: -20px;
+  left: 20px;
+  background-color: var(--green-accent);
+  border-radius: 20px;
+  z-index: 0;
+}
+
+.about-photo-frame,
+.boerderij-photo-frame {
+  position: relative;
+  z-index: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 16px 56px rgba(54, 72, 56, 0.18);
+  margin: 0;
+}
+
+.about-photo-frame img,
+.boerderij-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.about-photo-caption,
+.boerderij-photo-caption {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.55;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ==================== STORY ==================== */
+
+.about-story,
+.boerderij-story {
+  background-color: #f0f5ec;
+  padding: 88px 60px;
+}
+
+.about-story-inner,
+.boerderij-story-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-story-inner .section-title,
+.boerderij-story-inner .section-title {
+  margin-bottom: 40px;
+}
+
+.about-story-columns,
+.boerderij-story-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 24px;
+}
+
+.about-story-columns:last-child,
+.boerderij-story-columns:last-child {
+  margin-bottom: 0;
+}
+
+.about-story-columns p,
+.boerderij-story-columns p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+/* ==================== QUOTE ==================== */
+
+.about-quote-section,
+.boerderij-quote-section {
+  background-color: var(--green-dark);
+  padding: 88px 60px;
+}
+
+.about-quote-inner,
+.boerderij-quote-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-quote,
+.boerderij-quote {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.about-quote-author,
+.boerderij-quote-author {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--green-accent);
+  opacity: 0.8;
+  letter-spacing: 0.06em;
+}
+
+/* ==================== FARM PHOTO ==================== */
+
+.about-farm-photo,
+.boerderij-farm-photo {
+  height: 420px;
+  overflow: hidden;
+}
+
+.about-farm-photo img,
+.boerderij-farm-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* object-position overridden per page */
+
+/* ==================== CTA ==================== */
+
+.about-cta,
+.boerderij-cta {
+  background-color: #f0f5ec;
+  padding: 96px 60px;
+  text-align: center;
+}
+
+.about-cta-inner,
+.boerderij-cta-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-cta-title,
+.boerderij-cta-title {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--green-dark);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.about-cta-text,
+.boerderij-cta-text {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text);
+  max-width: 50ch;
+}
+
+.about-cta-btns,
+.boerderij-cta-btns {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media screen and (max-width: 1180px) {
+  .about-intro,
+  .boerderij-intro {
+    padding: 120px 40px 80px;
+  }
+
+  .about-story,
+  .boerderij-story,
+  .about-quote-section,
+  .boerderij-quote-section,
+  .about-cta,
+  .boerderij-cta {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .about-intro-inner,
+  .boerderij-intro-inner {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+
+  .about-photo-wrap,
+  .boerderij-photo-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .about-photo-wrap::before,
+  .boerderij-photo-wrap::before {
+    top: 14px;
+    right: -14px;
+    bottom: -14px;
+    left: 14px;
+  }
+
+  .about-farm-photo,
+  .boerderij-farm-photo {
+    height: 320px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .about-intro,
+  .boerderij-intro {
+    padding: 100px 24px 64px;
+  }
+
+  .about-lead,
+  .boerderij-lead {
+    font-size: 16px;
+  }
+
+  .about-story,
+  .boerderij-story {
+    padding: 64px 24px;
+  }
+
+  .about-story-columns,
+  .boerderij-story-columns {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .about-quote-section,
+  .boerderij-quote-section {
+    padding: 64px 24px;
+  }
+
+  .about-quote,
+  .boerderij-quote {
+    font-size: 22px;
+  }
+
+  .about-farm-photo,
+  .boerderij-farm-photo {
+    height: 260px;
+  }
+
+  .about-cta,
+  .boerderij-cta {
+    padding: 64px 24px;
+  }
+
+  .about-cta-title,
+  .boerderij-cta-title {
+    font-size: 30px;
+  }
+
+  .about-cta-btns,
+  .boerderij-cta-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .about-cta-btns .btn,
+  .boerderij-cta-btns .btn {
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .about-photo-wrap::before,
+  .boerderij-photo-wrap::before {
+    display: none;
+  }
+
+  .about-quote,
+  .boerderij-quote {
+    font-size: 19px;
+  }
+
+  .about-cta-title,
+  .boerderij-cta-title {
+    font-size: 26px;
+  }
+}

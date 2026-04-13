@@ -1,0 +1,171 @@
+/* ============================================
+   OVER ONS PAGE — over-ons.css
+   Page-specific styles; shared layout in page-shared.css
+   ============================================ */
+
+/* --- Page title size --- */
+.about-title {
+  font-size: 60px;
+  line-height: 1.05;
+}
+
+/* --- Story extras --- */
+.about-story-label-row {
+  margin-bottom: 4px;
+}
+
+.about-story-columns p em {
+  font-style: italic;
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+/* --- Placeholder badge (remove when real photo is added) --- */
+.about-photo-placeholder-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(54, 72, 56, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 100em;
+  padding: 7px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-accent);
+  letter-spacing: 0.04em;
+}
+
+.about-photo-placeholder-badge svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+/* --- Farm photo focal point --- */
+.about-farm-photo img {
+  object-position: center 60%;
+}
+
+/* ==================== VALUES ==================== */
+
+.about-values {
+  background-color: var(--white);
+  padding: 88px 60px;
+}
+
+.about-values-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.about-values-label,
+.about-values-title {
+  text-align: center;
+}
+
+.about-values-title {
+  margin-bottom: 56px;
+}
+
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.about-value {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 36px 32px;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  transition: box-shadow var(--transition-default), transform var(--transition-default);
+}
+
+.about-value:hover {
+  box-shadow: 0 8px 32px rgba(54, 72, 56, 0.1);
+  transform: translateY(-3px);
+}
+
+.about-value-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--green-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.about-value-icon svg {
+  width: 22px;
+  height: 22px;
+  color: var(--green-dark);
+}
+
+.about-value-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green-dark);
+  line-height: 1.25;
+}
+
+.about-value p {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  opacity: 0.85;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media screen and (max-width: 1180px) {
+  .about-title { font-size: 52px; }
+
+  .about-values {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .about-title { font-size: 44px; }
+
+  .about-values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .about-title { font-size: 36px; }
+
+  .about-values {
+    padding: 64px 24px;
+  }
+
+  .about-values-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .about-values-title {
+    margin-bottom: 36px;
+  }
+
+  .about-value {
+    padding: 28px 24px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .about-title { font-size: 30px; }
+}

@@ -1,0 +1,435 @@
+/* ============================================
+   EVENT DETAIL PAGE — evenement.css
+   ============================================ */
+
+/* ==================== HERO ==================== */
+
+.event-hero {
+  position: relative;
+  min-height: 520px;
+  display: flex;
+}
+
+.event-hero-image-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.event-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.event-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(54, 72, 56, 0.45) 0%,
+    rgba(54, 72, 56, 0.25) 40%,
+    rgba(54, 72, 56, 0.88) 100%
+  );
+  z-index: 1;
+}
+
+.event-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 100px 60px 56px;
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* --- Breadcrumb --- */
+.event-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  align-self: flex-start;
+}
+
+.event-breadcrumb:hover {
+  color: var(--green-accent);
+}
+
+.event-breadcrumb svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* --- Hero bottom content --- */
+.event-hero-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.event-hero-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+  max-width: 760px;
+  margin: 0;
+}
+
+/* --- Chips (meta info badges) --- */
+.event-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.event-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 100em;
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.event-chip svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ==================== CONTENT LAYOUT ==================== */
+
+.event-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 72px 60px 96px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 72px;
+  align-items: start;
+}
+
+/* ==================== MAIN CONTENT ==================== */
+
+.event-section {
+  margin-bottom: 52px;
+}
+
+.event-section:last-child {
+  margin-bottom: 0;
+}
+
+.event-section-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--green-dark);
+  line-height: 1.25;
+  margin: 10px 0 20px;
+}
+
+.event-section p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.event-section p:last-of-type {
+  margin-bottom: 0;
+}
+
+.event-sub-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--green-dark);
+  margin-bottom: 20px;
+}
+
+/* --- Feature list --- */
+.event-feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.event-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.event-feature-list svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--green-light);
+}
+
+.event-contact-btn {
+  margin-top: 24px;
+}
+
+/* ==================== SIDEBAR ==================== */
+
+.event-sidebar {
+  position: sticky;
+  top: 88px;
+}
+
+.event-info-card {
+  background-color: var(--green-dark);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* --- Heading inside card --- */
+.event-info-heading {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green-accent);
+}
+
+/* --- Info list --- */
+.event-info-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.event-info-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.event-info-list svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--green-accent);
+  opacity: 0.7;
+  margin-top: 3px;
+}
+
+.event-info-list div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.event-info-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1;
+}
+
+.event-info-value {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.35;
+}
+
+/* --- Sidebar CTA area --- */
+.event-info-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event-info-actions .btn {
+  text-align: center;
+  width: 100%;
+}
+
+.event-external-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 14px 20px;
+  border-radius: 100em;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  text-align: center;
+}
+
+.event-external-btn:hover {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.event-external-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media screen and (max-width: 991px) {
+  .event-hero-content {
+    padding: 100px 40px 48px;
+  }
+
+  .event-hero-title {
+    font-size: 40px;
+  }
+
+  .event-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 56px 40px 80px;
+  }
+
+  .event-sidebar {
+    position: static;
+  }
+
+  .event-info-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 24px 40px;
+  }
+
+  .event-info-heading {
+    grid-column: 1 / -1;
+    margin-bottom: -8px;
+  }
+
+  .event-info-list {
+    grid-row: 2;
+    grid-column: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+
+  .event-info-actions {
+    grid-row: 2;
+    grid-column: 2;
+    align-self: start;
+    min-width: 200px;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0;
+    padding-left: 40px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .event-hero {
+    min-height: 440px;
+  }
+
+  .event-hero-content {
+    padding: 90px 24px 40px;
+  }
+
+  .event-hero-title {
+    font-size: 32px;
+  }
+
+  .event-chip {
+    font-size: 13px;
+    padding: 6px 13px;
+  }
+
+  .event-layout {
+    padding: 48px 20px 72px;
+    gap: 40px;
+  }
+
+  .event-section {
+    margin-bottom: 40px;
+  }
+
+  .event-info-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-info-actions {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: none;
+    padding-top: 8px;
+    padding-left: 0;
+  }
+
+  .event-info-list {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .event-hero-title {
+    font-size: 26px;
+  }
+
+  .event-chip {
+    font-size: 12px;
+    padding: 5px 11px;
+    gap: 5px;
+  }
+
+  .event-chip svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .event-section-title {
+    font-size: 24px;
+  }
+}
