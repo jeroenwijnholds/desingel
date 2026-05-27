@@ -31,7 +31,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap',
@@ -50,8 +50,8 @@ export default defineNuxtConfig({
         useCdn: false,
       })
       const [eventSlugs, newsSlugs] = await Promise.all([
-        client.fetch<string[]>(`*[_type == "event" && defined(slug.current)].slug.current`),
-        client.fetch<string[]>(`*[_type == "nieuwsArtikel" && defined(slug.current)].slug.current`),
+        client.fetch<string[]>(`*[_type == "event" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current`),
+        client.fetch<string[]>(`*[_type == "nieuwsArtikel" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current`),
       ])
       nitroConfig.prerender!.routes = [
         ...(nitroConfig.prerender!.routes ?? []),
