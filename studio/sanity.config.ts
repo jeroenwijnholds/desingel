@@ -7,7 +7,7 @@ export default defineConfig({
   name: 'default',
   title: 'Belevenisboerderij de Singel',
 
-  projectId: 'placeholder',
+  projectId: 'vua8q73o',
   dataset: 'production',
 
   plugins: [
