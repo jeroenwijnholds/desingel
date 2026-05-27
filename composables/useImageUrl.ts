@@ -15,7 +15,13 @@ export function useImageUrl() {
     })
     _builder = createImageUrlBuilder(client)
   }
-  const PLACEHOLDER = { url: () => '' } as ReturnType<ReturnType<typeof createImageUrlBuilder>['image']>
+  // Proxy that swallows all chained calls and returns '' from .url()
+  const PLACEHOLDER: any = new Proxy({}, {
+    get(_, prop) {
+      if (prop === 'url') return () => ''
+      return () => PLACEHOLDER
+    },
+  })
 
   return (source: SanityImageSource | null | undefined) => {
     if (!source || !(source as any)?.asset?._ref) return PLACEHOLDER
