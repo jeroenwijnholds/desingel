@@ -15,5 +15,10 @@ export function useImageUrl() {
     })
     _builder = createImageUrlBuilder(client)
   }
-  return (source: SanityImageSource) => _builder!.image(source)
+  const PLACEHOLDER = { url: () => '' } as ReturnType<ReturnType<typeof createImageUrlBuilder>['image']>
+
+  return (source: SanityImageSource | null | undefined) => {
+    if (!source || !(source as any)?.asset?._ref) return PLACEHOLDER
+    return _builder!.image(source)
+  }
 }

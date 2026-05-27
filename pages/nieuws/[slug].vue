@@ -46,7 +46,7 @@ const portableTextComponents = {
       setup(props) {
         return () => {
           const val = props.value as any
-          if (!val?.asset?._ref) return null
+          if (!val) return null
           return h('figure', { class: 'article-figure' }, [
             h('img', {
               src: imageUrl(val).width(900).url(),
