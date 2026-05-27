@@ -1,0 +1,17 @@
+{
+  "name": "desingel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt generate",
+    "preview": "npx serve .output/public"
+  },
+  "dependencies": {
+    "@nuxtjs/sanity": "^2.3.0",
+    "@portabletext/vue": "^1.0.14",
+    "@sanity/client": "^7.22.0",
+    "@sanity/image-url": "^2.1.1",
+    "nuxt": "^4.4.6"
+  }
+}

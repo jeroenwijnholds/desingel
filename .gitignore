@@ -8,3 +8,12 @@ images/
 # OS bestanden
 .DS_Store
 Thumbs.db
+
+# Nuxt / Node
+node_modules
+.output
+.nuxt
+dist
+.env
+.env.local
+*.log
