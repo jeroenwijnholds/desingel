@@ -6,6 +6,9 @@ interface SiteSettings { siteName: string; navigation: NavItem[] }
 
 const { data } = useSanityQuery<SiteSettings>(QUERY)
 
+const route = useRoute()
+const isHome = computed(() => route.path === '/')
+
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 
@@ -27,7 +30,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 <template>
   <nav
     class="nav"
-    :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled }"
+    :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled || !isHome }"
   >
     <NuxtLink to="/" class="nav-logo" @click="closeMenu">
       Belevenisboerderij<br>de Singel
