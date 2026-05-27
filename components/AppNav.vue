@@ -29,33 +29,39 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     class="nav"
     :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled }"
   >
-    <div class="nav__container">
-      <NuxtLink to="/" class="nav__logo" @click="closeMenu">
-        {{ data?.siteName }}
-      </NuxtLink>
+    <NuxtLink to="/" class="nav-logo" @click="closeMenu">
+      Belevenisboerderij<br>de Singel
+    </NuxtLink>
 
-      <button
-        class="nav__hamburger"
-        :aria-expanded="isMenuOpen"
-        aria-label="Menu openen"
-        @click="toggleMenu"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    <button
+      class="nav-hamburger"
+      :aria-expanded="isMenuOpen.toString()"
+      aria-label="Menu openen"
+      @click="toggleMenu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
-      <ul class="nav__links">
-        <li v-for="item in data?.navigation ?? []" :key="item.href">
-          <NuxtLink
-            :to="item.href"
-            :class="item.isButton ? 'btn btn-green' : ''"
-            @click="closeMenu"
-          >
-            {{ item.label }}
-          </NuxtLink>
+    <div class="nav-menu">
+      <ul class="nav-links">
+        <li
+          v-for="item in (data?.navigation ?? []).filter((n: NavItem) => !n.isButton)"
+          :key="item.href"
+        >
+          <NuxtLink :to="item.href" @click="closeMenu">{{ item.label }}</NuxtLink>
         </li>
       </ul>
+      <NuxtLink
+        v-for="item in (data?.navigation ?? []).filter((n: NavItem) => n.isButton)"
+        :key="item.href"
+        :to="item.href"
+        class="btn btn-green"
+        @click="closeMenu"
+      >
+        {{ item.label }}
+      </NuxtLink>
     </div>
   </nav>
 </template>
