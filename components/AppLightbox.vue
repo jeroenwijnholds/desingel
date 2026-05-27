@@ -27,7 +27,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <div class="gallery">
     <div
       v-for="(img, i) in images"
-      :key="i"
+      :key="img.url || i"
       class="gallery__item"
       @click="open(i)"
     >
@@ -37,7 +37,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
   <Teleport to="body">
     <div
-      v-if="activeIndex !== null"
+      v-if="activeIndex !== null && activeIndex < images.length"
       class="lightbox"
       role="dialog"
       aria-modal="true"

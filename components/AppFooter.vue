@@ -16,7 +16,7 @@ const { data } = await useSanityQuery<SiteSettings>(QUERY)
 
       <nav class="footer__nav" aria-label="Footer navigatie">
         <ul>
-          <li v-for="item in data?.navigation?.filter((n: NavItem) => !n.isButton)" :key="item.href">
+          <li v-for="item in (data?.navigation ?? []).filter((n: NavItem) => !n.isButton)" :key="item.href">
             <NuxtLink :to="item.href">{{ item.label }}</NuxtLink>
           </li>
         </ul>

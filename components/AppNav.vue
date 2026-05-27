@@ -19,11 +19,9 @@ function closeMenu() {
   document.body.style.overflow = ''
 }
 
-onMounted(() => {
-  const onScroll = () => { isScrolled.value = window.scrollY > 50 }
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onUnmounted(() => window.removeEventListener('scroll', onScroll))
-})
+const onScroll = () => { isScrolled.value = window.scrollY > 50 }
+onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <template>
@@ -48,7 +46,7 @@ onMounted(() => {
       </button>
 
       <ul class="nav__links">
-        <li v-for="item in data?.navigation" :key="item.href">
+        <li v-for="item in data?.navigation ?? []" :key="item.href">
           <NuxtLink
             :to="item.href"
             :class="item.isButton ? 'btn btn-green' : ''"
