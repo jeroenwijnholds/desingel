@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@sanity/vision": "^5.27.0",
-    "sanity": "^5.27.0"
+    "sanity": "^5.27.0",
+    "styled-components": "^6.4.2"
   }
 }
