@@ -1,10 +1,10 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 const QUERY = `*[_type == "siteSettings"][0]{ siteName, navigation }`
 
 interface NavItem { label: string; href: string; isButton: boolean }
 interface SiteSettings { siteName: string; navigation: NavItem[] }
 
-const { data } = await useSanityQuery<SiteSettings>(QUERY)
+const { data } = useSanityQuery<SiteSettings>(QUERY)
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)

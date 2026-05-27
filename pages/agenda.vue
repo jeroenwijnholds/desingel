@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Event {
   _id: string
   title: string
@@ -14,7 +14,7 @@ interface Event {
 const QUERY = `*[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
   _id, title, slug, category, date, timeRange, location, description, externalLink
 }`
-const { data } = await useSanityQuery<Event[]>(QUERY)
+const { data } = useSanityQuery<Event[]>(QUERY)
 
 function formatDay(dateStr: string) {
   return new Date(dateStr).getDate().toString()
@@ -44,7 +44,7 @@ const groupedEvents = computed(() => {
   return groups
 })
 
-useHead({ title: 'Agenda — Belevenisboerderij De Singel' })
+useHead({ title: 'Agenda â€” Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -72,7 +72,7 @@ useHead({ title: 'Agenda — Belevenisboerderij De Singel' })
             <p v-if="event.description" class="agenda-desc">{{ event.description }}</p>
             <p v-if="event.timeRange || event.location" class="agenda-meta">
               <span v-if="event.timeRange">{{ event.timeRange }}</span>
-              <template v-if="event.timeRange && event.location"> · </template>
+              <template v-if="event.timeRange && event.location"> Â· </template>
               <span v-if="event.location">{{ event.location }}</span>
             </p>
             <div class="agenda-actions">

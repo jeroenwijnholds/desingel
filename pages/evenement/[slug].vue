@@ -16,7 +16,7 @@ interface Event {
 
 const route = useRoute()
 const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const { data } = await useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const { data } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
 const event = computed(() => data.value)
 
 const imageUrl = useImageUrl()

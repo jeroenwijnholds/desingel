@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Value {
   title: string
   description: string
@@ -19,12 +19,12 @@ interface OverOnsPage {
 }
 
 const QUERY = `*[_type == "overOnsPage" && !(_id in path("drafts.**"))][0]`
-const { data } = await useSanityQuery<OverOnsPage>(QUERY)
+const { data } = useSanityQuery<OverOnsPage>(QUERY)
 const page = computed(() => data.value)
 
 const imageUrl = useImageUrl()
 
-useHead({ title: 'Over Ons — Belevenisboerderij De Singel' })
+useHead({ title: 'Over Ons â€” Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -60,7 +60,7 @@ useHead({ title: 'Over Ons — Belevenisboerderij De Singel' })
             Familiefoto volgt
           </div>
         </figure>
-        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel · Achterhoek</p>
+        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel Â· Achterhoek</p>
       </div>
 
     </div>
@@ -85,7 +85,7 @@ useHead({ title: 'Over Ons — Belevenisboerderij De Singel' })
   <section v-if="page?.victorQuote" class="about-quote-section">
     <div class="about-quote-inner">
       <blockquote class="about-quote">{{ page.victorQuote }}</blockquote>
-      <p class="about-quote-author">— Victor Duurland</p>
+      <p class="about-quote-author">â€” Victor Duurland</p>
     </div>
   </section>
 

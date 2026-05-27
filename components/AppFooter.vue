@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 const QUERY = `*[_type == "siteSettings"][0]{ siteName, tagline, footerCopyright, navigation, owners, address }`
 
 interface NavItem { label: string; href: string; isButton: boolean }
@@ -12,7 +12,7 @@ interface SiteSettings {
   address: string
 }
 
-const { data } = await useSanityQuery<SiteSettings>(QUERY)
+const { data } = useSanityQuery<SiteSettings>(QUERY)
 
 const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
 </script>

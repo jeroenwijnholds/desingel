@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface NieuwsArtikel {
   _id: string
   title: string
@@ -12,7 +12,7 @@ interface NieuwsArtikel {
 const QUERY = `*[_type == "nieuwsArtikel" && !(_id in path("drafts.**"))] | order(publishedAt desc) {
   _id, title, slug, category, publishedAt, excerpt, featuredImage
 }`
-const { data } = await useSanityQuery<NieuwsArtikel[]>(QUERY)
+const { data } = useSanityQuery<NieuwsArtikel[]>(QUERY)
 
 const articles = computed(() => data.value ?? [])
 const hero = computed(() => articles.value[0])
@@ -29,7 +29,7 @@ function formatDatetime(dateStr: string) {
   return dateStr.slice(0, 10)
 }
 
-useHead({ title: 'Nieuws — Belevenisboerderij De Singel' })
+useHead({ title: 'Nieuws â€” Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -37,7 +37,7 @@ useHead({ title: 'Nieuws — Belevenisboerderij De Singel' })
     <div class="page-header-inner">
       <p class="section-label bright-green">Belevenisboerderij de Singel</p>
       <h1 class="page-header-title">Nieuws</h1>
-      <p class="page-header-sub">Verhalen van het land — over dieren, seizoenen en het leven op de boerderij.</p>
+      <p class="page-header-sub">Verhalen van het land â€” over dieren, seizoenen en het leven op de boerderij.</p>
     </div>
   </header>
 

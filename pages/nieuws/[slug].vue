@@ -26,7 +26,7 @@ const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in p
   title, slug, category, publishedAt, author, excerpt, readTime, featuredImage, body,
   relatedArticles[]->{_id, title, slug, featuredImage}
 }`
-const { data } = await useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
+const { data } = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
 const article = computed(() => data.value)
 
 const imageUrl = useImageUrl()

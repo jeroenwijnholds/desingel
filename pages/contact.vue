@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface ContactPage {
   infoOwners?: string
   infoAddress?: string
@@ -9,10 +9,10 @@ interface ContactPage {
 }
 
 const QUERY = `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]`
-const { data } = await useSanityQuery<ContactPage>(QUERY)
+const { data } = useSanityQuery<ContactPage>(QUERY)
 const page = computed(() => data.value)
 
-useHead({ title: 'Contact — Belevenisboerderij De Singel' })
+useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -20,7 +20,7 @@ useHead({ title: 'Contact — Belevenisboerderij De Singel' })
     <div class="page-header-inner">
       <p class="section-label bright-green">Belevenisboerderij de Singel</p>
       <h1 class="page-header-title">Contact</h1>
-      <p class="page-header-sub">We horen graag van je — stel je vraag of laat ons weten wat je wil bespreken.</p>
+      <p class="page-header-sub">We horen graag van je â€” stel je vraag of laat ons weten wat je wil bespreken.</p>
     </div>
   </header>
 
@@ -29,7 +29,7 @@ useHead({ title: 'Contact — Belevenisboerderij De Singel' })
 
       <section class="contact-form-section" aria-labelledby="form-heading">
         <h2 class="contact-form-heading" id="form-heading">Stuur een bericht</h2>
-        <p class="contact-form-intro">Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in — we reageren normaal gesproken binnen 2 werkdagen.</p>
+        <p class="contact-form-intro">Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in â€” we reageren normaal gesproken binnen 2 werkdagen.</p>
 
         <form
           class="contact-form"
@@ -62,7 +62,7 @@ useHead({ title: 'Contact — Belevenisboerderij De Singel' })
           <div class="form-row form-row--two">
             <div class="form-group">
               <label class="form-label" for="telefoonnummer">
-                Telefoonnummer <span class="form-optional">— optioneel</span>
+                Telefoonnummer <span class="form-optional">â€” optioneel</span>
               </label>
               <input class="form-input" type="tel" id="telefoonnummer" name="telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
             </div>
@@ -122,7 +122,7 @@ useHead({ title: 'Contact — Belevenisboerderij De Singel' })
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               <div>
                 <span class="contact-info-label">Farmshop open</span>
-                <span class="contact-info-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 – 17:00' }}</span>
+                <span class="contact-info-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 â€“ 17:00' }}</span>
               </div>
             </li>
           </ul>

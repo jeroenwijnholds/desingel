@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Service {
   title: string
   description: string
@@ -28,7 +28,7 @@ const QUERY = `{
   "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ siteName }
 }`
 
-const { data } = await useSanityQuery<{ page: HomePage; settings: { siteName: string } }>(QUERY)
+const { data } = useSanityQuery<{ page: HomePage; settings: { siteName: string } }>(QUERY)
 
 const page = computed(() => data.value?.page)
 const settings = computed(() => data.value?.settings)

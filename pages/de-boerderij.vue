@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 interface Highlight {
   title: string
   description: string
@@ -18,12 +18,12 @@ interface BoerderijPage {
 }
 
 const QUERY = `*[_type == "boerderijPage" && !(_id in path("drafts.**"))][0]`
-const { data } = await useSanityQuery<BoerderijPage>(QUERY)
+const { data } = useSanityQuery<BoerderijPage>(QUERY)
 const page = computed(() => data.value)
 
 const imageUrl = useImageUrl()
 
-useHead({ title: 'De Boerderij — Belevenisboerderij De Singel' })
+useHead({ title: 'De Boerderij â€” Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -78,7 +78,7 @@ useHead({ title: 'De Boerderij — Belevenisboerderij De Singel' })
   <section v-if="page?.victorQuote" class="boerderij-quote-section">
     <div class="boerderij-quote-inner">
       <blockquote class="boerderij-quote">{{ page.victorQuote }}</blockquote>
-      <p class="boerderij-quote-author">— Victor Duurland</p>
+      <p class="boerderij-quote-author">â€” Victor Duurland</p>
     </div>
   </section>
 
@@ -100,7 +100,7 @@ useHead({ title: 'De Boerderij — Belevenisboerderij De Singel' })
   <div v-if="page?.fullWidthPhoto" class="boerderij-farm-photo">
     <img
       :src="imageUrl(page.fullWidthPhoto).width(1600).url()"
-      alt="De Singel — Achterhoek"
+      alt="De Singel â€” Achterhoek"
       loading="lazy"
     />
   </div>
