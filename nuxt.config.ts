@@ -61,5 +61,7 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: { preset: 'netlify-static' },
+
   typescript: { strict: true },
 })
