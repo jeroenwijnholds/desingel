@@ -1,8 +1,8 @@
-import imageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 import { createClient } from '@sanity/client'
 import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
-let _builder: ReturnType<typeof imageUrlBuilder> | null = null
+let _builder: ReturnType<typeof createImageUrlBuilder> | null = null
 
 export function useImageUrl() {
   if (!_builder) {
@@ -13,7 +13,7 @@ export function useImageUrl() {
       apiVersion: '2024-01-01',
       useCdn: false,
     })
-    _builder = imageUrlBuilder(client)
+    _builder = createImageUrlBuilder(client)
   }
   return (source: SanityImageSource) => _builder!.image(source)
 }
