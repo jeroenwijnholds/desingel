@@ -22,8 +22,20 @@ function closeMenu() {
   document.body.style.overflow = ''
 }
 
-const onScroll = () => { isScrolled.value = window.scrollY > 50 }
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+const onScroll = () => {
+  const hero = document.querySelector('.hero')
+  if (hero) {
+    const heroRect = hero.getBoundingClientRect()
+    const clipOffset = window.innerWidth >= 768 ? heroRect.height * 0.07 : 0
+    isScrolled.value = (heroRect.bottom - clipOffset) <= 0
+  } else {
+    isScrolled.value = window.scrollY > 0
+  }
+}
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+})
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
