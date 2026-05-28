@@ -9,6 +9,7 @@ interface Service {
 interface SecondaryService {
   title: string
   description: string
+  image?: any
 }
 interface HomePage {
   heroTitle: string
@@ -136,6 +137,13 @@ useHead({ title: 'Belevenisboerderij De Singel' })
   <section v-if="page?.secondaryServices?.length" class="services-section">
     <div class="services-wrapper">
       <div v-for="service in page.secondaryServices" :key="service.title" class="service-item">
+        <img
+          v-if="service.image"
+          :src="imageUrl(service.image).width(600).url()"
+          :alt="service.title"
+          class="service-image"
+          loading="lazy"
+        />
         <div class="service-desc">
           <h3 class="card-title">{{ service.title }}</h3>
           <p>{{ service.description }}</p>

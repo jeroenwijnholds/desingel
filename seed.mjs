@@ -151,9 +151,9 @@ async function seed() {
       },
     ],
     secondaryServices: [
-      { _key: key(), title: 'Loopvogels',          description: 'Bij belevingsboerderij de Singel doen wij aan struisvogelpolitiek.' },
-      { _key: key(), title: 'De Wagyu Ranch',       description: 'Keizerlijke koeien die grazen op ongerepte Achterhoekse gronden.' },
-      { _key: key(), title: 'Achterhoekse Outback', description: 'Naar de andere kant van de wereld, gewoon in eigen land.' },
+      { _key: key(), title: 'Loopvogels',          description: 'Bij belevingsboerderij de Singel doen wij aan struisvogelpolitiek.', image: imgLoopvogels },
+      { _key: key(), title: 'De Wagyu Ranch',       description: 'Keizerlijke koeien die grazen op ongerepte Achterhoekse gronden.',  image: imgWagyu },
+      { _key: key(), title: 'Achterhoekse Outback', description: 'Naar de andere kant van de wereld, gewoon in eigen land.',           image: imgOutback },
     ],
     galleryImages: [img5948, img5370, img5257, img5333, img5281, img5327, img5242, img5896, img5909].map((img, i) => ({
       ...img, _key: key(),
