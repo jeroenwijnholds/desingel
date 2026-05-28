@@ -26,8 +26,9 @@ export default defineType({
           fields: [
             defineField({ name: 'title', title: 'Titel', type: 'string' }),
             defineField({ name: 'description', title: 'Beschrijving', type: 'text', rows: 3 }),
+            defineField({ name: 'image', title: 'Afbeelding', type: 'image', options: { hotspot: true } }),
           ],
-          preview: { select: { title: 'title' } },
+          preview: { select: { title: 'title', media: 'image' } },
         },
       ],
       validation: Rule => Rule.max(3),

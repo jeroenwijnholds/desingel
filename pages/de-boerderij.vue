@@ -2,6 +2,7 @@
 interface Highlight {
   title: string
   description: string
+  image?: any
 }
 interface BoerderijPage {
   introTitle: string
@@ -88,6 +89,13 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
       <h2 class="section-title boerderij-highlights-title">Wat je aantreft</h2>
       <div class="boerderij-cards">
         <article v-for="highlight in page.highlights" :key="highlight.title" class="boerderij-card">
+          <div v-if="highlight.image" class="boerderij-card-img-wrap">
+            <img
+              :src="imageUrl(highlight.image).width(600).url()"
+              :alt="highlight.title"
+              loading="lazy"
+            />
+          </div>
           <div class="boerderij-card-body">
             <h3 class="boerderij-card-title">{{ highlight.title }}</h3>
             <p>{{ highlight.description }}</p>
