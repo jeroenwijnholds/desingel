@@ -35,6 +35,7 @@ useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
           class="contact-form"
           name="contact"
           method="POST"
+          action="/bedankt"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
           novalidate
