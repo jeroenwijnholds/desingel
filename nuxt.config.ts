@@ -1,5 +1,3 @@
-import { createClient } from '@sanity/client'
-
 export default defineNuxtConfig({
   modules: ['@nuxtjs/sanity'],
 
@@ -40,28 +38,11 @@ export default defineNuxtConfig({
     },
   },
 
-  hooks: {
-    async 'nitro:config'(nitroConfig) {
-      if (nitroConfig.dev) return
-      const client = createClient({
-        projectId: process.env.SANITY_PROJECT_ID!,
-        dataset: process.env.SANITY_DATASET || 'production',
-        apiVersion: '2024-01-01',
-        useCdn: false,
-      })
-      const [eventSlugs, newsSlugs] = await Promise.all([
-        client.fetch<string[]>(`*[_type == "event" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current`),
-        client.fetch<string[]>(`*[_type == "nieuwsArtikel" && defined(slug.current) && !(_id in path("drafts.**"))].slug.current`),
-      ])
-      nitroConfig.prerender!.routes = [
-        ...(nitroConfig.prerender!.routes ?? []),
-        ...eventSlugs.map(s => `/evenement/${s}`),
-        ...newsSlugs.map(s => `/nieuws/${s}`),
-      ]
-    },
+  routeRules: {
+    '/**': { isr: 60 },
   },
 
-  nitro: { preset: 'netlify-static' },
+  nitro: { preset: 'netlify' },
 
   typescript: { strict: true },
 })
