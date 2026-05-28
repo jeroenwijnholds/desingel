@@ -44,7 +44,7 @@ const groupedEvents = computed(() => {
   return groups
 })
 
-useHead({ title: 'Agenda â€” Belevenisboerderij De Singel' })
+useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
 </script>
 
 <template>

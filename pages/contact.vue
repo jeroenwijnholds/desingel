@@ -12,7 +12,7 @@ const QUERY = `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<ContactPage>(QUERY)
 const page = computed(() => data.value)
 
-useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
+useHead({ title: 'Contact – Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -20,7 +20,7 @@ useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
     <div class="page-header-inner">
       <p class="section-label bright-green">Belevenisboerderij de Singel</p>
       <h1 class="page-header-title">Contact</h1>
-      <p class="page-header-sub">We horen graag van je â€” stel je vraag of laat ons weten wat je wil bespreken.</p>
+      <p class="page-header-sub">We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken.</p>
     </div>
   </header>
 
@@ -29,7 +29,7 @@ useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
 
       <section class="contact-form-section" aria-labelledby="form-heading">
         <h2 class="contact-form-heading" id="form-heading">Stuur een bericht</h2>
-        <p class="contact-form-intro">Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in â€” we reageren normaal gesproken binnen 2 werkdagen.</p>
+        <p class="contact-form-intro">Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.</p>
 
         <form
           class="contact-form"
@@ -63,7 +63,7 @@ useHead({ title: 'Contact â€” Belevenisboerderij De Singel' })
           <div class="form-row form-row--two">
             <div class="form-group">
               <label class="form-label" for="telefoonnummer">
-                Telefoonnummer <span class="form-optional">â€” optioneel</span>
+                Telefoonnummer <span class="form-optional">– optioneel</span>
               </label>
               <input class="form-input" type="tel" id="telefoonnummer" name="telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
             </div>

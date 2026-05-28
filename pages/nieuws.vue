@@ -29,7 +29,7 @@ function formatDatetime(dateStr: string) {
   return dateStr.slice(0, 10)
 }
 
-useHead({ title: 'Nieuws â€” Belevenisboerderij De Singel' })
+useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
 </script>
 
 <template>
@@ -37,7 +37,7 @@ useHead({ title: 'Nieuws â€” Belevenisboerderij De Singel' })
     <div class="page-header-inner">
       <p class="section-label bright-green">Belevenisboerderij de Singel</p>
       <h1 class="page-header-title">Nieuws</h1>
-      <p class="page-header-sub">Verhalen van het land â€” over dieren, seizoenen en het leven op de boerderij.</p>
+      <p class="page-header-sub">Verhalen van het land – over dieren, seizoenen en het leven op de boerderij.</p>
     </div>
   </header>
 
