@@ -22,7 +22,7 @@ const QUERY = `*[_type == "overOnsPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<OverOnsPage>(QUERY)
 const page = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
 </script>
@@ -51,9 +51,10 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
         <figure class="about-photo-frame">
           <img
             v-if="page?.familyPhoto"
-            :src="imageUrl(page.familyPhoto).width(900).url()"
+            v-bind="img(page.familyPhoto, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             alt="Victor, Mari en de kinderen van de Singel"
             loading="eager"
+            fetchpriority="high"
           />
           <div v-else class="about-photo-placeholder-badge">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -104,7 +105,7 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
 
   <div v-if="page?.fullWidthPhoto" class="about-farm-photo">
     <img
-      :src="imageUrl(page.fullWidthPhoto).width(1600).url()"
+      v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       alt="Belevenisboerderij de Singel in de Achterhoek"
       loading="lazy"
     />

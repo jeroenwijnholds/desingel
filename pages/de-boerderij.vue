@@ -22,7 +22,7 @@ const QUERY = `*[_type == "boerderijPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<BoerderijPage>(QUERY)
 const page = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
 </script>
@@ -51,9 +51,10 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
         <figure class="boerderij-photo-frame">
           <img
             v-if="page?.introImage"
-            :src="imageUrl(page.introImage).width(900).url()"
+            v-bind="img(page.introImage, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             alt="Belevenisboerderij de Singel in de Achterhoek"
             loading="eager"
+            fetchpriority="high"
           />
         </figure>
         <p class="boerderij-photo-caption">De Singel in het hart van de Achterhoek</p>
@@ -91,7 +92,7 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
         <article v-for="highlight in page.highlights" :key="highlight.title" class="boerderij-card">
           <div v-if="highlight.image" class="boerderij-card-img-wrap">
             <img
-              :src="imageUrl(highlight.image).width(600).url()"
+              v-bind="img(highlight.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 33vw' })"
               :alt="highlight.title"
               loading="lazy"
             />
@@ -107,7 +108,7 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
 
   <div v-if="page?.fullWidthPhoto" class="boerderij-farm-photo">
     <img
-      :src="imageUrl(page.fullWidthPhoto).width(1600).url()"
+      v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       alt="De Singel – Achterhoek"
       loading="lazy"
     />

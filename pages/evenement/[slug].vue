@@ -19,7 +19,7 @@ const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("dra
 const { data } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
 const event = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 function formatChipDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -40,7 +40,7 @@ const portableTextComponents = {
           if (!val) return null
           return h('figure', { class: 'article-figure' }, [
             h('img', {
-              src: imageUrl(val).width(900).url(),
+              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
               alt: val.alt ?? '',
               loading: 'lazy',
             }),
@@ -62,10 +62,11 @@ useHead(() => ({
     <header class="event-hero">
       <div v-if="event.featuredImage" class="event-hero-image-wrap">
         <img
-          :src="imageUrl(event.featuredImage).width(1400).url()"
+          v-bind="img(event.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="event.title"
           class="event-hero-img"
           loading="eager"
+          fetchpriority="high"
         />
       </div>
       <div class="event-hero-content">

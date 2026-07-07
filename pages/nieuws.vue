@@ -19,7 +19,7 @@ const hero = computed(() => articles.value[0])
 const featured = computed(() => articles.value.slice(1, 3))
 const archive = computed(() => articles.value.slice(3))
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -48,7 +48,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
             <div class="news-card-img-wrap">
               <img
                 v-if="hero.featuredImage"
-                :src="imageUrl(hero.featuredImage).width(900).url()"
+                v-bind="img(hero.featuredImage, { widths: [600, 900, 1400], sizes: '(max-width: 767px) 100vw, 62vw' })"
                 :alt="hero.title"
                 loading="eager"
               />
@@ -74,7 +74,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
               <div class="news-card-img-wrap">
                 <img
                   v-if="article.featuredImage"
-                  :src="imageUrl(article.featuredImage).width(600).url()"
+                  v-bind="img(article.featuredImage, { widths: [400, 600, 900], sizes: '(max-width: 767px) 50vw, 33vw' })"
                   :alt="article.title"
                   loading="lazy"
                 />
@@ -103,7 +103,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
             <div class="news-list-img-wrap">
               <img
                 v-if="article.featuredImage"
-                :src="imageUrl(article.featuredImage).width(400).url()"
+                v-bind="img(article.featuredImage, { widths: [200, 400], sizes: '(max-width: 767px) 88px, 160px' })"
                 :alt="article.title"
                 loading="lazy"
               />

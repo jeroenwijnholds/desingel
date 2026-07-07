@@ -29,7 +29,7 @@ const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in p
 const { data } = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
 const article = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -49,7 +49,7 @@ const portableTextComponents = {
           if (!val) return null
           return h('figure', { class: 'article-figure' }, [
             h('img', {
-              src: imageUrl(val).width(900).url(),
+              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
               alt: val.alt ?? '',
               loading: 'lazy',
             }),
@@ -71,10 +71,11 @@ useHead(() => ({
     <header class="article-hero">
       <div v-if="article.featuredImage" class="article-hero-image-wrap">
         <img
-          :src="imageUrl(article.featuredImage).width(1400).url()"
+          v-bind="img(article.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="article.title"
           class="article-hero-img"
           loading="eager"
+          fetchpriority="high"
         />
       </div>
       <div class="article-hero-content">
@@ -142,7 +143,7 @@ useHead(() => ({
               <NuxtLink :to="`/nieuws/${related.slug.current}`" class="article-related-link">
                 <div v-if="related.featuredImage" class="article-related-img">
                   <img
-                    :src="imageUrl(related.featuredImage).width(200).url()"
+                    v-bind="img(related.featuredImage, { widths: [120, 200], sizes: '72px' })"
                     :alt="related.title"
                     loading="lazy"
                   />

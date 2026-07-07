@@ -35,12 +35,22 @@ const page = computed(() => data.value?.page)
 const settings = computed(() => data.value?.settings)
 
 const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 const galleryImages = computed(() =>
-  (page.value?.galleryImages ?? []).map((img: any) => ({
-    url: imageUrl(img).width(1200).url(),
-    alt: '',
-  }))
+  (page.value?.galleryImages ?? []).map((source: any) => {
+    const thumb = img(source, {
+      widths: [400, 800, 1200],
+      sizes: '(max-width: 767px) 50vw, 33vw',
+    })
+    return {
+      url: thumb.src,
+      srcset: thumb.srcset,
+      sizes: thumb.sizes,
+      full: imageUrl(source).width(1600).auto('format').quality(80).url(),
+      alt: source?.alt ?? '',
+    }
+  })
 )
 
 const heroEl = ref<HTMLElement | null>(null)
@@ -99,7 +109,7 @@ useHead({ title: 'Belevenisboerderij De Singel' })
         <div class="card-container">
           <img
             v-if="page.primaryServices[0].image"
-            :src="imageUrl(page.primaryServices[0].image).width(800).url()"
+            v-bind="img(page.primaryServices[0].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[0].title"
             class="card-image"
             loading="lazy"
@@ -115,7 +125,7 @@ useHead({ title: 'Belevenisboerderij De Singel' })
         <div class="card-container">
           <img
             v-if="page.primaryServices[1].image"
-            :src="imageUrl(page.primaryServices[1].image).width(800).url()"
+            v-bind="img(page.primaryServices[1].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[1].title"
             class="card-image"
             loading="lazy"
@@ -139,7 +149,7 @@ useHead({ title: 'Belevenisboerderij De Singel' })
       <div v-for="service in page.secondaryServices" :key="service.title" class="service-item">
         <img
           v-if="service.image"
-          :src="imageUrl(service.image).width(600).url()"
+          v-bind="img(service.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 32vw' })"
           :alt="service.title"
           class="service-image"
           loading="lazy"
