@@ -8,6 +8,8 @@
     "preview": "npx serve .output/public"
   },
   "dependencies": {
+    "@fontsource/playfair-display": "^5.2.8",
+    "@fontsource/source-sans-3": "^5.2.9",
     "@nuxtjs/sanity": "^2.3.0",
     "@portabletext/vue": "^1.0.14",
     "@sanity/client": "^7.22.0",
