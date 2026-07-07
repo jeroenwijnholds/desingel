@@ -367,7 +367,7 @@ hr.divider {
   position: relative;
   display: flex;
   min-height: 80vh;
-  background-image: url('https://cdn.prod.website-files.com/6533a9b8694c7dea02da67d4/6533c067cb7b49b9d9c40824_HeaderImage.png');
+  background-image: url('~/assets/images/hero-desktop.jpg');
   background-position: 50% 60%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -399,7 +399,7 @@ hr.divider {
 
 @media screen and (max-width: 479px) {
   .hero {
-    background-image: url('https://cdn.prod.website-files.com/6533a9b8694c7dea02da67d4/65ec7a978a3ca11431019d46_IMG_5279.jpg');
+    background-image: url('~/assets/images/hero-mobile.jpg');
     background-position: 50%;
     align-items: flex-end;
     min-height: 100vh;
@@ -420,13 +420,13 @@ hr.divider {
 
 .hero-ellipse-1 {
   z-index: 1;
-  background-image: url('https://cdn.prod.website-files.com/6533a9b8694c7dea02da67d4/6533b5a06a9176ae6b4badb9_EllipseHeader.svg');
+  background-image: url('~/assets/images/ellipse-1.svg');
   animation: ellipse-drift-1 18s ease-in-out infinite;
 }
 
 .hero-ellipse-2 {
   z-index: 2;
-  background-image: url('https://cdn.prod.website-files.com/6533a9b8694c7dea02da67d4/6533b76a6047abfdf85d65fb_Ellipse2.svg');
+  background-image: url('~/assets/images/ellipse-2.svg');
   animation: ellipse-drift-2 22s ease-in-out infinite;
 }
 
