@@ -54,7 +54,7 @@
 
   /* Layout */
   --container-max: 1140px;
-  --page-pad: clamp(16px, 6vw, 120px);
+  --page-pad: clamp(16px, calc(10vw - 32px), 120px);
   --section-pad: clamp(64px, 9vw, 112px);
   --nav-height: 72px;
 }
@@ -367,6 +367,7 @@ hr.divider {
   position: relative;
   display: flex;
   min-height: 80vh;
+  min-height: 80svh;
   background-image: url('~/assets/images/hero-desktop.jpg');
   background-position: 50% 60%;
   background-repeat: no-repeat;
@@ -403,6 +404,7 @@ hr.divider {
     background-position: 50%;
     align-items: flex-end;
     min-height: 100vh;
+    min-height: 100svh;
     padding: 0;
   }
 }
@@ -567,16 +569,13 @@ hr.divider {
 /* ============================================
    INTRO BG
    ============================================ */
+/* De band schildert achter de (gepositioneerde) hero en is daardoor
+   alleen zichtbaar in het door de ellips weggeknipte deel. Vloeiende
+   maten i.p.v. vaste hoogtes zodat elke schermbreedte klopt. */
 .intro-bg {
   background-color: var(--green-transparent);
-  height: 800px;
-  margin-top: -500px;
-}
-
-@media screen and (max-width: 1180px) {
-  .intro-bg {
-    height: 720px;
-  }
+  height: clamp(480px, 64vw, 800px);
+  margin-top: calc(-1 * clamp(320px, 40vw, 500px));
 }
 
 
@@ -584,12 +583,14 @@ hr.divider {
    INTRO SECTION
    ============================================ */
 .intro-section {
+  --card-hang: 88px;
+  --card-overhang: min(90px, max(0px, calc(var(--page-pad) - 32px)));
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -220px;
-  padding-left: 120px;
-  padding-right: 120px;
+  margin-top: calc(-1 * clamp(150px, 18vw, 220px));
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
   position: relative;
   z-index: 1;
 }
@@ -624,10 +625,11 @@ hr.divider {
   max-width: 60ch;
 }
 
-/* Card container */
+/* Card container — reserveert precies de ruimte die de overlay
+   eronder uitsteekt (--card-hang) plus vaste marge */
 .card-container {
   width: 100%;
-  margin-bottom: 152px;
+  margin-bottom: calc(var(--card-hang, 88px) + var(--space-16));
   position: relative;
 }
 
@@ -646,19 +648,19 @@ hr.divider {
 }
 
 .card-desc--intro {
-  min-width: 300px;
+  min-width: min(300px, 100%);
   max-width: 400px;
-  margin-bottom: -88px;
+  margin-bottom: calc(-1 * var(--card-hang, 88px));
   position: absolute;
 }
 
 .card-desc--left {
-  margin-left: -80px;
+  margin-left: calc(-1 * var(--card-overhang, 0px));
   inset: auto auto 0% 0%;
 }
 
 .card-desc--right {
-  margin-right: -90px;
+  margin-right: calc(-1 * var(--card-overhang, 0px));
   inset: auto 0% 0% auto;
 }
 
@@ -674,11 +676,6 @@ hr.divider {
 
 /* --- Intro section responsive --- */
 @media screen and (max-width: 1180px) {
-  .intro-section {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-
   .content-wrapper {
     flex-direction: column;
     gap: 0;
@@ -746,8 +743,8 @@ hr.divider {
 .services-section {
   display: flex;
   padding-bottom: 60px;
-  padding-left: 120px;
-  padding-right: 120px;
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
 }
 
 .services-wrapper {
@@ -785,11 +782,6 @@ hr.divider {
 
 /* Tablet */
 @media screen and (max-width: 991px) {
-  .services-section {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-
   .services-wrapper {
     flex-flow: row;
     gap: 10px;
@@ -814,8 +806,6 @@ hr.divider {
   .services-section {
     margin-top: 32px;
     padding-bottom: 32px;
-    padding-left: 32px;
-    padding-right: 32px;
   }
 
   .services-wrapper {
@@ -845,8 +835,6 @@ hr.divider {
   .services-section {
     margin-top: 16px;
     padding-bottom: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
   }
 
   .services-wrapper {
@@ -913,7 +901,7 @@ hr.divider {
 .gallery-section {
   background-color: var(--green-transparent);
   margin-top: 48px;
-  padding: 48px 120px;
+  padding: var(--space-12) var(--page-pad);
 }
 
 .gallery-grid {
@@ -929,18 +917,10 @@ hr.divider {
   cursor: pointer;
 }
 
-/* Tablet ≤1180px */
-@media screen and (max-width: 1180px) {
-  .gallery-section {
-    padding: 40px;
-  }
-}
-
 /* Mobile ≤767px */
 @media screen and (max-width: 767px) {
   .gallery-section {
     margin-top: 8px;
-    padding: 16px;
   }
 
   .gallery-grid {
@@ -1005,7 +985,7 @@ hr.divider {
 .footer {
   background-color: var(--green-dark);
   color: var(--white);
-  padding: 60px 120px 0;
+  padding: var(--space-16) var(--page-pad) 0;
 }
 
 .footer-wrapper {
@@ -1098,29 +1078,11 @@ hr.divider {
   }
 }
 
-/* Tablet ≤1180px */
-@media screen and (max-width: 1180px) {
-  .footer {
-    padding: 48px 40px 0;
-  }
-}
-
 /* Mobile ≤767px */
 @media screen and (max-width: 767px) {
-  .footer {
-    padding: 40px 32px 0;
-  }
-
   .footer-wrapper {
     flex-direction: column;
     gap: 32px;
-  }
-}
-
-/* Small mobile ≤479px */
-@media screen and (max-width: 479px) {
-  .footer {
-    padding: 32px 16px 0;
   }
 }
 
