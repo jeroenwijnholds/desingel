@@ -1,5 +1,9 @@
 <script setup lang="ts">
-useHead({ title: 'Bedankt voor je bericht – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Bedankt voor je bericht – Belevenisboerderij De Singel',
+  description: 'We hebben je bericht ontvangen en nemen zo snel mogelijk contact met je op.',
+  noindex: true,
+})
 </script>
 
 <template>

@@ -77,7 +77,10 @@ onUnmounted(() => {
   window.removeEventListener('scroll', updateCta)
 })
 
-useHead({ title: 'Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Belevenisboerderij De Singel',
+  description: 'Belevenisboerderij in de Achterhoek: farmshop met eigen producten, boerderij op locatie en evenementen. Kom langs en beleef het boerenleven van dichtbij.',
+})
 </script>
 
 <template>

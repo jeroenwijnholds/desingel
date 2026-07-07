@@ -67,9 +67,13 @@ const portableTextComponents = {
   },
 }
 
-useHead(() => ({
-  title: article.value ? `${article.value.title} — Belevenisboerderij De Singel` : 'Nieuws',
-}))
+useSeo({
+  title: () => article.value ? `${article.value.title} – Belevenisboerderij De Singel` : 'Nieuws – Belevenisboerderij De Singel',
+  description: () => article.value?.excerpt ?? 'Nieuws van Belevenisboerderij de Singel.',
+  image: () => article.value?.featuredImage
+    ? img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
+    : undefined,
+})
 </script>
 
 <template>

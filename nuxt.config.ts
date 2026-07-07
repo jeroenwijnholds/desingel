@@ -12,6 +12,8 @@ export default defineNuxtConfig({
     public: {
       // ingevuld via NUXT_PUBLIC_WEB3FORMS_KEY tijdens de build
       web3formsKey: '',
+      // absolute site-URL voor canonical/OG; NUXT_PUBLIC_SITE_URL in CI
+      siteUrl: 'https://jeroenwijnholds.github.io/desingel',
     },
   },
 
@@ -42,6 +44,12 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#364838' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon.svg` },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon-32.png` },
+        { rel: 'apple-touch-icon', href: `${process.env.NUXT_APP_BASE_URL || '/'}apple-touch-icon.png` },
       ],
     },
   },

@@ -82,7 +82,10 @@ async function onSubmit() {
   }
 }
 
-useHead({ title: 'Contact – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Contact – Belevenisboerderij De Singel',
+  description: 'Neem contact op met Belevenisboerderij de Singel: stel je vraag over de farmshop, evenementen of de boerderij op locatie.',
+})
 </script>
 
 <template>

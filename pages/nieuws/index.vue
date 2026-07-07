@@ -29,7 +29,10 @@ function formatDatetime(dateStr: string) {
   return dateStr.slice(0, 10)
 }
 
-useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Nieuws – Belevenisboerderij De Singel',
+  description: 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
+})
 </script>
 
 <template>

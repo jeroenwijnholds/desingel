@@ -44,7 +44,10 @@ const groupedEvents = computed(() => {
   return groups
 })
 
-useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Agenda – Belevenisboerderij De Singel',
+  description: 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
+})
 </script>
 
 <template>

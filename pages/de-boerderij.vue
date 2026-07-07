@@ -24,7 +24,10 @@ const page = computed(() => data.value)
 
 const img = useSanityImg()
 
-useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'De Boerderij – Belevenisboerderij De Singel',
+  description: 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
+})
 </script>
 
 <template>
