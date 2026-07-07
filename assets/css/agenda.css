@@ -138,7 +138,8 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 13px;
+  min-height: 40px;
+  padding: 8px 16px;
   border-radius: 100em;
   font-family: var(--font-body);
   font-size: 13px;

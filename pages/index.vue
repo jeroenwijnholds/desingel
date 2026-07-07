@@ -149,7 +149,7 @@ useSeo({
 
   <section v-if="page?.secondaryServices?.length" class="services-section">
     <div class="services-wrapper">
-      <div v-for="service in page.secondaryServices" :key="service.title" class="service-item">
+      <div v-for="(service, i) in page.secondaryServices" :key="service.title" v-reveal="i * 100" class="service-item">
         <img
           v-if="service.image"
           v-bind="img(service.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 32vw' })"
@@ -165,15 +165,15 @@ useSeo({
     </div>
   </section>
 
-  <section class="gallery-section">
+  <section v-reveal class="gallery-section">
     <p class="section-label dark-green">De boerderij in beeld</p>
     <h2 class="section-title">Belevenisboerderij de Singel</h2>
     <AppLightbox :images="galleryImages" />
   </section>
 
   <section ref="contactEl" class="boerderij-cta" id="contact">
-    <div class="boerderij-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="boerderij-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="boerderij-cta-title">Beleef de boerderij zelf</h2>
       <p class="boerderij-cta-text">Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of leer ons beter kennen.</p>
       <div class="boerderij-cta-btns">

@@ -300,6 +300,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: 44px;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;

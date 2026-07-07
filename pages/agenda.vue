@@ -59,7 +59,7 @@ useSeo({
 
   <main class="agenda-main">
     <div class="agenda-wrapper">
-      <div v-for="group in groupedEvents" :key="group.key" class="agenda-month">
+      <div v-for="group in groupedEvents" :key="group.key" v-reveal class="agenda-month">
         <h2 class="agenda-month-title">{{ group.key }}</h2>
 
         <article v-for="event in group.events" :key="event._id" class="agenda-item">

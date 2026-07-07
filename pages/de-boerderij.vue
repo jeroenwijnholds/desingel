@@ -67,21 +67,17 @@ useSeo({
   </section>
 
   <section class="boerderij-story">
-    <div class="boerderij-story-inner">
+    <div v-reveal class="boerderij-story-inner">
       <p class="section-label dark-green">De boerderij</p>
       <h2 class="section-title">Kleinschalig, bewust en echt</h2>
-      <div
-        v-for="(column, i) in (page?.storyColumns ?? [])"
-        :key="i"
-        class="boerderij-story-columns"
-      >
-        <p>{{ column }}</p>
+      <div class="boerderij-story-columns">
+        <p v-for="(column, i) in (page?.storyColumns ?? [])" :key="i">{{ column }}</p>
       </div>
     </div>
   </section>
 
   <section v-if="page?.victorQuote" class="boerderij-quote-section">
-    <div class="boerderij-quote-inner">
+    <div v-reveal class="boerderij-quote-inner">
       <blockquote class="boerderij-quote">{{ page.victorQuote }}</blockquote>
       <p class="boerderij-quote-author">– Victor Duurland</p>
     </div>
@@ -92,7 +88,7 @@ useSeo({
       <p class="section-label dark-green boerderij-highlights-label">Op de Singel</p>
       <h2 class="section-title boerderij-highlights-title">Wat je aantreft</h2>
       <div class="boerderij-cards">
-        <article v-for="highlight in page.highlights" :key="highlight.title" class="boerderij-card">
+        <article v-for="(highlight, i) in page.highlights" :key="highlight.title" v-reveal="i * 100" class="boerderij-card">
           <div v-if="highlight.image" class="boerderij-card-img-wrap">
             <img
               v-bind="img(highlight.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 33vw' })"
@@ -118,8 +114,8 @@ useSeo({
   </div>
 
   <section class="boerderij-cta">
-    <div class="boerderij-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="boerderij-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="boerderij-cta-title">Beleef de Singel zelf</h2>
       <p class="boerderij-cta-text">Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of neem gewoon contact op.</p>
       <div class="boerderij-cta-btns">

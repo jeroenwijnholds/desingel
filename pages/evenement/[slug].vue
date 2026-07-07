@@ -16,14 +16,17 @@ interface Event {
 
 const route = useRoute()
 const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const { data, status } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const query = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const { data } = query
 const event = computed(() => data.value)
 
-watch(status, (s) => {
-  if ((s === 'success' || s === 'error') && !data.value) {
+// De composable is thenable en resolvet pas nadat de data-ref gevuld is —
+// status alleen is niet betrouwbaar (data volgt in een latere microtask).
+query.then(() => {
+  if (!data.value) {
     showError({ statusCode: 404, statusMessage: 'Evenement niet gevonden' })
   }
-}, { immediate: true })
+}).catch(() => {})
 
 const img = useSanityImg()
 

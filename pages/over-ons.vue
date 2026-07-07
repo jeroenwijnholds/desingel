@@ -71,23 +71,19 @@ useSeo({
   </section>
 
   <section class="about-story">
-    <div class="about-story-inner">
+    <div v-reveal class="about-story-inner">
       <div class="about-story-label-row">
         <p class="section-label dark-green">Ons verhaal</p>
       </div>
       <h2 class="section-title">{{ page?.storyTitle ?? 'Van passie naar praktijk' }}</h2>
-      <div
-        v-for="(column, i) in (page?.storyColumns ?? [])"
-        :key="i"
-        class="about-story-columns"
-      >
-        <p>{{ column }}</p>
+      <div class="about-story-columns">
+        <p v-for="(column, i) in (page?.storyColumns ?? [])" :key="i">{{ column }}</p>
       </div>
     </div>
   </section>
 
   <section v-if="page?.victorQuote" class="about-quote-section">
-    <div class="about-quote-inner">
+    <div v-reveal class="about-quote-inner">
       <blockquote class="about-quote">{{ page.victorQuote }}</blockquote>
       <p class="about-quote-author">– Victor Duurland</p>
     </div>
@@ -98,7 +94,7 @@ useSeo({
       <p class="section-label dark-green about-values-label">Waar wij voor staan</p>
       <h2 class="section-title about-values-title">Onze overtuigingen</h2>
       <div class="about-values-grid">
-        <div v-for="value in page.values" :key="value.title" class="about-value">
+        <div v-for="(value, i) in page.values" :key="value.title" v-reveal="i * 100" class="about-value">
           <h3 class="about-value-title">{{ value.title }}</h3>
           <p>{{ value.description }}</p>
         </div>
@@ -115,8 +111,8 @@ useSeo({
   </div>
 
   <section class="about-cta">
-    <div class="about-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="about-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="about-cta-title">Beleef de boerderij zelf</h2>
       <p class="about-cta-text">Nieuwsgierig geworden? Kom langs op de farmshop, bezoek ons op een evenement, of stuur ons gewoon een bericht. We horen graag van je.</p>
       <div class="about-cta-btns">

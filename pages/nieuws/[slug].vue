@@ -26,14 +26,17 @@ const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in p
   title, slug, category, publishedAt, author, excerpt, readTime, featuredImage, body,
   relatedArticles[]->{_id, title, slug, featuredImage}
 }`
-const { data, status } = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
+const query = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
+const { data } = query
 const article = computed(() => data.value)
 
-watch(status, (s) => {
-  if ((s === 'success' || s === 'error') && !data.value) {
+// De composable is thenable en resolvet pas nadat de data-ref gevuld is —
+// status alleen is niet betrouwbaar (data volgt in een latere microtask).
+query.then(() => {
+  if (!data.value) {
     showError({ statusCode: 404, statusMessage: 'Artikel niet gevonden' })
   }
-}, { immediate: true })
+}).catch(() => {})
 
 const img = useSanityImg()
 
