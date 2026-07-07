@@ -38,11 +38,5 @@ export default defineNuxtConfig({
     },
   },
 
-  routeRules: {
-    '/**': { isr: 60 },
-  },
-
-  nitro: { preset: 'netlify' },
-
   typescript: { strict: true },
 })
