@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     '@fontsource/source-sans-3/600.css',
     '@fontsource/source-sans-3/700.css',
     '~/assets/css/style.css',
+    '~/assets/css/page-header.css',
     '~/assets/css/page-shared.css',
     '~/assets/css/agenda.css',
     '~/assets/css/contact.css',

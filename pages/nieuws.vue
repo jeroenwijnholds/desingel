@@ -33,13 +33,11 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
 </script>
 
 <template>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <p class="section-label bright-green">Belevenisboerderij de Singel</p>
-      <h1 class="page-header-title">Nieuws</h1>
-      <p class="page-header-sub">Verhalen van het land – over dieren, seizoenen en het leven op de boerderij.</p>
-    </div>
-  </header>
+  <PageHeader
+    label="Belevenisboerderij de Singel"
+    title="Nieuws"
+    subtitle="Verhalen van het land – over dieren, seizoenen en het leven op de boerderij."
+  />
 
   <section v-if="hero" class="news-featured">
     <div class="news-featured-inner">

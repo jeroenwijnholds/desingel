@@ -48,13 +48,11 @@ useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
 </script>
 
 <template>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <p class="section-label bright-green">Belevenisboerderij de Singel</p>
-      <h1 class="page-header-title">Agenda</h1>
-      <p class="page-header-sub">Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij.</p>
-    </div>
-  </header>
+  <PageHeader
+    label="Belevenisboerderij de Singel"
+    title="Agenda"
+    subtitle="Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij."
+  />
 
   <main class="agenda-main">
     <div class="agenda-wrapper">

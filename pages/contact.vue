@@ -22,13 +22,11 @@ useHead({ title: 'Contact – Belevenisboerderij De Singel' })
 </script>
 
 <template>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <p class="section-label bright-green">Belevenisboerderij de Singel</p>
-      <h1 class="page-header-title">Contact</h1>
-      <p class="page-header-sub">We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken.</p>
-    </div>
-  </header>
+  <PageHeader
+    label="Belevenisboerderij de Singel"
+    title="Contact"
+    subtitle="We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken."
+  />
 
   <main class="contact-main" id="contact-form">
     <div class="contact-layout">
