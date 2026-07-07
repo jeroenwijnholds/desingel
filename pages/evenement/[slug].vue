@@ -16,8 +16,14 @@ interface Event {
 
 const route = useRoute()
 const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const { data } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const { data, status } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
 const event = computed(() => data.value)
+
+watch(status, (s) => {
+  if ((s === 'success' || s === 'error') && !data.value) {
+    showError({ statusCode: 404, statusMessage: 'Evenement niet gevonden' })
+  }
+}, { immediate: true })
 
 const img = useSanityImg()
 
