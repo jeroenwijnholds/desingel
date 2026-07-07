@@ -12,6 +12,12 @@ const QUERY = `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<ContactPage>(QUERY)
 const page = computed(() => data.value)
 
+const config = useRuntimeConfig()
+const redirectUrl = ref('')
+onMounted(() => {
+  redirectUrl.value = new URL(`${config.app.baseURL}bedankt`, window.location.origin).href
+})
+
 useHead({ title: 'Contact – Belevenisboerderij De Singel' })
 </script>
 
@@ -33,17 +39,15 @@ useHead({ title: 'Contact – Belevenisboerderij De Singel' })
 
         <form
           class="contact-form"
-          name="contact"
           method="POST"
-          action="/bedankt"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
+          action="https://api.web3forms.com/submit"
           novalidate
         >
-          <input type="hidden" name="form-name" value="contact" />
-          <p class="visually-hidden">
-            <label>Laat dit veld leeg: <input name="bot-field" /></label>
-          </p>
+          <input type="hidden" name="access_key" :value="config.public.web3formsKey" />
+          <input type="hidden" name="redirect" :value="redirectUrl" />
+          <input type="hidden" name="subject" value="Nieuw bericht via het contactformulier" />
+          <input type="hidden" name="from_name" value="Belevenisboerderij de Singel" />
+          <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
           <div class="form-row form-row--two">
             <div class="form-group">

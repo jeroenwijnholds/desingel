@@ -8,6 +8,13 @@ export default defineNuxtConfig({
     useCdn: false,
   },
 
+  runtimeConfig: {
+    public: {
+      // ingevuld via NUXT_PUBLIC_WEB3FORMS_KEY tijdens de build
+      web3formsKey: '',
+    },
+  },
+
   css: [
     '~/assets/css/style.css',
     '~/assets/css/page-shared.css',
