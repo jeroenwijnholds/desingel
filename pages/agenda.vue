@@ -72,7 +72,7 @@ useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
             <p v-if="event.description" class="agenda-desc">{{ event.description }}</p>
             <p v-if="event.timeRange || event.location" class="agenda-meta">
               <span v-if="event.timeRange">{{ event.timeRange }}</span>
-              <template v-if="event.timeRange && event.location"> Â· </template>
+              <template v-if="event.timeRange && event.location"> · </template>
               <span v-if="event.location">{{ event.location }}</span>
             </p>
             <div class="agenda-actions">

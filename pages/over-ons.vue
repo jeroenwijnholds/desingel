@@ -60,7 +60,7 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
             Familiefoto volgt
           </div>
         </figure>
-        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel Â· Achterhoek</p>
+        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel · Achterhoek</p>
       </div>
 
     </div>
