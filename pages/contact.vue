@@ -8,9 +8,18 @@ interface ContactPage {
   privacyNotice?: string
 }
 
-const QUERY = `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]`
-const { data } = useSanityQuery<ContactPage>(QUERY)
-const page = computed(() => data.value)
+const QUERY = `{
+  "page": *[_type == "contactPage" && !(_id in path("drafts.**"))][0],
+  "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ coordinates }
+}`
+const { data } = useSanityQuery<{ page: ContactPage; settings?: { coordinates?: { lat: number; lng: number } } }>(QUERY)
+const page = computed(() => data.value?.page)
+
+// Kaart volgt de coördinaten uit Site-instellingen; fallback = huidige locatie
+const mapSrc = computed(() => {
+  const { lat = 51.9479284, lng = 6.5100125 } = data.value?.settings?.coordinates ?? {}
+  return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
+})
 
 const config = useRuntimeConfig()
 
@@ -255,7 +264,7 @@ useSeo({
 
   <section class="contact-map-section" aria-label="Locatie op de kaart">
     <iframe
-      src="https://maps.google.com/maps?q=51.9479284,6.510012499999999&t=&z=13&ie=UTF8&iwloc=&output=embed"
+      :src="mapSrc"
       class="contact-map"
       title="Locatie Belevenisboerderij de Singel"
       loading="lazy"

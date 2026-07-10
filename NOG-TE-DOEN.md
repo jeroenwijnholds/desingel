@@ -2,6 +2,28 @@
 
 De site draait al live op **https://jeroenwijnholds.github.io/desingel/** en elke push naar `master` wordt automatisch gedeployed. Er zijn nog drie dingen die alleen jij kunt doen, omdat er accounts en inloggegevens bij nodig zijn. Reken op zo'n 10–15 minuten totaal.
 
+> **Let op (branch `cms-herinrichting`):** na het mergen van de CMS-herinrichting
+> moet de Studio opnieuw gedeployed worden — zie stap 0 hieronder. Zolang dat
+> niet is gebeurd, toont de gehoste Studio nog de oude, rommelige indeling.
+
+---
+
+## Stap 0 — Sanity Studio opnieuw deployen (na merge CMS-herinrichting)
+
+**Waarom:** de nieuwe Studio-indeling (singletons, Fotogalerij als eigen menu-item, alt-tekstvelden, Nederlandse uitleg) staat in de code, maar de gehoste Studio draait pas mee na een deploy.
+
+1. Open een terminal in `studio/` en log zo nodig in: `npx sanity login`.
+2. Voer uit: `npm run deploy` (accepteer de bestaande studio-host).
+3. **Controleren:** open de Studio-URL; links hoort nu een menu te staan met Pagina's → Homepage/De Boerderij/Over Ons/Contact, daarnaast Fotogalerij, Agenda, Nieuwsartikelen en Site-instellingen.
+4. **Opruimen (mag later):** het oude veld `galleryImages` op het Homepage-document is verborgen maar de data staat er nog. Als de nieuwe site live staat en de galerij het doet, kan die data weg:
+
+   ```bash
+   npx sanity documents query '*[_id=="homePage"]{galleryImages}'   # eerst kijken
+   # daarna in Vision of via een patch het veld unsetten
+   ```
+
+   Verwijder daarna ook het verborgen veld uit `studio/schemas/homePage.ts` en de `coalesce`-fallback in `pages/index.vue`.
+
 Volgorde aanhouden: eerst het formulier (stap 1), dan de Sanity-koppeling (stap 2), pas daarna Netlify opruimen (stap 3). Zo is er nooit een moment waarop iets kapot is.
 
 ---

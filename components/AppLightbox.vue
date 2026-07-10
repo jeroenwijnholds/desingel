@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  images: Array<{ url: string; srcset?: string; sizes?: string; full?: string; alt?: string }>
+  images: Array<{ url: string; srcset?: string; sizes?: string; full?: string; alt?: string; style?: Record<string, string> }>
 }>()
 
 const activeIndex = ref<number | null>(null)
@@ -86,6 +86,7 @@ onUnmounted(() => {
         :srcset="img.srcset"
         :sizes="img.sizes"
         :alt="img.alt || ''"
+        :style="img.style"
         class="gallery-image"
         loading="lazy"
       />

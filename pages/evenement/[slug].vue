@@ -76,7 +76,7 @@ useSeo({
       <div v-if="event.featuredImage" class="event-hero-image-wrap">
         <img
           v-bind="img(event.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
-          :alt="event.title"
+          :alt="event.featuredImage.alt ?? event.title"
           class="event-hero-img"
           loading="eager"
           fetchpriority="high"

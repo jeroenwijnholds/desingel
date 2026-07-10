@@ -12,6 +12,13 @@ interface SanityImgOptions {
  * Levert alle attributen voor een responsive Sanity-afbeelding:
  * src, srcset, sizes en (bij vaste verhouding) width/height tegen
  * layout shift. WebP/AVIF via auto=format.
+ *
+ * Hotspot: bij `aspect` snijdt Sanity server-side al rond de hotspot.
+ * Zonder `aspect` wordt de hotspot doorgegeven als inline
+ * `object-position`, zodat CSS-crops (object-fit: cover) het door de
+ * redactie gekozen beeldmiddelpunt volgen in plaats van hardcoded
+ * percentages. Zonder hotspot blijft de CSS-fallback gelden.
+ *
  * Gebruik in templates met v-bind: `<img v-bind="img(source, opts)" alt="…">`
  */
 export function useSanityImg() {
@@ -24,12 +31,17 @@ export function useSanityImg() {
       return b.url()
     }
     const maxW = Math.max(...opts.widths)
+    const hotspot = (source as any)?.hotspot
+    const objectPosition = !opts.aspect && hotspot
+      ? `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
+      : undefined
     return {
       src: build(maxW),
       srcset: opts.widths.map(w => `${build(w)} ${w}w`).join(', '),
       sizes: opts.sizes,
       width: maxW,
       height: opts.aspect ? Math.round(maxW / opts.aspect) : undefined,
+      ...(objectPosition ? { style: { objectPosition } } : {}),
     }
   }
 }

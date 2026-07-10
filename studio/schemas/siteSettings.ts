@@ -58,6 +58,7 @@ export default defineType({
     defineField({
       name: 'coordinates',
       title: 'Coördinaten (Google Maps)',
+      description: 'Bepaalt waar de kaart op de contactpagina op inzoomt.',
       type: 'object',
       fields: [
         defineField({ name: 'lat', title: 'Breedtegraad', type: 'number' }),

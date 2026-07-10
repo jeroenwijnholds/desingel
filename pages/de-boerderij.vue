@@ -55,7 +55,7 @@ useSeo({
           <img
             v-if="page?.introImage"
             v-bind="img(page.introImage, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
-            alt="Belevenisboerderij de Singel in de Achterhoek"
+            :alt="page.introImage.alt ?? 'Belevenisboerderij de Singel in de Achterhoek'"
             loading="eager"
             fetchpriority="high"
           />
@@ -92,7 +92,7 @@ useSeo({
           <div v-if="highlight.image" class="boerderij-card-img-wrap">
             <img
               v-bind="img(highlight.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 33vw' })"
-              :alt="highlight.title"
+              :alt="highlight.image.alt ?? highlight.title"
               loading="lazy"
             />
           </div>
@@ -108,7 +108,7 @@ useSeo({
   <div v-if="page?.fullWidthPhoto" class="boerderij-farm-photo">
     <img
       v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
-      alt="De Singel – Achterhoek"
+      :alt="page.fullWidthPhoto.alt ?? 'De Singel – Achterhoek'"
       loading="lazy"
     />
   </div>

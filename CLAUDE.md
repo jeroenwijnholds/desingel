@@ -70,9 +70,24 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   `PageHeader` (dé paginakop; props label/title/subtitle).
 - `composables/` — `useImageUrl` (ruwe Sanity image-builder),
   `useSanityImg` (**gebruik deze voor elke afbeelding**: levert
-  src/srcset/sizes/width/height met WebP via `auto=format`),
+  src/srcset/sizes/width/height met WebP via `auto=format`; mét `aspect`
+  snijdt Sanity server-side rond de hotspot, zónder `aspect` komt de hotspot
+  terug als inline `object-position`-style die de CSS-fallback overridet —
+  redacteuren sturen de uitsnede dus via "Edit hotspot" in Studio),
   `useSeo` (title/description/canonical/OG per pagina; accepteert getters
   voor reactieve waarden op detailpagina's).
+- `studio/` — Sanity Studio (v5). Deskstructuur in `sanity.config.ts`:
+  singletons (Homepage, De Boerderij, Over Ons, Contact, Fotogalerij,
+  Site-instellingen) zijn niet aan te maken/verwijderen; documentnieuws en
+  agenda zijn lijsten. Schema-helper `schemas/lib.ts` (`imageField`) geeft
+  elk afbeeldingsveld hotspot + alt-veld — gebruik die voor nieuwe velden.
+  **Na elke schemawijziging opnieuw deployen** (`npm run deploy` in
+  `studio/`), anders werkt de gehoste Studio met het oude schema.
+- De fotogalerij is een eigen document (`fotoGalerij`, id `fotoGalerij`);
+  de homepage-query heeft een `coalesce`-fallback naar het verouderde
+  `homePage.galleryImages` (verborgen veld — opruimen na merge, zie
+  NOG-TE-DOEN).
+- `scripts/eenmalig/` — afgeronde seed-/migratiescripts; alleen ter naslag.
 - `plugins/reveal.ts` — `v-reveal`-directive voor scroll-reveals
   (optionele waarde = vertraging in ms; slaat elementen over die al in beeld
   zijn en respecteert reduced-motion).
@@ -138,6 +153,11 @@ niet verstoren.
 - **PR #1** (`frontend-optimalisatie`, 16+ commits): complete frontend-
   optimalisatie — robuustheid, mobiel, a11y, SEO, visuele polish. Wacht op
   review/merge door Jeroen. Spec/plan in `docs/superpowers/`.
+- **Branch `cms-herinrichting`** (gebaseerd op `frontend-optimalisatie`,
+  dus mergen ná PR #1): Studio-herinrichting (deskstructuur, singletons,
+  Fotogalerij als eigen document, alt-velden), hotspot-gestuurde
+  beelduitsnedes, hero/kaart aan CMS gekoppeld. Na merge: Studio opnieuw
+  deployen (stap 0 in `NOG-TE-DOEN.md`).
 - **Handmatige stappen** (alleen Jeroen kan dit, zie `NOG-TE-DOEN.md`):
   Web3Forms-key instellen (contactformulier werkt tot die tijd niet echt),
   Sanity-webhook omzetten naar GitHub, Netlify opruimen.

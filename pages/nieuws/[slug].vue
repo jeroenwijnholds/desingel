@@ -85,7 +85,7 @@ useSeo({
       <div v-if="article.featuredImage" class="article-hero-image-wrap">
         <img
           v-bind="img(article.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
-          :alt="article.title"
+          :alt="article.featuredImage.alt ?? article.title"
           class="article-hero-img"
           loading="eager"
           fetchpriority="high"
@@ -157,7 +157,7 @@ useSeo({
                 <div v-if="related.featuredImage" class="article-related-img">
                   <img
                     v-bind="img(related.featuredImage, { widths: [120, 200], sizes: '72px' })"
-                    :alt="related.title"
+                    :alt="related.featuredImage.alt ?? related.title"
                     loading="lazy"
                   />
                 </div>

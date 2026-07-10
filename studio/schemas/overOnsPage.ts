@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { imageField } from './lib'
 
 export default defineType({
   name: 'overOnsPage',
@@ -7,7 +8,7 @@ export default defineType({
   fields: [
     defineField({ name: 'introTitle', title: 'Intro-titel', type: 'string' }),
     defineField({ name: 'introText', title: 'Intro-tekst', type: 'text', rows: 5 }),
-    defineField({ name: 'familyPhoto', title: 'Familiefoto', type: 'image', options: { hotspot: true } }),
+    imageField({ name: 'familyPhoto', title: 'Familiefoto', description: 'De staande foto naast de introtekst.' }),
     defineField({ name: 'storyTitle', title: 'Verhaaltitel', type: 'string' }),
     defineField({
       name: 'storyColumns',
@@ -33,7 +34,7 @@ export default defineType({
       ],
       validation: Rule => Rule.max(3),
     }),
-    defineField({ name: 'fullWidthPhoto', title: 'Brede foto', type: 'image', options: { hotspot: true } }),
+    imageField({ name: 'fullWidthPhoto', title: 'Brede foto', description: 'De paginabrede foto onderaan.' }),
     defineField({ name: 'ctaPrimaryLabel', title: 'CTA primaire knoptekst', type: 'string' }),
     defineField({ name: 'ctaPrimaryHref', title: 'CTA primaire URL', type: 'string' }),
     defineField({ name: 'ctaSecondaryLabel', title: 'CTA secundaire knoptekst', type: 'string' }),
