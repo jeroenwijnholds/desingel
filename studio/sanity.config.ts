@@ -72,7 +72,8 @@ export default defineConfig({
             singleton(S, 'siteSettings', 'Site-instellingen', CogIcon),
           ]),
     }),
-    visionTool(),
+    // apiVersion gepind zodat query-gedrag in Vision niet stilletjes verandert
+    visionTool({ defaultApiVersion: '2024-01-01' }),
   ],
 
   schema: {

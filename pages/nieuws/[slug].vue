@@ -109,7 +109,7 @@ useJsonLd(() => article.value
       <aside class="article-sidebar">
 
         <div class="article-info-card">
-          <p class="article-info-heading">Over dit artikel</p>
+          <h2 class="article-info-heading">Over dit artikel</h2>
           <ul class="article-info-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -143,7 +143,7 @@ useJsonLd(() => article.value
         </div>
 
         <div v-if="article.relatedArticles?.length" class="article-related-card">
-          <p class="article-related-heading">Meer nieuws</p>
+          <h2 class="article-related-heading">Meer nieuws</h2>
           <ul class="article-related-list">
             <li v-for="related in article.relatedArticles" :key="related._id">
               <NuxtLink :to="`/nieuws/${related.slug.current}`" class="article-related-link">

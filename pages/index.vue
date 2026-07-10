@@ -16,9 +16,16 @@ interface HomePage {
   heroSubtitle: string
   heroImage?: any
   heroImageMobile?: any
+  servicesLabel?: string
+  servicesTitle?: string
+  servicesIntro?: string
   primaryServices: Service[]
   secondaryServices: SecondaryService[]
-  galleryImages: any[]
+  galleryLabel?: string
+  galleryTitle?: string
+  ctaLabel?: string
+  ctaTitle?: string
+  ctaText?: string
   ctaPrimaryLabel?: string
   ctaPrimaryHref?: string
   ctaSecondaryLabel?: string
@@ -27,10 +34,7 @@ interface HomePage {
 
 const QUERY = `{
   "page": *[_type == "homePage" && !(_id in path("drafts.**"))][0],
-  "gallery": coalesce(
-    *[_id == "fotoGalerij"][0].images,
-    *[_type == "homePage" && !(_id in path("drafts.**"))][0].galleryImages
-  ),
+  "gallery": *[_id == "fotoGalerij"][0].images,
   "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ siteName }
 }`
 
@@ -78,7 +82,7 @@ const galleryImages = computed(() =>
 )
 
 const heroEl = ref<HTMLElement | null>(null)
-const contactEl = ref<HTMLElement | null>(null)
+const contactCmp = ref<{ $el: HTMLElement } | null>(null)
 const ctaFixedVisible = ref(false)
 
 function updateCta() {
@@ -86,8 +90,9 @@ function updateCta() {
   const heroRect = heroEl.value.getBoundingClientRect()
   const clipOffset = window.innerWidth >= 768 ? heroRect.height * 0.07 : 0
   const pastHero = (heroRect.bottom - clipOffset) <= 0
-  const contactVisible = contactEl.value
-    ? contactEl.value.getBoundingClientRect().top < window.innerHeight
+  const contactEl = contactCmp.value?.$el
+  const contactVisible = contactEl
+    ? contactEl.getBoundingClientRect().top < window.innerHeight
     : false
   ctaFixedVisible.value = pastHero && !contactVisible
 }
@@ -129,9 +134,9 @@ useSeo({
 
       <div v-if="page?.primaryServices?.[0]" class="content-block">
         <div class="intro-text">
-          <p class="section-label dark-green">Wat we doen</p>
-          <h2 class="section-title">De boerderij dichtbij</h2>
-          <p class="intro-paragraph">In onze tamme en georganiseerde levens willen wij mensen weer kennis laten maken met wildernis, dieren, natuur en buitenleven.</p>
+          <p class="section-label dark-green">{{ page?.servicesLabel ?? 'Wat we doen' }}</p>
+          <h2 class="section-title">{{ page?.servicesTitle ?? 'De boerderij dichtbij' }}</h2>
+          <p class="intro-paragraph">{{ page?.servicesIntro ?? 'In onze tamme en georganiseerde levens willen wij mensen weer kennis laten maken met wildernis, dieren, natuur en buitenleven.' }}</p>
         </div>
         <div class="card-container">
           <img
@@ -190,26 +195,22 @@ useSeo({
   </section>
 
   <section v-reveal class="gallery-section">
-    <p class="section-label dark-green">De boerderij in beeld</p>
-    <h2 class="section-title">Belevenisboerderij de Singel</h2>
+    <p class="section-label dark-green">{{ page?.galleryLabel ?? 'De boerderij in beeld' }}</p>
+    <h2 class="section-title">{{ page?.galleryTitle ?? 'Belevenisboerderij de Singel' }}</h2>
     <AppLightbox :images="galleryImages" />
   </section>
 
-  <section ref="contactEl" class="boerderij-cta" id="contact">
-    <div v-reveal class="boerderij-cta-inner">
-      <p class="section-label dark-green">Kom langs</p>
-      <h2 class="boerderij-cta-title">Beleef de boerderij zelf</h2>
-      <p class="boerderij-cta-text">Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of leer ons beter kennen.</p>
-      <div class="boerderij-cta-btns">
-        <NuxtLink :to="page?.ctaPrimaryHref ?? '/agenda'" class="btn btn-green">
-          {{ page?.ctaPrimaryLabel ?? 'Bekijk de agenda' }}
-        </NuxtLink>
-        <NuxtLink :to="page?.ctaSecondaryHref ?? '/over-ons'" class="btn btn-yellow">
-          {{ page?.ctaSecondaryLabel ?? 'Leer ons kennen' }}
-        </NuxtLink>
-      </div>
-    </div>
-  </section>
+  <CtaBlock
+    id="contact"
+    ref="contactCmp"
+    :label="page?.ctaLabel ?? 'Kom langs'"
+    :title="page?.ctaTitle ?? 'Beleef de boerderij zelf'"
+    :text="page?.ctaText ?? 'Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of leer ons beter kennen.'"
+    :primary-href="page?.ctaPrimaryHref ?? '/agenda'"
+    :primary-label="page?.ctaPrimaryLabel ?? 'Bekijk de agenda'"
+    :secondary-href="page?.ctaSecondaryHref ?? '/over-ons'"
+    :secondary-label="page?.ctaSecondaryLabel ?? 'Leer ons kennen'"
+  />
 
   <div class="cta-fixed" :class="{ 'cta-fixed--visible': ctaFixedVisible }">
     <NuxtLink to="/contact" class="btn btn-yellow">Neem contact op</NuxtLink>

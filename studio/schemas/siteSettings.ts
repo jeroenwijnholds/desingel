@@ -65,16 +65,8 @@ export default defineType({
         defineField({ name: 'lng', title: 'Lengtegraad', type: 'number' }),
       ],
     }),
-    defineField({
-      name: 'farmshopHours',
-      title: 'Farmshop openingstijden',
-      type: 'string',
-    }),
-    defineField({
-      name: 'responseTime',
-      title: 'Reactietijd contact',
-      type: 'string',
-    }),
+    // farmshopHours en responseTime zijn verwijderd: de site las ze nooit —
+    // de contactpagina gebruikt contactPage.infoHours / infoResponseTime.
     defineField({
       name: 'footerCopyright',
       title: 'Copyright-tekst (footer)',
