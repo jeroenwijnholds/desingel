@@ -19,6 +19,9 @@
   --black:                  #000000;
   --text:                   #333333;
   --border-light:           #e0e0d0;
+  --surface-soft:           #f0f5ec; /* zachte groene sectie-achtergrond */
+  --error:                  #b3261e;
+  --error-bg:               #fdf1f0;
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
@@ -125,19 +128,6 @@ h3 { font-size: var(--text-xl); }
   transform: none;
 }
 
-/* --- Accessibility --- */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* --- Buttons --- */
 .btn {
   display: inline-block;
@@ -188,6 +178,8 @@ h3 { font-size: var(--text-xl); }
 @media screen and (max-width: 479px) {
   .btn {
     padding: 12px;
+    /* tap target ≥ 44px op mobiel */
+    min-height: 44px;
   }
 }
 
@@ -231,17 +223,16 @@ h3 { font-size: var(--text-xl); }
   gap: 10px;
 }
 
+.hero-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .hero-link svg {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
-}
-
-/* --- Divider --- */
-hr.divider {
-  border: none;
-  border-top: 1px solid var(--border-light);
-  margin: 0;
 }
 
 /* ============================================
@@ -1146,11 +1137,18 @@ hr.divider {
   opacity: 0.8;
   transition: opacity var(--transition-fast);
   display: inline-block;
-  padding: 6px 0;
+  /* tap target: ruimere klikhoogte */
+  padding: 10px 0;
 }
 
 .footer-links a:hover {
   opacity: 1;
+}
+
+.footer-links a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .footer-col--contact p {
