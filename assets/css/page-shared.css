@@ -49,6 +49,13 @@
   gap: 24px;
 }
 
+/* Compenseert de 24px-gap hierboven: 24 − 12 = de standaard 12px
+   label→titel-afstand (zie .section-label in style.css) */
+.about-intro-text .section-label,
+.boerderij-intro-text .section-label {
+  margin-bottom: -12px;
+}
+
 /* Page title — font-size overridden per page */
 .about-title,
 .boerderij-title {
@@ -262,6 +269,12 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+}
+
+/* Compenseert de 16px-gap hierboven: 16 − 4 = de standaard 12px
+   label→titel-afstand (zie .section-label in style.css) */
+.cta-block-inner .section-label {
+  margin-bottom: -4px;
 }
 
 .cta-block-title {

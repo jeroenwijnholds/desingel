@@ -86,6 +86,12 @@
   gap: 14px;
 }
 
+/* Compenseert de 14px-gap hierboven: 14 − 2 = de standaard 12px
+   label→titel-afstand (zie .section-label in style.css) */
+.event-hero-bottom .section-label {
+  margin-bottom: -2px;
+}
+
 .event-hero-title {
   font-family: var(--font-display);
   font-size: 52px;

@@ -184,8 +184,11 @@ h3 { font-size: var(--text-xl); }
 }
 
 /* --- Section label --- */
+/* Afstand label→titel is overal --space-3 (12px). Flex-containers met
+   een eigen gap compenseren deze marge zodat het totaal 12px blijft
+   (zie page-header.css, page-shared.css en evenement.css). */
 .section-label {
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
   font-size: var(--text-sm);
   font-weight: 700;
   line-height: 1.4;

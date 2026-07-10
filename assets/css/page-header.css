@@ -39,6 +39,12 @@
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* De flex-gap (--space-3) van .page-header-inner levert hier al de
+   standaard label→titel-afstand; eigen marge zou verdubbelen */
+.page-header .section-label {
+  margin-bottom: 0;
+}
+
 .page-header-image-wrap {
   position: absolute;
   inset: 0;
