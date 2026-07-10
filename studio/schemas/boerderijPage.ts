@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { imageField } from './lib'
 
 export default defineType({
   name: 'boerderijPage',
@@ -7,7 +8,7 @@ export default defineType({
   fields: [
     defineField({ name: 'introTitle', title: 'Intro-titel', type: 'string' }),
     defineField({ name: 'introText', title: 'Intro-tekst', type: 'text', rows: 5 }),
-    defineField({ name: 'introImage', title: 'Intro-afbeelding', type: 'image', options: { hotspot: true } }),
+    imageField({ name: 'introImage', title: 'Intro-foto', description: 'De staande foto naast de introtekst.' }),
     defineField({
       name: 'storyColumns',
       title: 'Verhaaltekst (2 kolommen)',
@@ -26,14 +27,14 @@ export default defineType({
           fields: [
             defineField({ name: 'title', title: 'Titel', type: 'string' }),
             defineField({ name: 'description', title: 'Beschrijving', type: 'text', rows: 3 }),
-            defineField({ name: 'image', title: 'Afbeelding', type: 'image', options: { hotspot: true } }),
+            imageField({ name: 'image', title: 'Afbeelding' }),
           ],
           preview: { select: { title: 'title', media: 'image' } },
         },
       ],
       validation: Rule => Rule.max(3),
     }),
-    defineField({ name: 'fullWidthPhoto', title: 'Brede foto', type: 'image', options: { hotspot: true } }),
+    imageField({ name: 'fullWidthPhoto', title: 'Brede foto', description: 'De paginabrede foto onderaan.' }),
     defineField({ name: 'ctaPrimaryLabel', title: 'CTA primaire knoptekst', type: 'string' }),
     defineField({ name: 'ctaPrimaryHref', title: 'CTA primaire URL', type: 'string' }),
     defineField({ name: 'ctaSecondaryLabel', title: 'CTA secundaire knoptekst', type: 'string' }),

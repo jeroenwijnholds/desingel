@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { imageField } from './lib'
 
 export default defineType({
   name: 'event',
@@ -56,11 +57,10 @@ export default defineType({
       type: 'text',
       rows: 3,
     }),
-    defineField({
+    imageField({
       name: 'featuredImage',
       title: 'Afbeelding',
-      type: 'image',
-      options: { hotspot: true },
+      description: 'De grote foto bovenaan de evenementpagina.',
     }),
     defineField({
       name: 'body',

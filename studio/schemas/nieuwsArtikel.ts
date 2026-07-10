@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { imageField } from './lib'
 
 export default defineType({
   name: 'nieuwsArtikel',
@@ -57,11 +58,10 @@ export default defineType({
       title: 'Leestijd (minuten)',
       type: 'number',
     }),
-    defineField({
+    imageField({
       name: 'featuredImage',
       title: 'Uitgelichte afbeelding',
-      type: 'image',
-      options: { hotspot: true },
+      description: 'De grote foto bovenaan het artikel; ook zichtbaar op de nieuwsoverzichtspagina.',
     }),
     defineField({
       name: 'body',
