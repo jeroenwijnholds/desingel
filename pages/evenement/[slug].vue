@@ -39,6 +39,23 @@ useSeo({
     ? img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
 })
+
+const config = useRuntimeConfig()
+useJsonLd(() => event.value
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: event.value.title,
+      startDate: event.value.date,
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      ...(event.value.description ? { description: event.value.description } : {}),
+      ...(event.value.location ? { location: { '@type': 'Place', name: event.value.location } } : {}),
+      ...(event.value.featuredImage
+        ? { image: [img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
+        : {}),
+      organizer: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
+    }
+  : null)
 </script>
 
 <template>

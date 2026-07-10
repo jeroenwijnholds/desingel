@@ -47,7 +47,29 @@ useSeo({
   image: () => article.value?.featuredImage
     ? img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
+  type: 'article',
+  publishedTime: () => article.value?.publishedAt,
 })
+
+const config = useRuntimeConfig()
+useJsonLd(() => article.value
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      headline: article.value.title,
+      description: article.value.excerpt,
+      datePublished: article.value.publishedAt,
+      ...(article.value.featuredImage
+        ? { image: [img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
+        : {}),
+      author: [
+        article.value.author
+          ? { '@type': 'Person', name: article.value.author }
+          : { '@type': 'Organization', name: 'Belevenisboerderij de Singel' },
+      ],
+      publisher: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
+    }
+  : null)
 </script>
 
 <template>

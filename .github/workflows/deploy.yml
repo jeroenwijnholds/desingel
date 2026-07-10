@@ -39,7 +39,8 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build static site
-        run: npx nuxt generate
+        # npm run build = nuxt generate + sitemap.xml/robots.txt-generatie
+        run: npm run build
         env:
           SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
           SANITY_DATASET: ${{ vars.SANITY_DATASET }}
