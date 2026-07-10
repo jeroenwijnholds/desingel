@@ -22,9 +22,12 @@ const QUERY = `*[_type == "boerderijPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<BoerderijPage>(QUERY)
 const page = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
-useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'De Boerderij – Belevenisboerderij De Singel',
+  description: 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
+})
 </script>
 
 <template>
@@ -51,9 +54,10 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
         <figure class="boerderij-photo-frame">
           <img
             v-if="page?.introImage"
-            :src="imageUrl(page.introImage).width(900).url()"
+            v-bind="img(page.introImage, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             alt="Belevenisboerderij de Singel in de Achterhoek"
             loading="eager"
+            fetchpriority="high"
           />
         </figure>
         <p class="boerderij-photo-caption">De Singel in het hart van de Achterhoek</p>
@@ -63,21 +67,17 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
   </section>
 
   <section class="boerderij-story">
-    <div class="boerderij-story-inner">
+    <div v-reveal class="boerderij-story-inner">
       <p class="section-label dark-green">De boerderij</p>
       <h2 class="section-title">Kleinschalig, bewust en echt</h2>
-      <div
-        v-for="(column, i) in (page?.storyColumns ?? [])"
-        :key="i"
-        class="boerderij-story-columns"
-      >
-        <p>{{ column }}</p>
+      <div class="boerderij-story-columns">
+        <p v-for="(column, i) in (page?.storyColumns ?? [])" :key="i">{{ column }}</p>
       </div>
     </div>
   </section>
 
   <section v-if="page?.victorQuote" class="boerderij-quote-section">
-    <div class="boerderij-quote-inner">
+    <div v-reveal class="boerderij-quote-inner">
       <blockquote class="boerderij-quote">{{ page.victorQuote }}</blockquote>
       <p class="boerderij-quote-author">– Victor Duurland</p>
     </div>
@@ -88,10 +88,10 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
       <p class="section-label dark-green boerderij-highlights-label">Op de Singel</p>
       <h2 class="section-title boerderij-highlights-title">Wat je aantreft</h2>
       <div class="boerderij-cards">
-        <article v-for="highlight in page.highlights" :key="highlight.title" class="boerderij-card">
+        <article v-for="(highlight, i) in page.highlights" :key="highlight.title" v-reveal="i * 100" class="boerderij-card">
           <div v-if="highlight.image" class="boerderij-card-img-wrap">
             <img
-              :src="imageUrl(highlight.image).width(600).url()"
+              v-bind="img(highlight.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 33vw' })"
               :alt="highlight.title"
               loading="lazy"
             />
@@ -107,15 +107,15 @@ useHead({ title: 'De Boerderij – Belevenisboerderij De Singel' })
 
   <div v-if="page?.fullWidthPhoto" class="boerderij-farm-photo">
     <img
-      :src="imageUrl(page.fullWidthPhoto).width(1600).url()"
+      v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       alt="De Singel – Achterhoek"
       loading="lazy"
     />
   </div>
 
   <section class="boerderij-cta">
-    <div class="boerderij-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="boerderij-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="boerderij-cta-title">Beleef de Singel zelf</h2>
       <p class="boerderij-cta-text">Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of neem gewoon contact op.</p>
       <div class="boerderij-cta-btns">

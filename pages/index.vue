@@ -35,12 +35,22 @@ const page = computed(() => data.value?.page)
 const settings = computed(() => data.value?.settings)
 
 const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 const galleryImages = computed(() =>
-  (page.value?.galleryImages ?? []).map((img: any) => ({
-    url: imageUrl(img).width(1200).url(),
-    alt: '',
-  }))
+  (page.value?.galleryImages ?? []).map((source: any) => {
+    const thumb = img(source, {
+      widths: [400, 800, 1200],
+      sizes: '(max-width: 767px) 50vw, 33vw',
+    })
+    return {
+      url: thumb.src,
+      srcset: thumb.srcset,
+      sizes: thumb.sizes,
+      full: imageUrl(source).width(1600).auto('format').quality(80).url(),
+      alt: source?.alt ?? '',
+    }
+  })
 )
 
 const heroEl = ref<HTMLElement | null>(null)
@@ -67,7 +77,10 @@ onUnmounted(() => {
   window.removeEventListener('scroll', updateCta)
 })
 
-useHead({ title: 'Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Belevenisboerderij De Singel',
+  description: 'Belevenisboerderij in de Achterhoek: farmshop met eigen producten, boerderij op locatie en evenementen. Kom langs en beleef het boerenleven van dichtbij.',
+})
 </script>
 
 <template>
@@ -99,7 +112,7 @@ useHead({ title: 'Belevenisboerderij De Singel' })
         <div class="card-container">
           <img
             v-if="page.primaryServices[0].image"
-            :src="imageUrl(page.primaryServices[0].image).width(800).url()"
+            v-bind="img(page.primaryServices[0].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[0].title"
             class="card-image"
             loading="lazy"
@@ -115,7 +128,7 @@ useHead({ title: 'Belevenisboerderij De Singel' })
         <div class="card-container">
           <img
             v-if="page.primaryServices[1].image"
-            :src="imageUrl(page.primaryServices[1].image).width(800).url()"
+            v-bind="img(page.primaryServices[1].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[1].title"
             class="card-image"
             loading="lazy"
@@ -136,10 +149,10 @@ useHead({ title: 'Belevenisboerderij De Singel' })
 
   <section v-if="page?.secondaryServices?.length" class="services-section">
     <div class="services-wrapper">
-      <div v-for="service in page.secondaryServices" :key="service.title" class="service-item">
+      <div v-for="(service, i) in page.secondaryServices" :key="service.title" v-reveal="i * 100" class="service-item">
         <img
           v-if="service.image"
-          :src="imageUrl(service.image).width(600).url()"
+          v-bind="img(service.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 32vw' })"
           :alt="service.title"
           class="service-image"
           loading="lazy"
@@ -152,15 +165,15 @@ useHead({ title: 'Belevenisboerderij De Singel' })
     </div>
   </section>
 
-  <section class="gallery-section">
+  <section v-reveal class="gallery-section">
     <p class="section-label dark-green">De boerderij in beeld</p>
     <h2 class="section-title">Belevenisboerderij de Singel</h2>
     <AppLightbox :images="galleryImages" />
   </section>
 
   <section ref="contactEl" class="boerderij-cta" id="contact">
-    <div class="boerderij-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="boerderij-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="boerderij-cta-title">Beleef de boerderij zelf</h2>
       <p class="boerderij-cta-text">Nieuwsgierig naar de boerderij? Bezoek ons op een van onze evenementen, kom langs bij de farmshop, of leer ons beter kennen.</p>
       <div class="boerderij-cta-btns">

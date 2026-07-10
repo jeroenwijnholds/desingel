@@ -11,6 +11,7 @@ const isHome = computed(() => route.path === '/')
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
+const navEl = ref<HTMLElement | null>(null)
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
@@ -20,6 +21,31 @@ function toggleMenu() {
 function closeMenu() {
   isMenuOpen.value = false
   document.body.style.overflow = ''
+}
+
+// Menu sluit bij elke navigatie (vangt ook browser-terugknop)
+watch(() => route.path, closeMenu)
+
+function onKeydown(e: KeyboardEvent) {
+  if (!isMenuOpen.value) return
+  if (e.key === 'Escape') {
+    closeMenu()
+    return
+  }
+  if (e.key === 'Tab') {
+    // Focus-trap binnen de nav zolang het menu open is
+    const focusables = navEl.value?.querySelectorAll<HTMLElement>('a, button') ?? []
+    if (!focusables.length) return
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
 }
 
 const onScroll = () => {
@@ -34,13 +60,19 @@ const onScroll = () => {
 }
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('keydown', onKeydown)
   onScroll()
 })
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('keydown', onKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
   <nav
+    ref="navEl"
     class="nav"
     :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled || !isHome }"
   >
@@ -51,7 +83,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <button
       class="nav-hamburger"
       :aria-expanded="isMenuOpen.toString()"
-      aria-label="Menu openen"
+      :aria-label="isMenuOpen ? 'Menu sluiten' : 'Menu openen'"
       @click="toggleMenu"
     >
       <span></span>

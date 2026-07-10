@@ -44,21 +44,22 @@ const groupedEvents = computed(() => {
   return groups
 })
 
-useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Agenda – Belevenisboerderij De Singel',
+  description: 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
+})
 </script>
 
 <template>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <p class="section-label bright-green">Belevenisboerderij de Singel</p>
-      <h1 class="page-header-title">Agenda</h1>
-      <p class="page-header-sub">Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij.</p>
-    </div>
-  </header>
+  <PageHeader
+    label="Belevenisboerderij de Singel"
+    title="Agenda"
+    subtitle="Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij."
+  />
 
   <main class="agenda-main">
     <div class="agenda-wrapper">
-      <div v-for="group in groupedEvents" :key="group.key" class="agenda-month">
+      <div v-for="group in groupedEvents" :key="group.key" v-reveal class="agenda-month">
         <h2 class="agenda-month-title">{{ group.key }}</h2>
 
         <article v-for="event in group.events" :key="event._id" class="agenda-item">
@@ -72,7 +73,7 @@ useHead({ title: 'Agenda – Belevenisboerderij De Singel' })
             <p v-if="event.description" class="agenda-desc">{{ event.description }}</p>
             <p v-if="event.timeRange || event.location" class="agenda-meta">
               <span v-if="event.timeRange">{{ event.timeRange }}</span>
-              <template v-if="event.timeRange && event.location"> Â· </template>
+              <template v-if="event.timeRange && event.location"> · </template>
               <span v-if="event.location">{{ event.location }}</span>
             </p>
             <div class="agenda-actions">

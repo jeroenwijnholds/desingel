@@ -1,4 +1,6 @@
 export default defineNuxtConfig({
+  compatibilityDate: '2026-07-08',
+
   modules: ['@nuxtjs/sanity'],
 
   sanity: {
@@ -12,11 +14,22 @@ export default defineNuxtConfig({
     public: {
       // ingevuld via NUXT_PUBLIC_WEB3FORMS_KEY tijdens de build
       web3formsKey: '',
+      // absolute site-URL voor canonical/OG; NUXT_PUBLIC_SITE_URL in CI
+      siteUrl: 'https://jeroenwijnholds.github.io/desingel',
     },
   },
 
   css: [
+    '@fontsource/playfair-display/400.css',
+    '@fontsource/playfair-display/700.css',
+    '@fontsource/playfair-display/900.css',
+    '@fontsource/playfair-display/400-italic.css',
+    '@fontsource/source-sans-3/300.css',
+    '@fontsource/source-sans-3/400.css',
+    '@fontsource/source-sans-3/600.css',
+    '@fontsource/source-sans-3/700.css',
     '~/assets/css/style.css',
+    '~/assets/css/page-header.css',
     '~/assets/css/page-shared.css',
     '~/assets/css/agenda.css',
     '~/assets/css/contact.css',
@@ -33,14 +46,12 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#364838' },
       ],
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap',
-        },
+        { rel: 'icon', type: 'image/svg+xml', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon.svg` },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon-32.png` },
+        { rel: 'apple-touch-icon', href: `${process.env.NUXT_APP_BASE_URL || '/'}apple-touch-icon.png` },
       ],
     },
   },

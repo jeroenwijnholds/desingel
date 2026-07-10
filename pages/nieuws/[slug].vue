@@ -26,10 +26,19 @@ const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in p
   title, slug, category, publishedAt, author, excerpt, readTime, featuredImage, body,
   relatedArticles[]->{_id, title, slug, featuredImage}
 }`
-const { data } = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
+const query = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
+const { data } = query
 const article = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+// De composable is thenable en resolvet pas nadat de data-ref gevuld is —
+// status alleen is niet betrouwbaar (data volgt in een latere microtask).
+query.then(() => {
+  if (!data.value) {
+    showError({ statusCode: 404, statusMessage: 'Artikel niet gevonden' })
+  }
+}).catch(() => {})
+
+const img = useSanityImg()
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -49,7 +58,7 @@ const portableTextComponents = {
           if (!val) return null
           return h('figure', { class: 'article-figure' }, [
             h('img', {
-              src: imageUrl(val).width(900).url(),
+              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
               alt: val.alt ?? '',
               loading: 'lazy',
             }),
@@ -61,9 +70,13 @@ const portableTextComponents = {
   },
 }
 
-useHead(() => ({
-  title: article.value ? `${article.value.title} — Belevenisboerderij De Singel` : 'Nieuws',
-}))
+useSeo({
+  title: () => article.value ? `${article.value.title} – Belevenisboerderij De Singel` : 'Nieuws – Belevenisboerderij De Singel',
+  description: () => article.value?.excerpt ?? 'Nieuws van Belevenisboerderij de Singel.',
+  image: () => article.value?.featuredImage
+    ? img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
+    : undefined,
+})
 </script>
 
 <template>
@@ -71,10 +84,11 @@ useHead(() => ({
     <header class="article-hero">
       <div v-if="article.featuredImage" class="article-hero-image-wrap">
         <img
-          :src="imageUrl(article.featuredImage).width(1400).url()"
+          v-bind="img(article.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="article.title"
           class="article-hero-img"
           loading="eager"
+          fetchpriority="high"
         />
       </div>
       <div class="article-hero-content">
@@ -142,7 +156,7 @@ useHead(() => ({
               <NuxtLink :to="`/nieuws/${related.slug.current}`" class="article-related-link">
                 <div v-if="related.featuredImage" class="article-related-img">
                   <img
-                    :src="imageUrl(related.featuredImage).width(200).url()"
+                    v-bind="img(related.featuredImage, { widths: [120, 200], sizes: '72px' })"
                     :alt="related.title"
                     loading="lazy"
                   />

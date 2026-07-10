@@ -22,9 +22,12 @@ const QUERY = `*[_type == "overOnsPage" && !(_id in path("drafts.**"))][0]`
 const { data } = useSanityQuery<OverOnsPage>(QUERY)
 const page = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
-useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Over Ons – Belevenisboerderij De Singel',
+  description: 'Maak kennis met Victor en Mari Duurland, de boeren achter Belevenisboerderij de Singel in de Achterhoek.',
+})
 </script>
 
 <template>
@@ -51,39 +54,36 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
         <figure class="about-photo-frame">
           <img
             v-if="page?.familyPhoto"
-            :src="imageUrl(page.familyPhoto).width(900).url()"
+            v-bind="img(page.familyPhoto, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             alt="Victor, Mari en de kinderen van de Singel"
             loading="eager"
+            fetchpriority="high"
           />
           <div v-else class="about-photo-placeholder-badge">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             Familiefoto volgt
           </div>
         </figure>
-        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel Â· Achterhoek</p>
+        <p class="about-photo-caption">Victor, Mari en de dieren van de Singel · Achterhoek</p>
       </div>
 
     </div>
   </section>
 
   <section class="about-story">
-    <div class="about-story-inner">
+    <div v-reveal class="about-story-inner">
       <div class="about-story-label-row">
         <p class="section-label dark-green">Ons verhaal</p>
       </div>
       <h2 class="section-title">{{ page?.storyTitle ?? 'Van passie naar praktijk' }}</h2>
-      <div
-        v-for="(column, i) in (page?.storyColumns ?? [])"
-        :key="i"
-        class="about-story-columns"
-      >
-        <p>{{ column }}</p>
+      <div class="about-story-columns">
+        <p v-for="(column, i) in (page?.storyColumns ?? [])" :key="i">{{ column }}</p>
       </div>
     </div>
   </section>
 
   <section v-if="page?.victorQuote" class="about-quote-section">
-    <div class="about-quote-inner">
+    <div v-reveal class="about-quote-inner">
       <blockquote class="about-quote">{{ page.victorQuote }}</blockquote>
       <p class="about-quote-author">– Victor Duurland</p>
     </div>
@@ -94,7 +94,7 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
       <p class="section-label dark-green about-values-label">Waar wij voor staan</p>
       <h2 class="section-title about-values-title">Onze overtuigingen</h2>
       <div class="about-values-grid">
-        <div v-for="value in page.values" :key="value.title" class="about-value">
+        <div v-for="(value, i) in page.values" :key="value.title" v-reveal="i * 100" class="about-value">
           <h3 class="about-value-title">{{ value.title }}</h3>
           <p>{{ value.description }}</p>
         </div>
@@ -104,15 +104,15 @@ useHead({ title: 'Over Ons – Belevenisboerderij De Singel' })
 
   <div v-if="page?.fullWidthPhoto" class="about-farm-photo">
     <img
-      :src="imageUrl(page.fullWidthPhoto).width(1600).url()"
+      v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       alt="Belevenisboerderij de Singel in de Achterhoek"
       loading="lazy"
     />
   </div>
 
   <section class="about-cta">
-    <div class="about-cta-inner">
-      <p class="section-label bright-green">Kom langs</p>
+    <div v-reveal class="about-cta-inner">
+      <p class="section-label dark-green">Kom langs</p>
       <h2 class="about-cta-title">Beleef de boerderij zelf</h2>
       <p class="about-cta-text">Nieuwsgierig geworden? Kom langs op de farmshop, bezoek ons op een evenement, of stuur ons gewoon een bericht. We horen graag van je.</p>
       <div class="about-cta-btns">

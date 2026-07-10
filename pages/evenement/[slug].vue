@@ -16,10 +16,19 @@ interface Event {
 
 const route = useRoute()
 const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const { data } = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const query = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const { data } = query
 const event = computed(() => data.value)
 
-const imageUrl = useImageUrl()
+// De composable is thenable en resolvet pas nadat de data-ref gevuld is —
+// status alleen is niet betrouwbaar (data volgt in een latere microtask).
+query.then(() => {
+  if (!data.value) {
+    showError({ statusCode: 404, statusMessage: 'Evenement niet gevonden' })
+  }
+}).catch(() => {})
+
+const img = useSanityImg()
 
 function formatChipDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -40,7 +49,7 @@ const portableTextComponents = {
           if (!val) return null
           return h('figure', { class: 'article-figure' }, [
             h('img', {
-              src: imageUrl(val).width(900).url(),
+              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
               alt: val.alt ?? '',
               loading: 'lazy',
             }),
@@ -52,9 +61,13 @@ const portableTextComponents = {
   },
 }
 
-useHead(() => ({
-  title: event.value ? `${event.value.title} — Belevenisboerderij De Singel` : 'Evenement',
-}))
+useSeo({
+  title: () => event.value ? `${event.value.title} – Belevenisboerderij De Singel` : 'Evenement – Belevenisboerderij De Singel',
+  description: () => event.value?.description ?? 'Evenement van Belevenisboerderij de Singel.',
+  image: () => event.value?.featuredImage
+    ? img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
+    : undefined,
+})
 </script>
 
 <template>
@@ -62,10 +75,11 @@ useHead(() => ({
     <header class="event-hero">
       <div v-if="event.featuredImage" class="event-hero-image-wrap">
         <img
-          :src="imageUrl(event.featuredImage).width(1400).url()"
+          v-bind="img(event.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="event.title"
           class="event-hero-img"
           loading="eager"
+          fetchpriority="high"
         />
       </div>
       <div class="event-hero-content">

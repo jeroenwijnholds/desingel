@@ -19,7 +19,7 @@ const hero = computed(() => articles.value[0])
 const featured = computed(() => articles.value.slice(1, 3))
 const archive = computed(() => articles.value.slice(3))
 
-const imageUrl = useImageUrl()
+const img = useSanityImg()
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -29,17 +29,18 @@ function formatDatetime(dateStr: string) {
   return dateStr.slice(0, 10)
 }
 
-useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
+useSeo({
+  title: 'Nieuws – Belevenisboerderij De Singel',
+  description: 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
+})
 </script>
 
 <template>
-  <header class="page-header">
-    <div class="page-header-inner">
-      <p class="section-label bright-green">Belevenisboerderij de Singel</p>
-      <h1 class="page-header-title">Nieuws</h1>
-      <p class="page-header-sub">Verhalen van het land – over dieren, seizoenen en het leven op de boerderij.</p>
-    </div>
-  </header>
+  <PageHeader
+    label="Belevenisboerderij de Singel"
+    title="Nieuws"
+    subtitle="Verhalen van het land – over dieren, seizoenen en het leven op de boerderij."
+  />
 
   <section v-if="hero" class="news-featured">
     <div class="news-featured-inner">
@@ -50,7 +51,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
             <div class="news-card-img-wrap">
               <img
                 v-if="hero.featuredImage"
-                :src="imageUrl(hero.featuredImage).width(900).url()"
+                v-bind="img(hero.featuredImage, { widths: [600, 900, 1400], sizes: '(max-width: 767px) 100vw, 62vw' })"
                 :alt="hero.title"
                 loading="eager"
               />
@@ -76,7 +77,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
               <div class="news-card-img-wrap">
                 <img
                   v-if="article.featuredImage"
-                  :src="imageUrl(article.featuredImage).width(600).url()"
+                  v-bind="img(article.featuredImage, { widths: [400, 600, 900], sizes: '(max-width: 767px) 50vw, 33vw' })"
                   :alt="article.title"
                   loading="lazy"
                 />
@@ -105,7 +106,7 @@ useHead({ title: 'Nieuws – Belevenisboerderij De Singel' })
             <div class="news-list-img-wrap">
               <img
                 v-if="article.featuredImage"
-                :src="imageUrl(article.featuredImage).width(400).url()"
+                v-bind="img(article.featuredImage, { widths: [200, 400], sizes: '(max-width: 767px) 88px, 160px' })"
                 :alt="article.title"
                 loading="lazy"
               />
