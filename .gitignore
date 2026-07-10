@@ -18,3 +18,8 @@ dist
 .env
 .env.local
 *.log
+
+# Sanity Studio build-artefacten
+studio/.sanity/
+studio/.output/
+studio/dist/
