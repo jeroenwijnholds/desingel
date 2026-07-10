@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { imageField } from './lib'
 
 export default defineType({
   name: 'contactPage',
@@ -6,6 +7,21 @@ export default defineType({
   type: 'document',
   description: 'Teksten op de contactpagina. Let op: de gegevens in de footer komen uit Site-instellingen.',
   fields: [
+    defineField({
+      name: 'headerLabel',
+      title: 'Kop-label',
+      type: 'string',
+      description: 'Kleine tekst boven de paginatitel, bijv. "Belevenisboerderij de Singel".',
+    }),
+    defineField({ name: 'headerTitle', title: 'Paginatitel', type: 'string' }),
+    defineField({ name: 'headerSubtitle', title: 'Ondertitel', type: 'text', rows: 2 }),
+    imageField({
+      name: 'headerImage',
+      title: 'Headerfoto',
+      description: 'Foto achter de paginakop. Er komt automatisch een donkergroene waas overheen zodat de tekst leesbaar blijft.',
+    }),
+    defineField({ name: 'formTitle', title: 'Formulier titel', type: 'string', description: 'Bijv. "Stuur een bericht".' }),
+    defineField({ name: 'formIntro', title: 'Formulier introtekst', type: 'text', rows: 3 }),
     defineField({
       name: 'infoOwners',
       title: 'Eigenaren (weergavetekst)',

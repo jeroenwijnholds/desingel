@@ -1,6 +1,6 @@
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { createClient } from '@sanity/client'
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import type { SanityImageSource } from '@sanity/image-url'
 
 let _builder: ReturnType<typeof createImageUrlBuilder> | null = null
 

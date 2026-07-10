@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
-import { defineComponent, h } from 'vue'
 
 interface RelatedArticle {
   _id: string
@@ -39,36 +38,8 @@ query.then(() => {
 }).catch(() => {})
 
 const img = useSanityImg()
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function formatDatetime(dateStr: string) {
-  return dateStr.slice(0, 10)
-}
-
-const portableTextComponents = {
-  types: {
-    image: defineComponent({
-      props: { value: { type: Object, default: null } },
-      setup(props) {
-        return () => {
-          const val = props.value as any
-          if (!val) return null
-          return h('figure', { class: 'article-figure' }, [
-            h('img', {
-              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
-              alt: val.alt ?? '',
-              loading: 'lazy',
-            }),
-            val.caption ? h('figcaption', val.caption) : null,
-          ].filter(Boolean))
-        }
-      },
-    }),
-  },
-}
+const { formatDate, formatDatetime } = useDateFormat()
+const portableTextComponents = usePortableTextComponents()
 
 useSeo({
   title: () => article.value ? `${article.value.title} – Belevenisboerderij De Singel` : 'Nieuws – Belevenisboerderij De Singel',
@@ -76,7 +47,29 @@ useSeo({
   image: () => article.value?.featuredImage
     ? img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
+  type: 'article',
+  publishedTime: () => article.value?.publishedAt,
 })
+
+const config = useRuntimeConfig()
+useJsonLd(() => article.value
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      headline: article.value.title,
+      description: article.value.excerpt,
+      datePublished: article.value.publishedAt,
+      ...(article.value.featuredImage
+        ? { image: [img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
+        : {}),
+      author: [
+        article.value.author
+          ? { '@type': 'Person', name: article.value.author }
+          : { '@type': 'Organization', name: 'Belevenisboerderij de Singel' },
+      ],
+      publisher: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
+    }
+  : null)
 </script>
 
 <template>
@@ -116,7 +109,7 @@ useSeo({
       <aside class="article-sidebar">
 
         <div class="article-info-card">
-          <p class="article-info-heading">Over dit artikel</p>
+          <h2 class="article-info-heading">Over dit artikel</h2>
           <ul class="article-info-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -150,7 +143,7 @@ useSeo({
         </div>
 
         <div v-if="article.relatedArticles?.length" class="article-related-card">
-          <p class="article-related-heading">Meer nieuws</p>
+          <h2 class="article-related-heading">Meer nieuws</h2>
           <ul class="article-related-list">
             <li v-for="related in article.relatedArticles" :key="related._id">
               <NuxtLink :to="`/nieuws/${related.slug.current}`" class="article-related-link">

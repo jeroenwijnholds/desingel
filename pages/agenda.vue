@@ -11,35 +11,37 @@ interface Event {
   externalLink?: string
 }
 
-const QUERY = `*[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
-  _id, title, slug, category, date, timeRange, location, description, externalLink
+interface AgendaPage {
+  headerLabel?: string
+  headerTitle?: string
+  headerSubtitle?: string
+  headerImage?: any
+  emptyMessage?: string
+}
+
+const QUERY = `{
+  "events": *[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
+    _id, title, slug, category, date, timeRange, location, description, externalLink
+  },
+  "page": *[_type == "agendaPage" && !(_id in path("drafts.**"))][0]
 }`
-const { data } = useSanityQuery<Event[]>(QUERY)
+const { data } = useSanityQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
+const page = computed(() => data.value?.page)
 
-function formatDay(dateStr: string) {
-  return new Date(dateStr).getDate().toString()
-}
-
-function formatWeekday(dateStr: string) {
-  const wd = new Date(dateStr).toLocaleDateString('nl-NL', { weekday: 'short' })
-  return wd.charAt(0).toUpperCase() + wd.slice(1, 2)
-}
-
-function formatMonthYear(dateStr: string) {
-  const label = new Date(dateStr).toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })
-  return label.charAt(0).toUpperCase() + label.slice(1)
-}
+const { formatDay, formatWeekday, formatMonthYear } = useDateFormat()
 
 const groupedEvents = computed(() => {
   const groups: { key: string; events: Event[] }[] = []
-  const seen: Record<string, number> = {}
-  for (const event of data.value ?? []) {
+  const byKey: Record<string, { key: string; events: Event[] }> = {}
+  for (const event of data.value?.events ?? []) {
     const key = formatMonthYear(event.date)
-    if (seen[key] === undefined) {
-      seen[key] = groups.length
-      groups.push({ key, events: [] })
+    let group = byKey[key]
+    if (!group) {
+      group = { key, events: [] }
+      byKey[key] = group
+      groups.push(group)
     }
-    groups[seen[key]].events.push(event)
+    group.events.push(event)
   }
   return groups
 })
@@ -52,9 +54,10 @@ useSeo({
 
 <template>
   <PageHeader
-    label="Belevenisboerderij de Singel"
-    title="Agenda"
-    subtitle="Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij."
+    :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
+    :title="page?.headerTitle ?? 'Agenda'"
+    :subtitle="page?.headerSubtitle ?? 'Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij.'"
+    :image="page?.headerImage"
   />
 
   <main class="agenda-main">
@@ -90,7 +93,7 @@ useSeo({
         </article>
       </div>
 
-      <p v-if="!groupedEvents.length" class="agenda-empty">Er zijn momenteel geen evenementen gepland.</p>
+      <p v-if="!groupedEvents.length" class="agenda-empty">{{ page?.emptyMessage ?? 'Er zijn momenteel geen evenementen gepland.' }}</p>
     </div>
   </main>
 </template>

@@ -41,6 +41,7 @@ function onKeydown(e: KeyboardEvent) {
     if (!focusables.length) return
     const first = focusables[0]
     const last = focusables[focusables.length - 1]
+    if (!first || !last) return
     if (e.shiftKey && document.activeElement === first) {
       e.preventDefault()
       last.focus()
@@ -54,14 +55,20 @@ function onKeydown(e: KeyboardEvent) {
 // Swipe-navigatie
 let touchStartX = 0
 function onTouchStart(e: TouchEvent) {
-  touchStartX = e.changedTouches[0].clientX
+  touchStartX = e.changedTouches[0]?.clientX ?? 0
 }
 function onTouchEnd(e: TouchEvent) {
-  const dx = e.changedTouches[0].clientX - touchStartX
+  const touch = e.changedTouches[0]
+  if (!touch) return
+  const dx = touch.clientX - touchStartX
   if (Math.abs(dx) < 40) return
   if (dx > 0) prev()
   else next()
 }
+
+const activeImage = computed(() =>
+  activeIndex.value === null ? null : props.images[activeIndex.value] ?? null
+)
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => {
@@ -95,7 +102,7 @@ onUnmounted(() => {
 
   <Teleport to="body">
     <div
-      v-if="activeIndex !== null && activeIndex < images.length"
+      v-if="activeIndex !== null && activeImage"
       ref="modalEl"
       class="modal modal--open"
       role="dialog"
@@ -118,8 +125,8 @@ onUnmounted(() => {
       </button>
 
       <img
-        :src="images[activeIndex].full || images[activeIndex].url"
-        :alt="images[activeIndex].alt || ''"
+        :src="activeImage.full || activeImage.url"
+        :alt="activeImage.alt || ''"
         class="modal-img"
         @click.stop
       />

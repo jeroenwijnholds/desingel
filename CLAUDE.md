@@ -9,9 +9,10 @@ Jeroen ook in het Nederlands.
 
 ```bash
 npm run dev                      # dev-server
-npm run build                    # nuxt generate → .output/public (DE verificatie: moet altijd slagen)
+npm run build                    # nuxt generate + sitemap.xml/robots.txt → .output/public (DE verificatie)
+npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI vóór de deploy)
 npx serve -l 4173 .output/public # gebouwde site lokaal serveren
-node scripts/viewport-check.mjs  # Playwright: overflow-check + screenshots (zie Verificatie)
+npm run viewport-check           # Playwright: overflow-check + screenshots (zie Verificatie)
 ```
 
 `.env` bevat `SANITY_PROJECT_ID`/`SANITY_DATASET` (nodig voor build; nooit committen).
@@ -65,17 +66,22 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
 
 - `pages/` — index, agenda, contact, de-boerderij, over-ons, bedankt,
   `nieuws/index` + `nieuws/[slug]`, `evenement/[slug]`; `error.vue` in de root.
-- `components/` — `AppNav` (focus-trap, escape, sluit bij navigatie),
-  `AppFooter`, `AppLightbox` (pijltjes/swipe/focus-trap/teller),
-  `PageHeader` (dé paginakop; props label/title/subtitle).
+- `components/` — `AppNav` (focus-trap, escape, sluit bij navigatie;
+  logo-tekst uit `siteSettings.siteName`), `AppFooter` (incl. site-brede
+  LocalBusiness-JSON-LD), `AppLightbox` (pijltjes/swipe/focus-trap/teller),
+  `PageHeader` (dé paginakop; props label/title/subtitle/image — image is
+  een Sanity-afbeelding als achtergrond met gradient-overlay),
+  `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared).
 - `composables/` — `useImageUrl` (ruwe Sanity image-builder),
   `useSanityImg` (**gebruik deze voor elke afbeelding**: levert
   src/srcset/sizes/width/height met WebP via `auto=format`; mét `aspect`
   snijdt Sanity server-side rond de hotspot, zónder `aspect` komt de hotspot
   terug als inline `object-position`-style die de CSS-fallback overridet —
   redacteuren sturen de uitsnede dus via "Edit hotspot" in Studio),
-  `useSeo` (title/description/canonical/OG per pagina; accepteert getters
-  voor reactieve waarden op detailpagina's).
+  `useSeo` (title/description/canonical/OG per pagina; accepteert getters;
+  `type: 'article'` + `publishedTime` voor artikelen), `useJsonLd`
+  (structured data), `useDateFormat` (alle nl-NL-datumformattering),
+  `usePortableTextComponents` (gedeelde body-afbeelding-renderer).
 - `studio/` — Sanity Studio (v5). Deskstructuur in `sanity.config.ts`:
   singletons (Homepage, De Boerderij, Over Ons, Contact, Fotogalerij,
   Site-instellingen) zijn niet aan te maken/verwijderen; documentnieuws en
@@ -84,9 +90,12 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   **Na elke schemawijziging opnieuw deployen** (`npm run deploy` in
   `studio/`), anders werkt de gehoste Studio met het oude schema.
 - De fotogalerij is een eigen document (`fotoGalerij`, id `fotoGalerij`);
-  de homepage-query heeft een `coalesce`-fallback naar het verouderde
-  `homePage.galleryImages` (verborgen veld — opruimen na merge, zie
-  NOG-TE-DOEN).
+  de homepage leest alléén daaruit. Het verouderde verborgen veld
+  `homePage.galleryImages` bevat nog data — opruimscript staat klaar
+  (zie NOG-TE-DOEN).
+- `scripts/generate-sitemap.mjs` draait als onderdeel van `npm run build`
+  en schrijft sitemap.xml + robots.txt op basis van de echt geprerenderde
+  routes (site-URL uit `NUXT_PUBLIC_SITE_URL`).
 - `scripts/eenmalig/` — afgeronde seed-/migratiescripts; alleen ter naslag.
 - `plugins/reveal.ts` — `v-reveal`-directive voor scroll-reveals
   (optionele waarde = vertraging in ms; slaat elementen over die al in beeld
@@ -102,7 +111,7 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
 
 Identiteit: donkergroen `#364838`, lichtgroen `#658457`, accentgroen
 `#d1f2c2`, geel `#f6c204`, Playfair Display (koppen, 400/700/900 + italic)
-en Source Sans 3 (body, 300/400/600/700), self-hosted via @fontsource —
+en Source Sans 3 (body, 400/600/700), self-hosted via @fontsource —
 **geen Google Fonts-links terugzetten** en geen gewichten gebruiken die niet
 in `nuxt.config.ts` geladen worden (geeft faux bold).
 
@@ -112,6 +121,8 @@ Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
 - Layout: `--page-pad` (fluid zijmarge), `--section-pad`, `--nav-height`,
   `--container-max`
 - Vorm: `--radius-*`, `--shadow-*`
+- Kleur-extra's: `--surface-soft` (zachte groene sectie-achtergrond),
+  `--error`/`--error-bg` (formulierfouten)
 
 Conventies: sectielabels zijn uppercase met `letter-spacing: 0.14em`
 (`.section-label`, kies `dark-green` op licht en `bright-green` op donker —
@@ -148,19 +159,16 @@ niet verstoren.
   gevonden nevenproblemen benoemen (de onbereikbare nieuwsartikelen vonden we
   ook "en passant" — dat soort vondsten altijd melden en meenemen).
 
-## Status & openstaande punten (juli 2026)
+## Status & openstaande punten (10 juli 2026)
 
-- **PR #1** (`frontend-optimalisatie`, 16+ commits): complete frontend-
-  optimalisatie — robuustheid, mobiel, a11y, SEO, visuele polish. Wacht op
-  review/merge door Jeroen. Spec/plan in `docs/superpowers/`.
-- **Branch `cms-herinrichting`** (gebaseerd op `frontend-optimalisatie`,
-  dus mergen ná PR #1): Studio-herinrichting (deskstructuur, singletons,
-  Fotogalerij als eigen document, alt-velden), hotspot-gestuurde
-  beelduitsnedes, hero/kaart aan CMS gekoppeld. Na merge: Studio opnieuw
-  deployen (stap 0 in `NOG-TE-DOEN.md`).
-- **Handmatige stappen** (alleen Jeroen kan dit, zie `NOG-TE-DOEN.md`):
-  Web3Forms-key instellen (contactformulier werkt tot die tijd niet echt),
-  Sanity-webhook omzetten naar GitHub, Netlify opruimen.
-- Ideeën voor later: alt-tekstvelden voor galerij-afbeeldingen in het
-  Sanity-schema (lightbox ondersteunt ze al), sitemap.xml, eigen domein
-  (workflow ondersteunt het al via `NUXT_APP_BASE_URL`).
+- **Migratie afgerond**: site live op GitHub Pages, Studio gehost op
+  desingel.sanity.studio, Web3Forms werkt, Sanity-publish triggert een
+  rebuild. Details en beheersleutels in `NOG-TE-DOEN.md`.
+- **Verbeterplan uitgevoerd** (`docs/verbeterplan-2026-07.md`, zie de
+  statuskop daarin): SEO-infra (sitemap/robots/JSON-LD), typecheck in CI,
+  alle paginateksten CMS-bewerkbaar, CSS-hygiëne + a11y, Studio-validaties.
+  Bewust uitgesteld: volledige px→token-migratie (plan-punt 20) en de
+  optionele InfoCard-/Icon-componenten.
+- **Nog open** (zie `NOG-TE-DOEN.md`): eigen domein omzetten (DNS wijst
+  nog naar de oude Webflow-site) en de oude galerijdata unsetten
+  (script staat klaar in `scripts/eenmalig/`).

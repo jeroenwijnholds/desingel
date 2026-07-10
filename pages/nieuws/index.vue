@@ -9,25 +9,31 @@ interface NieuwsArtikel {
   featuredImage?: any
 }
 
-const QUERY = `*[_type == "nieuwsArtikel" && !(_id in path("drafts.**"))] | order(publishedAt desc) {
-  _id, title, slug, category, publishedAt, excerpt, featuredImage
-}`
-const { data } = useSanityQuery<NieuwsArtikel[]>(QUERY)
+interface NieuwsPage {
+  headerLabel?: string
+  headerTitle?: string
+  headerSubtitle?: string
+  headerImage?: any
+  archiveHeading?: string
+  emptyMessage?: string
+}
 
-const articles = computed(() => data.value ?? [])
+const QUERY = `{
+  "articles": *[_type == "nieuwsArtikel" && !(_id in path("drafts.**"))] | order(publishedAt desc) {
+    _id, title, slug, category, publishedAt, excerpt, featuredImage
+  },
+  "page": *[_type == "nieuwsPage" && !(_id in path("drafts.**"))][0]
+}`
+const { data } = useSanityQuery<{ articles: NieuwsArtikel[]; page?: NieuwsPage }>(QUERY)
+const page = computed(() => data.value?.page)
+
+const articles = computed(() => data.value?.articles ?? [])
 const hero = computed(() => articles.value[0])
 const featured = computed(() => articles.value.slice(1, 3))
 const archive = computed(() => articles.value.slice(3))
 
 const img = useSanityImg()
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function formatDatetime(dateStr: string) {
-  return dateStr.slice(0, 10)
-}
+const { formatDate, formatDatetime } = useDateFormat()
 
 useSeo({
   title: 'Nieuws – Belevenisboerderij De Singel',
@@ -37,9 +43,10 @@ useSeo({
 
 <template>
   <PageHeader
-    label="Belevenisboerderij de Singel"
-    title="Nieuws"
-    subtitle="Verhalen van het land – over dieren, seizoenen en het leven op de boerderij."
+    :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
+    :title="page?.headerTitle ?? 'Nieuws'"
+    :subtitle="page?.headerSubtitle ?? 'Verhalen van het land – over dieren, seizoenen en het leven op de boerderij.'"
+    :image="page?.headerImage"
   />
 
   <section v-if="hero" class="news-featured">
@@ -99,7 +106,7 @@ useSeo({
 
   <section v-if="archive.length" class="news-archive">
     <div class="news-archive-inner">
-      <h2 class="news-archive-heading">Meer van de boerderij</h2>
+      <h2 class="news-archive-heading">{{ page?.archiveHeading ?? 'Meer van de boerderij' }}</h2>
       <div class="news-list">
         <article v-for="article in archive" :key="article._id" class="news-list-item">
           <NuxtLink :to="`/nieuws/${article.slug.current}`" class="news-list-link">
@@ -125,5 +132,5 @@ useSeo({
     </div>
   </section>
 
-  <p v-if="!articles.length" class="nieuws-empty">Er zijn nog geen nieuwsartikelen gepubliceerd.</p>
+  <p v-if="!articles.length" class="nieuws-empty">{{ page?.emptyMessage ?? 'Er zijn nog geen nieuwsartikelen gepubliceerd.' }}</p>
 </template>

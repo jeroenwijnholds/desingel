@@ -1,5 +1,11 @@
 ﻿<script setup lang="ts">
 interface ContactPage {
+  headerLabel?: string
+  headerTitle?: string
+  headerSubtitle?: string
+  headerImage?: any
+  formTitle?: string
+  formIntro?: string
   infoOwners?: string
   infoAddress?: string
   infoHours?: string
@@ -99,17 +105,18 @@ useSeo({
 
 <template>
   <PageHeader
-    label="Belevenisboerderij de Singel"
-    title="Contact"
-    subtitle="We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken."
+    :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
+    :title="page?.headerTitle ?? 'Contact'"
+    :subtitle="page?.headerSubtitle ?? 'We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken.'"
+    :image="page?.headerImage"
   />
 
   <main class="contact-main" id="contact-form">
     <div class="contact-layout">
 
       <section class="contact-form-section" aria-labelledby="form-heading">
-        <h2 class="contact-form-heading" id="form-heading">Stuur een bericht</h2>
-        <p class="contact-form-intro">Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.</p>
+        <h2 class="contact-form-heading" id="form-heading">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
+        <p class="contact-form-intro">{{ page?.formIntro ?? 'Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.' }}</p>
 
         <form class="contact-form" novalidate @submit.prevent="onSubmit">
           <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
@@ -221,7 +228,7 @@ useSeo({
 
       <aside class="contact-info-col">
         <div class="contact-info-card">
-          <p class="contact-info-heading">Praktisch</p>
+          <h2 class="contact-info-heading">Praktisch</h2>
           <ul class="contact-info-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>

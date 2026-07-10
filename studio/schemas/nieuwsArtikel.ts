@@ -1,5 +1,5 @@
 import { defineType, defineField } from 'sanity'
-import { imageField } from './lib'
+import { imageField, imageArrayMember } from './lib'
 
 export default defineType({
   name: 'nieuwsArtikel',
@@ -39,6 +39,7 @@ export default defineType({
       name: 'publishedAt',
       title: 'Publicatiedatum',
       type: 'datetime',
+      initialValue: () => new Date().toISOString(),
       validation: Rule => Rule.required(),
     }),
     defineField({
@@ -83,14 +84,7 @@ export default defineType({
             ],
           },
         },
-        {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [
-            { name: 'caption', title: 'Bijschrift', type: 'string' },
-            { name: 'alt', title: 'Alt-tekst', type: 'string' },
-          ],
-        },
+        imageArrayMember({ withCaption: true }),
       ],
     }),
     defineField({

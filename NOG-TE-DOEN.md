@@ -39,13 +39,20 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
 2. GitHub → repo → Settings → Pages → **Custom domain** invullen,
    wachten op het certificaat (tot ~1 uur) en **Enforce HTTPS** aanvinken.
 3. Eén keer de deploy-workflow draaien (de workflow detecteert het domein
-   en bouwt dan zonder `/desingel/`-padvoorvoegsel).
+   en bouwt dan zonder `/desingel/`-padvoorvoegsel; sitemap.xml en
+   robots.txt volgen automatisch mee via `NUXT_PUBLIC_SITE_URL`).
 4. Daarna het Webflow-abonnement opzeggen (staat anders door te lopen).
 
 ### Oude galerijdata opruimen (klein, geen haast)
 
-Het veld `galleryImages` op het Homepage-document is verborgen maar de
-data staat er nog; de site leest al uit het `fotoGalerij`-document.
-Opruimen: data unsetten, het `hidden`-veld uit
-`studio/schemas/homePage.ts` halen en de `coalesce`-fallback uit
-`pages/index.vue` verwijderen; daarna Studio en site opnieuw deployen.
+De code-kant is al gedaan (10 juli 2026): de homepage leest alléén nog
+uit `fotoGalerij` (coalesce-fallback verwijderd). Rest alleen de data:
+
+1. `node scripts/eenmalig/unset-legacy-gallery.mjs` (gebruikt
+   `SANITY_TOKEN` uit `.env`; verwijdert het veld van het live document —
+   vooraf geverifieerd dat `fotoGalerij` dezelfde 9 foto's bevat).
+2. Daarna het verborgen `galleryImages`-veld uit
+   `studio/schemas/homePage.ts` halen en de Studio opnieuw deployen.
+
+Het veld blijft tot die tijd bewust in het schema staan (verborgen),
+anders toont Studio "unknown fields"-waarschuwingen op het document.

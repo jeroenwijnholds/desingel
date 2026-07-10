@@ -96,7 +96,7 @@
   font-weight: 400;
   font-size: 12px;
   color: var(--text);
-  opacity: 0.5;
+  opacity: 0.7;
   letter-spacing: 0;
 }
 
@@ -142,7 +142,7 @@
 
 /* --- Validatie & status --- */
 .form-input[aria-invalid="true"] {
-  border-color: #b3261e;
+  border-color: var(--error);
 }
 
 .form-input[aria-invalid="true"]:focus {
@@ -152,7 +152,7 @@
 .form-error {
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  color: #b3261e;
+  color: var(--error);
   margin-top: 6px;
   line-height: 1.4;
 }
@@ -162,21 +162,21 @@
 }
 
 .form-error-summary {
-  border: 1.5px solid #b3261e;
+  border: 1.5px solid var(--error);
   border-radius: 8px;
-  background-color: #fdf1f0;
+  background-color: var(--error-bg);
   padding: 14px 16px;
   margin-bottom: 20px;
 }
 
 .form-error-summary:focus {
-  outline: 2px solid #b3261e;
+  outline: 2px solid var(--error);
   outline-offset: 2px;
 }
 
 .form-error-summary-title {
   font-weight: 600;
-  color: #b3261e;
+  color: var(--error);
   font-size: var(--text-sm);
   margin-bottom: 6px;
 }
@@ -188,7 +188,7 @@
 
 .form-error-summary li {
   font-size: var(--text-sm);
-  color: #b3261e;
+  color: var(--error);
 }
 
 .form-error-summary label {
@@ -220,7 +220,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   color: var(--text);
-  opacity: 0.5;
+  opacity: 0.7;
   line-height: 1.5;
   max-width: 36ch;
 }
@@ -284,7 +284,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1;
 }
 
@@ -313,6 +313,12 @@
 
 .contact-info-link:hover {
   gap: 10px;
+}
+
+.contact-info-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .contact-info-link svg {

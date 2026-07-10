@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
-import { defineComponent, h } from 'vue'
 
 interface Event {
   title: string
@@ -9,6 +8,7 @@ interface Event {
   date: string
   timeRange?: string
   location?: string
+  description?: string
   featuredImage?: any
   body?: any[]
   externalLink?: string
@@ -29,37 +29,8 @@ query.then(() => {
 }).catch(() => {})
 
 const img = useSanityImg()
-
-function formatChipDate(dateStr: string) {
-  const d = new Date(dateStr)
-  const wd = d.toLocaleDateString('nl-NL', { weekday: 'short' })
-  const day = d.getDate()
-  const month = d.toLocaleDateString('nl-NL', { month: 'long' })
-  const year = d.getFullYear()
-  return `${wd} ${day} ${month} ${year}`
-}
-
-const portableTextComponents = {
-  types: {
-    image: defineComponent({
-      props: { value: { type: Object, default: null } },
-      setup(props) {
-        return () => {
-          const val = props.value as any
-          if (!val) return null
-          return h('figure', { class: 'article-figure' }, [
-            h('img', {
-              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
-              alt: val.alt ?? '',
-              loading: 'lazy',
-            }),
-            val.caption ? h('figcaption', val.caption) : null,
-          ].filter(Boolean))
-        }
-      },
-    }),
-  },
-}
+const { formatChipDate } = useDateFormat()
+const portableTextComponents = usePortableTextComponents()
 
 useSeo({
   title: () => event.value ? `${event.value.title} – Belevenisboerderij De Singel` : 'Evenement – Belevenisboerderij De Singel',
@@ -68,6 +39,23 @@ useSeo({
     ? img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
 })
+
+const config = useRuntimeConfig()
+useJsonLd(() => event.value
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: event.value.title,
+      startDate: event.value.date,
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      ...(event.value.description ? { description: event.value.description } : {}),
+      ...(event.value.location ? { location: { '@type': 'Place', name: event.value.location } } : {}),
+      ...(event.value.featuredImage
+        ? { image: [img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
+        : {}),
+      organizer: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
+    }
+  : null)
 </script>
 
 <template>
@@ -120,7 +108,7 @@ useSeo({
 
       <aside class="event-sidebar">
         <div class="event-info-card">
-          <p class="event-info-heading">Praktisch</p>
+          <h2 class="event-info-heading">Praktisch</h2>
           <ul class="event-info-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>

@@ -23,6 +23,8 @@ const singletonTypes = new Set([
   'boerderijPage',
   'overOnsPage',
   'contactPage',
+  'agendaPage',
+  'nieuwsPage',
   'fotoGalerij',
   'siteSettings',
 ])
@@ -58,6 +60,8 @@ export default defineConfig({
                     singleton(S, 'boerderijPage', 'De Boerderij', LeaveIcon),
                     singleton(S, 'overOnsPage', 'Over Ons', UsersIcon),
                     singleton(S, 'contactPage', 'Contact', EnvelopeIcon),
+                    singleton(S, 'agendaPage', 'Agenda', CalendarIcon),
+                    singleton(S, 'nieuwsPage', 'Nieuws', DocumentTextIcon),
                   ])
               ),
             singleton(S, 'fotoGalerij', 'Fotogalerij', ImagesIcon),
@@ -68,7 +72,8 @@ export default defineConfig({
             singleton(S, 'siteSettings', 'Site-instellingen', CogIcon),
           ]),
     }),
-    visionTool(),
+    // apiVersion gepind zodat query-gedrag in Vision niet stilletjes verandert
+    visionTool({ defaultApiVersion: '2024-01-01' }),
   ],
 
   schema: {
