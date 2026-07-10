@@ -55,7 +55,7 @@ useSeo({
           <img
             v-if="page?.familyPhoto"
             v-bind="img(page.familyPhoto, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
-            alt="Victor, Mari en de kinderen van de Singel"
+            :alt="page.familyPhoto.alt ?? 'Victor, Mari en de kinderen van de Singel'"
             loading="eager"
             fetchpriority="high"
           />
@@ -105,7 +105,7 @@ useSeo({
   <div v-if="page?.fullWidthPhoto" class="about-farm-photo">
     <img
       v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
-      alt="Belevenisboerderij de Singel in de Achterhoek"
+      :alt="page.fullWidthPhoto.alt ?? 'Belevenisboerderij de Singel in de Achterhoek'"
       loading="lazy"
     />
   </div>

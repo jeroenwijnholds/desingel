@@ -15,6 +15,7 @@ interface HomePage {
   heroTitle: string
   heroSubtitle: string
   heroImage?: any
+  heroImageMobile?: any
   primaryServices: Service[]
   secondaryServices: SecondaryService[]
   galleryImages: any[]
@@ -26,10 +27,14 @@ interface HomePage {
 
 const QUERY = `{
   "page": *[_type == "homePage" && !(_id in path("drafts.**"))][0],
+  "gallery": coalesce(
+    *[_id == "fotoGalerij"][0].images,
+    *[_type == "homePage" && !(_id in path("drafts.**"))][0].galleryImages
+  ),
   "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ siteName }
 }`
 
-const { data } = useSanityQuery<{ page: HomePage; settings: { siteName: string } }>(QUERY)
+const { data } = useSanityQuery<{ page: HomePage; gallery: any[]; settings: { siteName: string } }>(QUERY)
 
 const page = computed(() => data.value?.page)
 const settings = computed(() => data.value?.settings)
@@ -37,8 +42,26 @@ const settings = computed(() => data.value?.settings)
 const imageUrl = useImageUrl()
 const img = useSanityImg()
 
+// Hero-foto's uit het CMS, doorgegeven als CSS-variabelen zodat de
+// media-query voor mobiel blijft werken (inline background-image zou die
+// overriden). Zonder ingevulde foto geldt de CSS-fallback (gebundelde
+// hero-desktop/mobile.jpg). Hotspot stuurt de background-position.
+const heroStyle = computed(() => {
+  const style: Record<string, string> = {}
+  const addImage = (source: any, suffix: string, width: number) => {
+    if (!source?.asset?._ref) return
+    style[`--hero-bg${suffix}`] = `url('${imageUrl(source).width(width).auto('format').quality(75).url()}')`
+    if (source.hotspot) {
+      style[`--hero-pos${suffix}`] = `${(source.hotspot.x * 100).toFixed(1)}% ${(source.hotspot.y * 100).toFixed(1)}%`
+    }
+  }
+  addImage(page.value?.heroImage, '', 2000)
+  addImage(page.value?.heroImageMobile, '-mobile', 1080)
+  return Object.keys(style).length ? style : undefined
+})
+
 const galleryImages = computed(() =>
-  (page.value?.galleryImages ?? []).map((source: any) => {
+  (data.value?.gallery ?? []).map((source: any) => {
     const thumb = img(source, {
       widths: [400, 800, 1200],
       sizes: '(max-width: 767px) 50vw, 33vw',
@@ -47,6 +70,7 @@ const galleryImages = computed(() =>
       url: thumb.src,
       srcset: thumb.srcset,
       sizes: thumb.sizes,
+      style: (thumb as any).style,
       full: imageUrl(source).width(1600).auto('format').quality(80).url(),
       alt: source?.alt ?? '',
     }
@@ -84,7 +108,7 @@ useSeo({
 </script>
 
 <template>
-  <section ref="heroEl" class="hero">
+  <section ref="heroEl" class="hero" :style="heroStyle">
     <div class="hero-ellipse-1"></div>
     <div class="hero-ellipse-2"></div>
     <div class="hero-text">
@@ -113,7 +137,7 @@ useSeo({
           <img
             v-if="page.primaryServices[0].image"
             v-bind="img(page.primaryServices[0].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
-            :alt="page.primaryServices[0].title"
+            :alt="page.primaryServices[0].image.alt ?? page.primaryServices[0].title"
             class="card-image"
             loading="lazy"
           />
@@ -129,7 +153,7 @@ useSeo({
           <img
             v-if="page.primaryServices[1].image"
             v-bind="img(page.primaryServices[1].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
-            :alt="page.primaryServices[1].title"
+            :alt="page.primaryServices[1].image.alt ?? page.primaryServices[1].title"
             class="card-image"
             loading="lazy"
           />
@@ -153,7 +177,7 @@ useSeo({
         <img
           v-if="service.image"
           v-bind="img(service.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 32vw' })"
-          :alt="service.title"
+          :alt="service.image.alt ?? service.title"
           class="service-image"
           loading="lazy"
         />

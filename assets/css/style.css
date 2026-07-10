@@ -377,8 +377,10 @@ hr.divider {
   display: flex;
   min-height: 80vh;
   min-height: 80svh;
-  background-image: url('~/assets/images/hero-desktop.jpg');
-  background-position: 50% 60%;
+  /* CMS-hero via custom properties (gezet in pages/index.vue);
+     zonder CMS-foto vallen we terug op de gebundelde afbeeldingen */
+  background-image: var(--hero-bg, url('~/assets/images/hero-desktop.jpg'));
+  background-position: var(--hero-pos, 50% 60%);
   background-repeat: no-repeat;
   background-size: cover;
   padding-left: 120px;
@@ -409,8 +411,8 @@ hr.divider {
 
 @media screen and (max-width: 479px) {
   .hero {
-    background-image: url('~/assets/images/hero-mobile.jpg');
-    background-position: 50%;
+    background-image: var(--hero-bg-mobile, var(--hero-bg, url('~/assets/images/hero-mobile.jpg')));
+    background-position: var(--hero-pos-mobile, var(--hero-pos, 50%));
     align-items: flex-end;
     min-height: 100vh;
     min-height: 100svh;
