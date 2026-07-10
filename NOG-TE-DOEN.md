@@ -1,130 +1,51 @@
-# Nog te doen — afronden migratie naar GitHub Pages
+# Status migratie & beheer
 
-De site draait al live op **https://jeroenwijnholds.github.io/desingel/** en elke push naar `master` wordt automatisch gedeployed. Er zijn nog drie dingen die alleen jij kunt doen, omdat er accounts en inloggegevens bij nodig zijn. Reken op zo'n 10–15 minuten totaal.
+**Stand: 10 juli 2026 — de migratie is afgerond.** De site draait live op
+https://jeroenwijnholds.github.io/desingel/ en elke push naar `master`
+deployt automatisch. Alle eerdere handmatige stappen zijn gedaan:
 
-> **Let op (branch `cms-herinrichting`):** na het mergen van de CMS-herinrichting
-> moet de Studio opnieuw gedeployed worden — zie stap 0 hieronder. Zolang dat
-> niet is gebeurd, toont de gehoste Studio nog de oude, rommelige indeling.
+| Onderdeel | Status |
+|---|---|
+| Studio-deploy (nieuwe CMS-indeling) | ✅ live op https://desingel.sanity.studio |
+| Web3Forms (contactformulier) | ✅ key ingesteld als repo-variabele `WEB3FORMS_ACCESS_KEY`; end-to-end getest |
+| Sanity-webhook → GitHub rebuild | ✅ webhook "GitHub Pages rebuild" (repository_dispatch `sanity-publish`); getest |
+| Netlify | ✅ build hook + site verwijderd; account is leeg |
+| Vercel-restanten in GitHub | ✅ homepage-URL en oud environment opgeruimd |
 
----
+Een publish in de Studio triggert nu automatisch een rebuild (~2 min).
 
-## Stap 0 — Sanity Studio opnieuw deployen (na merge CMS-herinrichting)
+## Beheersleutels (lokaal in `.env`, nooit committen)
 
-**Waarom:** de nieuwe Studio-indeling (singletons, Fotogalerij als eigen menu-item, alt-tekstvelden, Nederlandse uitleg) staat in de code, maar de gehoste Studio draait pas mee na een deploy.
+- `SANITY_TOKEN` — Editor-token voor content/datamigraties
+- `GITHUB_WEBHOOK_TOKEN` — fine-grained PAT (alleen repo `desingel`,
+  Contents R/W); staat óók in de Sanity-webhook. **Verloopt juli 2027**:
+  dan een nieuwe maken en de webhook bijwerken, anders stoppen de
+  automatische rebuilds stilletjes.
+- `NETLIFY_TOKEN` — mag ingetrokken worden, Netlify is opgeruimd.
+- Sanity-webhookbeheer en studio-deploys lopen via de lokale CLI-sessie
+  (`~/.config/sanity/config.json`).
 
-1. Open een terminal in `studio/` en log zo nodig in: `npx sanity login`.
-2. Voer uit: `npm run deploy` (accepteer de bestaande studio-host).
-3. **Controleren:** open de Studio-URL; links hoort nu een menu te staan met Pagina's → Homepage/De Boerderij/Over Ons/Contact, daarnaast Fotogalerij, Agenda, Nieuwsartikelen en Site-instellingen.
-4. **Opruimen (mag later):** het oude veld `galleryImages` op het Homepage-document is verborgen maar de data staat er nog. Als de nieuwe site live staat en de galerij het doet, kan die data weg:
+## Nog open
 
-   ```bash
-   npx sanity documents query '*[_id=="homePage"]{galleryImages}'   # eerst kijken
-   # daarna in Vision of via een patch het veld unsetten
-   ```
+### Eigen domein omzetten (wanneer Jeroen wil)
 
-   Verwijder daarna ook het verborgen veld uit `studio/schemas/homePage.ts` en de `coalesce`-fallback in `pages/index.vue`.
+**Let op:** belevenisboerderij-desingel.nl wijst nu nog naar de **oude
+Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
+`cdn.webflow.com`). Bezoekers zien dus verouderde content. Omzetten:
 
-Volgorde aanhouden: eerst het formulier (stap 1), dan de Sanity-koppeling (stap 2), pas daarna Netlify opruimen (stap 3). Zo is er nooit een moment waarop iets kapot is.
+1. TransIP → DNS van het domein: vier **A**-records op de apex naar
+   `185.199.108.153`, `185.199.109.153`, `185.199.110.153`,
+   `185.199.111.153`; **CNAME** `www` → `jeroenwijnholds.github.io`.
+2. GitHub → repo → Settings → Pages → **Custom domain** invullen,
+   wachten op het certificaat (tot ~1 uur) en **Enforce HTTPS** aanvinken.
+3. Eén keer de deploy-workflow draaien (de workflow detecteert het domein
+   en bouwt dan zonder `/desingel/`-padvoorvoegsel).
+4. Daarna het Webflow-abonnement opzeggen (staat anders door te lopen).
 
----
+### Oude galerijdata opruimen (klein, geen haast)
 
-## Stap 1 — Web3Forms activeren (contactformulier)
-
-**Waarom:** het contactformulier post nu naar Web3Forms, maar met een placeholder-sleutel (`PLACEHOLDER_KEY`). Inzendingen komen pas aan als de echte sleutel is ingesteld én de site opnieuw is gebouwd.
-
-1. Ga naar **https://web3forms.com**.
-2. Vul bij "Create your Access Key" het e-mailadres in waar de formulierberichten moeten binnenkomen (het adres van Victor & Mari, of jouw eigen adres als jij ze doorstuurt). Er is geen account of wachtwoord nodig.
-3. Klik op **Create Access Key**. De sleutel (een reeks letters/cijfers met streepjes, lijkt op een UUID) wordt naar dat e-mailadres gemaild. Deze sleutel is niet geheim — hij staat straks zichtbaar in de HTML van de site; dat is bij Web3Forms de bedoeling.
-4. Zet de sleutel in de GitHub-repository-variabele. Open een terminal in de projectmap en voer uit:
-
-   ```bash
-   gh variable set WEB3FORMS_ACCESS_KEY --repo jeroenwijnholds/desingel --body "PLAK-HIER-DE-KEY"
-   ```
-
-   Geen `gh` bij de hand? Het kan ook via de browser: GitHub → repo `desingel` → **Settings → Secrets and variables → Actions → tabblad Variables** → `WEB3FORMS_ACCESS_KEY` → **Edit** → waarde vervangen.
-
-5. Zet dezelfde sleutel ook in het lokale `.env`-bestand (vervang daar de regel `NUXT_PUBLIC_WEB3FORMS_KEY=PLACEHOLDER_KEY`), zodat een lokale build hetzelfde werkt als de live site.
-6. Bouw de site één keer opnieuw, zodat de echte sleutel in de HTML wordt gebakken:
-
-   ```bash
-   gh workflow run deploy.yml --repo jeroenwijnholds/desingel
-   ```
-
-   (Of via de browser: repo → **Actions → Deploy naar GitHub Pages → Run workflow**.)
-
-7. **Controleren:** wacht tot de workflow groen is (~2 min), open https://jeroenwijnholds.github.io/desingel/contact/, vul het formulier in en verstuur. Je moet worden doorgestuurd naar de "Bedankt voor je bericht!"-pagina en binnen een minuut hoort de e-mail binnen te zijn (check ook de spam-map bij de eerste keer).
-
-> **Let op:** het gratis Web3Forms-plan heeft een limiet van 250 inzendingen per maand — ruim voldoende voor dit formulier.
-
----
-
-## Stap 2 — Sanity-webhook omzetten (publish → automatische rebuild)
-
-**Waarom:** nu wijst de webhook in Sanity nog naar de oude Netlify build hook. Zolang die niet is omgezet, verschijnen wijzigingen uit Sanity Studio niet vanzelf op de nieuwe site.
-
-### 2a. GitHub-token aanmaken
-
-De webhook moet bij GitHub kunnen "aankloppen" en daar is een persoonlijk toegangstoken voor nodig.
-
-1. Ga naar GitHub → klik rechtsboven op je avatar → **Settings** → helemaal onderin **Developer settings** → **Personal access tokens → Fine-grained tokens** → **Generate new token**.
-2. Vul in:
-   - **Token name:** iets herkenbaars, bijv. `sanity-webhook-desingel`
-   - **Expiration:** 1 jaar (zet een agendaherinnering om hem tegen die tijd te vernieuwen — als het token verloopt, stoppen de automatische rebuilds stilletjes)
-   - **Repository access:** *Only select repositories* → kies `jeroenwijnholds/desingel`
-   - **Permissions → Repository permissions → Contents:** *Read and write* (dit is nodig voor het "dispatch"-signaal; verder niets aanvinken)
-3. Klik **Generate token** en **kopieer het token meteen** — het wordt maar één keer getoond. Dit token is wél geheim: nergens in code of documenten plakken.
-
-### 2b. Webhook in Sanity aanpassen
-
-1. Ga naar **https://sanity.io/manage**, open het project van de site, en ga naar **API → Webhooks**.
-2. Open de bestaande webhook die naar Netlify wijst (URL bevat `netlify.com`) en pas hem aan — of maak een nieuwe aan en verwijder de oude. Instellingen:
-   - **URL:** `https://api.github.com/repos/jeroenwijnholds/desingel/dispatches`
-   - **HTTP method:** `POST`
-   - **HTTP headers** (twee stuks):
-     - `Authorization` → `Bearer PLAK-HIER-HET-TOKEN` (dus het woord "Bearer", een spatie, en dan het token uit stap 2a)
-     - `Accept` → `application/vnd.github+json`
-   - **Trigger on:** Create, Update én Delete aanvinken
-   - **Filter:** `_type in ["event", "nieuwsArtikel", "siteSettings", "homePage", "boerderijPage", "overOnsPage", "contactPage"]`
-   - **Projection:** `{"event_type": "sanity-publish"}`
-   - **Drafts:** uitgeschakeld laten (alleen gepubliceerde documenten moeten een rebuild triggeren)
-3. Opslaan.
-
-### 2c. Controleren
-
-1. Open Sanity Studio, pas iets kleins aan (bijv. een tekstveld in een nieuwsartikel), klik **Publish**.
-2. Ga naar GitHub → repo → **Actions**. Binnen ~30 seconden hoort daar een nieuwe run "Deploy naar GitHub Pages" te verschijnen met als aanleiding *repository_dispatch*.
-3. Als de run groen is (~2 min), controleer of de wijziging op de live site staat. Draai de proefwijziging in Studio daarna eventueel terug (en publiceer opnieuw).
-4. Werkt het niet? In Sanity Manage → Webhooks kun je per webhook de **delivery log** bekijken: een rode delivery met status `401` betekent een fout token, `404` betekent een typefout in de URL.
-
----
-
-## Stap 3 — Netlify opruimen
-
-**Pas doen als stap 1 en 2 aantoonbaar werken.**
-
-1. Log in op **https://app.netlify.com** en open de site van de boerderij.
-2. Verwijder eerst de oude build hook: **Site configuration → Build & deploy → Build hooks** → verwijder de hook die door Sanity werd aangeroepen.
-3. Verwijder daarna de site zelf: **Site configuration → General → Danger zone → Delete site**. (Wil je hem liever bewaren als noodrem, zet dan minimaal **Build & deploy → Stop builds** aan — dan verbruikt hij geen credits meer.)
-4. **Controleren:** publiceer nog één keer iets in Sanity en bevestig dat er alléén een GitHub Actions-run start en er níéts meer gebeurt op Netlify.
-
----
-
-## Optioneel — eigen domeinnaam koppelen
-
-Als de site een eigen domein heeft (of krijgt) dat nu nog naar Netlify wijst:
-
-1. GitHub → repo → **Settings → Pages → Custom domain** → vul het domein in en sla op.
-2. Pas bij je domeinregistrar de DNS aan: een **CNAME**-record van bijv. `www` naar `jeroenwijnholds.github.io`. Voor een kaal domein (zonder `www`) gebruik je vier **A**-records naar `185.199.108.153`, `185.199.109.153`, `185.199.110.153` en `185.199.111.153`.
-3. Wacht tot GitHub het certificaat heeft aangemaakt (kan tot een uur duren) en vink **Enforce HTTPS** aan.
-4. Draai daarna één keer de deploy-workflow opnieuw (**Actions → Deploy naar GitHub Pages → Run workflow**). De workflow detecteert het domein automatisch en bouwt de site dan zonder het `/desingel/`-padvoorvoegsel — daar hoeft niets voor aangepast te worden in de code.
-
----
-
-## Samenvatting
-
-| # | Actie | Waar | Klaar wanneer |
-|---|-------|------|---------------|
-| 1 | Web3Forms-key aanmaken, variabele zetten, workflow draaien | web3forms.com + GitHub | Testinzending komt aan per e-mail |
-| 2 | GitHub-token maken en Sanity-webhook omzetten | GitHub + sanity.io/manage | Publish in Studio start automatisch een deploy |
-| 3 | Netlify build hook + site verwijderen | app.netlify.com | Publish triggert alléén nog GitHub |
-| — | (Optioneel) eigen domein koppelen | GitHub Pages + DNS | Site bereikbaar op eigen domein met HTTPS |
+Het veld `galleryImages` op het Homepage-document is verborgen maar de
+data staat er nog; de site leest al uit het `fotoGalerij`-document.
+Opruimen: data unsetten, het `hidden`-veld uit
+`studio/schemas/homePage.ts` halen en de `coalesce`-fallback uit
+`pages/index.vue` verwijderen; daarna Studio en site opnieuw deployen.
