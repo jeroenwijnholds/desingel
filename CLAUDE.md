@@ -35,6 +35,15 @@ npm run viewport-check           # Playwright: overflow-check + screenshots (zie
 
 Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugtijd gekost:
 
+- **`aspect-ratio` in CSS verliest van het `height`-attribuut** dat
+  `useSanityImg` op afbeeldingen met `aspect` zet (tegen layout shift):
+  zonder `height: auto` in de CSS rendert de foto op de attribuut-hoogte
+  (zo waren de homepage-kaarten maandenlang 800px hoog op elk scherm).
+  Zet bij `aspect-ratio` op een Sanity-`<img>` dus altijd óók `height: auto`.
+- **Het originele Webflow-ontwerp is de designreferentie** en draait nog
+  live op belevenisboerderij-desingel.nl (tot de DNS-omzetting). Bij
+  twijfel over hoe iets "hoort": haal daar de markup/CSS op (stylesheet
+  op cdn.prod.website-files.com) in plaats van te gissen vanaf screenshots.
 - **`useSanityQuery` zonder `await`** (bewuste keuze, tegen hydration-flash):
   de `status`-ref wordt `'success'` **vóórdat** de `data`-ref gevuld is (dat
   gebeurt een microtask later in de module). Voor "bestaat dit document?"-checks
