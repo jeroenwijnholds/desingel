@@ -387,8 +387,10 @@ h3 { font-size: var(--text-xl); }
   background-position: var(--hero-pos, 50% 60%);
   background-repeat: no-repeat;
   background-size: cover;
-  padding-left: 120px;
-  padding-right: 120px;
+  /* Zelfde zijmarge als de secties eronder, zodat de herokop uitlijnt
+     met de sectietitels op elke breedte */
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
 }
 
 @media only screen and (min-width: 768px) {
@@ -398,20 +400,6 @@ h3 { font-size: var(--text-xl); }
   }
 }
 
-
-@media screen and (max-width: 991px) {
-  .hero {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media screen and (max-width: 767px) {
-  .hero {
-    padding-left: 0;
-    padding-right: 0;
-  }
-}
 
 @media screen and (max-width: 479px) {
   .hero {
@@ -516,7 +504,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .hero-paragraph {
-  width: 70ch;
+  max-width: 70ch;
   font-size: 16px;
   line-height: 150%;
   color: var(--white);
@@ -524,13 +512,12 @@ h3 { font-size: var(--text-xl); }
 
 @media screen and (max-width: 767px) {
   .hero-paragraph {
-    width: 56ch;
+    max-width: 56ch;
   }
 }
 
 @media screen and (max-width: 479px) {
   .hero-paragraph {
-    width: 100%;
     margin-bottom: 8px;
   }
 }
@@ -743,7 +730,8 @@ h3 { font-size: var(--text-xl); }
   .intro-section {
     background-color: var(--green-transparent);
     margin-top: 0;
-    padding: 32px 24px;
+    /* --page-pad, zodat de kaarten uitlijnen met services/galerij/footer */
+    padding: 32px var(--page-pad);
   }
 
   /* Mobiel: de twee hoofdkaarten zijn de blikvangers — liggende foto
@@ -774,10 +762,6 @@ h3 { font-size: var(--text-xl); }
 }
 
 @media screen and (max-width: 479px) {
-  .intro-section {
-    padding: 32px 16px;
-  }
-
   .services-section {
     --service-img-w: 116px;
   }
