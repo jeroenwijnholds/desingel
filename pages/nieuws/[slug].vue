@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
-import { defineComponent, h } from 'vue'
 
 interface RelatedArticle {
   _id: string
@@ -39,36 +38,8 @@ query.then(() => {
 }).catch(() => {})
 
 const img = useSanityImg()
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function formatDatetime(dateStr: string) {
-  return dateStr.slice(0, 10)
-}
-
-const portableTextComponents = {
-  types: {
-    image: defineComponent({
-      props: { value: { type: Object, default: null } },
-      setup(props) {
-        return () => {
-          const val = props.value as any
-          if (!val) return null
-          return h('figure', { class: 'article-figure' }, [
-            h('img', {
-              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
-              alt: val.alt ?? '',
-              loading: 'lazy',
-            }),
-            val.caption ? h('figcaption', val.caption) : null,
-          ].filter(Boolean))
-        }
-      },
-    }),
-  },
-}
+const { formatDate, formatDatetime } = useDateFormat()
+const portableTextComponents = usePortableTextComponents()
 
 useSeo({
   title: () => article.value ? `${article.value.title} – Belevenisboerderij De Singel` : 'Nieuws – Belevenisboerderij De Singel',

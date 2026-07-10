@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
-import { defineComponent, h } from 'vue'
 
 interface Event {
   title: string
@@ -9,6 +8,7 @@ interface Event {
   date: string
   timeRange?: string
   location?: string
+  description?: string
   featuredImage?: any
   body?: any[]
   externalLink?: string
@@ -29,37 +29,8 @@ query.then(() => {
 }).catch(() => {})
 
 const img = useSanityImg()
-
-function formatChipDate(dateStr: string) {
-  const d = new Date(dateStr)
-  const wd = d.toLocaleDateString('nl-NL', { weekday: 'short' })
-  const day = d.getDate()
-  const month = d.toLocaleDateString('nl-NL', { month: 'long' })
-  const year = d.getFullYear()
-  return `${wd} ${day} ${month} ${year}`
-}
-
-const portableTextComponents = {
-  types: {
-    image: defineComponent({
-      props: { value: { type: Object, default: null } },
-      setup(props) {
-        return () => {
-          const val = props.value as any
-          if (!val) return null
-          return h('figure', { class: 'article-figure' }, [
-            h('img', {
-              ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
-              alt: val.alt ?? '',
-              loading: 'lazy',
-            }),
-            val.caption ? h('figcaption', val.caption) : null,
-          ].filter(Boolean))
-        }
-      },
-    }),
-  },
-}
+const { formatChipDate } = useDateFormat()
+const portableTextComponents = usePortableTextComponents()
 
 useSeo({
   title: () => event.value ? `${event.value.title} – Belevenisboerderij De Singel` : 'Evenement – Belevenisboerderij De Singel',

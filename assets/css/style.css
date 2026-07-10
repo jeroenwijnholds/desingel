@@ -276,9 +276,17 @@ hr.divider {
   text-decoration: none;
   letter-spacing: 0.01em;
   margin-right: auto;
+  /* logo-tekst komt uit het CMS; breek na "Belevenisboerderij", zoals de oude <br> */
+  max-width: 150px;
   opacity: 0;
   transition: opacity 0.35s ease;
   pointer-events: none;
+}
+
+.nav-logo:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .nav--scrolled .nav-logo {
@@ -329,7 +337,9 @@ hr.divider {
   border-radius: 2px;
 }
 
-.nav-links a.nav-link--active {
+/* Actieve sectie in de navigatie (router-link-active dekt ook detailpagina's,
+   bv. /nieuws/[slug] houdt "Nieuws" actief) */
+.nav-links a.router-link-active {
   color: var(--green-accent);
 }
 

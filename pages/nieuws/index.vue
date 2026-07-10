@@ -33,14 +33,7 @@ const featured = computed(() => articles.value.slice(1, 3))
 const archive = computed(() => articles.value.slice(3))
 
 const img = useSanityImg()
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function formatDatetime(dateStr: string) {
-  return dateStr.slice(0, 10)
-}
+const { formatDate, formatDatetime } = useDateFormat()
 
 useSeo({
   title: 'Nieuws – Belevenisboerderij De Singel',

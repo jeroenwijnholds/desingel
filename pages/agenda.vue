@@ -28,30 +28,20 @@ const QUERY = `{
 const { data } = useSanityQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
 const page = computed(() => data.value?.page)
 
-function formatDay(dateStr: string) {
-  return new Date(dateStr).getDate().toString()
-}
-
-function formatWeekday(dateStr: string) {
-  const wd = new Date(dateStr).toLocaleDateString('nl-NL', { weekday: 'short' })
-  return wd.charAt(0).toUpperCase() + wd.slice(1, 2)
-}
-
-function formatMonthYear(dateStr: string) {
-  const label = new Date(dateStr).toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })
-  return label.charAt(0).toUpperCase() + label.slice(1)
-}
+const { formatDay, formatWeekday, formatMonthYear } = useDateFormat()
 
 const groupedEvents = computed(() => {
   const groups: { key: string; events: Event[] }[] = []
-  const seen: Record<string, number> = {}
+  const byKey: Record<string, { key: string; events: Event[] }> = {}
   for (const event of data.value?.events ?? []) {
     const key = formatMonthYear(event.date)
-    if (seen[key] === undefined) {
-      seen[key] = groups.length
-      groups.push({ key, events: [] })
+    let group = byKey[key]
+    if (!group) {
+      group = { key, events: [] }
+      byKey[key] = group
+      groups.push(group)
     }
-    groups[seen[key]].events.push(event)
+    group.events.push(event)
   }
   return groups
 })

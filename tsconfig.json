@@ -1,3 +1,10 @@
 {
-  "extends": "./.nuxt/tsconfig.json"
+  "extends": "./.nuxt/tsconfig.json",
+  "exclude": [
+    "studio",
+    "scripts/eenmalig",
+    "node_modules",
+    ".output",
+    "dist"
+  ]
 }

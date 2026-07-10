@@ -38,6 +38,7 @@ function onKeydown(e: KeyboardEvent) {
     if (!focusables.length) return
     const first = focusables[0]
     const last = focusables[focusables.length - 1]
+    if (!first || !last) return
     if (e.shiftKey && document.activeElement === first) {
       e.preventDefault()
       last.focus()
@@ -77,12 +78,12 @@ onUnmounted(() => {
     :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled || !isHome }"
   >
     <NuxtLink to="/" class="nav-logo" @click="closeMenu">
-      Belevenisboerderij<br>de Singel
+      {{ data?.siteName ?? 'Belevenisboerderij de Singel' }}
     </NuxtLink>
 
     <button
       class="nav-hamburger"
-      :aria-expanded="isMenuOpen.toString()"
+      :aria-expanded="isMenuOpen"
       :aria-label="isMenuOpen ? 'Menu sluiten' : 'Menu openen'"
       @click="toggleMenu"
     >

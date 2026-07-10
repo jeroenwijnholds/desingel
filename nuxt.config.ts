@@ -24,7 +24,6 @@ export default defineNuxtConfig({
     '@fontsource/playfair-display/700.css',
     '@fontsource/playfair-display/900.css',
     '@fontsource/playfair-display/400-italic.css',
-    '@fontsource/source-sans-3/300.css',
     '@fontsource/source-sans-3/400.css',
     '@fontsource/source-sans-3/600.css',
     '@fontsource/source-sans-3/700.css',
@@ -49,6 +48,8 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#364838' },
       ],
       link: [
+        // alle contentfoto's (incl. LCP-hero's) komen van de Sanity-CDN
+        { rel: 'preconnect', href: 'https://cdn.sanity.io' },
         { rel: 'icon', type: 'image/svg+xml', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon.svg` },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon-32.png` },
         { rel: 'apple-touch-icon', href: `${process.env.NUXT_APP_BASE_URL || '/'}apple-touch-icon.png` },
