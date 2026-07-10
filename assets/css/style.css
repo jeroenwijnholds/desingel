@@ -647,8 +647,13 @@ h3 { font-size: var(--text-xl); }
   position: relative;
 }
 
+/* height: auto is nodig omdat useSanityImg width/height-attributen zet
+   (tegen layout shift); zonder height: auto wint dat attribuut van de
+   aspect-ratio en rendert de foto altijd 800px hoog. De 3:2-verhouding
+   matcht de server-side Sanity-crop (aspect: 1.5 in index.vue). */
 .card-image {
   aspect-ratio: 3 / 2;
+  height: auto;
   object-fit: cover;
   width: 100%;
 }
@@ -682,6 +687,12 @@ h3 { font-size: var(--text-xl); }
   color: var(--card-heading);
   font-family: var(--font-display);
   margin-bottom: 16px;
+}
+
+/* Titels van de twee hoofdkaarten zijn groter dan de standaard h3 */
+.card-desc--intro .card-title {
+  font-size: var(--text-2xl);
+  margin-bottom: 10px;
 }
 
 .card-paragraph {
@@ -731,6 +742,32 @@ h3 { font-size: var(--text-xl); }
     margin-top: 0;
     padding: 32px 24px;
   }
+
+  /* Mobiel: de twee hoofdkaarten zijn de blikvangers — liggende foto
+     met daaronder een royaal tekstblok in plaats van een overlay */
+  .content-wrapper {
+    gap: 40px;
+  }
+
+  .intro-text {
+    margin-bottom: 24px;
+  }
+
+  .card-container {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .card-desc--intro {
+    position: relative;
+    inset: auto;
+    margin: 0;
+    padding: 24px 20px 28px;
+  }
+
+  .quote-block {
+    margin-top: 24px;
+  }
 }
 
 @media screen and (max-width: 479px) {
@@ -738,16 +775,8 @@ h3 { font-size: var(--text-xl); }
     padding: 32px 16px;
   }
 
-  .card-container {
-    margin-top: 16px;
-    margin-bottom: 0;
-  }
-
-  .card-desc--intro {
-    padding: 8px 16px;
-    position: relative;
-    inset: auto;
-    margin: 0;
+  .services-section {
+    --service-img-w: 116px;
   }
 }
 
@@ -822,60 +851,38 @@ h3 { font-size: var(--text-xl); }
   }
 }
 
-/* Mobile */
+/* Mobile: compacte rijkaarten — duidelijk ondergeschikt aan de
+   twee grote hoofdkaarten erboven */
 @media screen and (max-width: 767px) {
   .quote-block {
     margin-bottom: 0;
   }
 
   .services-section {
-    margin-top: 32px;
-    padding-bottom: 32px;
+    margin-top: 24px;
+    padding-bottom: 24px;
   }
 
   .services-wrapper {
     flex-flow: column;
+    gap: 12px;
   }
 
   .service-item {
     aspect-ratio: auto;
     width: 100%;
-    height: 50vh;
-    max-height: 500px;
-  }
-
-  .service-image {
-    object-position: 50% 0%;
-  }
-
-  .service-desc {
-    width: 100%;
-    min-height: 150px;
-    margin-bottom: 0;
-  }
-}
-
-/* Small mobile */
-@media screen and (max-width: 479px) {
-  .services-section {
-    margin-top: 16px;
-    padding-bottom: 16px;
-  }
-
-  .services-wrapper {
-    gap: 16px;
-  }
-
-  .service-item {
     height: auto;
-    flex-direction: column;
-    margin-bottom: 0;
+    min-height: 124px;
+    background-color: var(--brown-transparent);
   }
 
+  /* Foto als volledig gevulde linkerkolom; de tekst bepaalt de rijhoogte */
   .service-image {
-    width: 100%;
-    height: 220px;
-    flex-shrink: 0;
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--service-img-w, 144px);
+    height: 100%;
+    object-position: 50% 0%;
   }
 
   .service-desc {
@@ -884,6 +891,21 @@ h3 { font-size: var(--text-xl); }
     position: relative;
     width: 100%;
     inset: auto;
+    background-color: transparent;
+    padding: 14px 16px 14px calc(var(--service-img-w, 144px) + 16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .service-desc .card-title {
+    font-size: var(--text-lg);
+    margin-bottom: 6px;
+  }
+
+  .service-desc p {
+    font-size: var(--text-sm);
+    line-height: 1.45;
   }
 }
 
@@ -892,18 +914,20 @@ h3 { font-size: var(--text-xl); }
    ============================================ */
 .quote-block {
   color: #6b6156;
-  text-align: right;
-  max-width: 46ch;
-  margin-left: auto;
+  text-align: center;
 }
 
 .quote-text {
   margin-bottom: var(--space-1);
   font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.45;
+  text-wrap: balance;
+}
+
+.quote-sender {
+  text-align: right;
 }
 
 .quote-sender {
