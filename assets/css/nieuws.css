@@ -8,7 +8,9 @@
 
 .news-featured {
   background-color: var(--white);
-  padding: 72px 60px 0;
+  /* eigen onderpadding: het archief rendert pas vanaf artikel 4, dus
+     zonder deze ruimte plakte de sectie tegen de footer */
+  padding: 72px var(--page-pad) 88px;
 }
 
 .news-featured-inner {
@@ -25,7 +27,9 @@
 
 .news-featured-side {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  /* auto-rows i.p.v. vaste 2 rijen: met één featured-kaart vult die de
+     hele kolomhoogte in plaats van een half-leeg gat achter te laten */
+  grid-auto-rows: 1fr;
   gap: 16px;
 }
 
@@ -153,6 +157,12 @@
   aspect-ratio: 3 / 4;
 }
 
+/* Bij precies één artikel is er geen zijkolom: hero over de volle breedte */
+.news-card--hero:only-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+}
+
 .news-card--hero .news-card-title {
   font-size: 28px;
 }
@@ -171,7 +181,8 @@
 
 .news-archive {
   background-color: var(--white);
-  padding: 56px 60px 88px;
+  /* toppadding zit in de onderpadding van .news-featured */
+  padding: 0 var(--page-pad) 88px;
 }
 
 .news-archive-inner {
@@ -298,14 +309,6 @@
 
 /* ==================== RESPONSIVE ==================== */
 
-@media screen and (max-width: 1180px) {
-  .news-featured,
-  .news-archive {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-}
-
 @media screen and (max-width: 991px) {
   .news-featured-grid {
     grid-template-columns: 1fr 1fr;
@@ -326,7 +329,7 @@
 
 @media screen and (max-width: 767px) {
   .news-featured {
-    padding: 48px 24px 0;
+    padding: 48px var(--page-pad) 64px;
   }
 
   /* Stack: hero card on top, two smaller below side-by-side */
@@ -347,12 +350,19 @@
   }
 
   .news-featured-side {
-    grid-template-rows: unset;
+    grid-auto-rows: auto;
     grid-template-columns: 1fr 1fr;
   }
 
+  /* De kaartinhoud is absoluut gepositioneerd; buiten de desktop-grid
+     (die de hoogte aan de hero koppelt) hebben de kaarten een eigen
+     verhouding nodig — anders klappen ze dicht tot 0px. */
+  .news-card--featured {
+    aspect-ratio: 4 / 3;
+  }
+
   .news-archive {
-    padding: 48px 24px 64px;
+    padding: 0 var(--page-pad) 64px;
   }
 
   .news-list-link {
@@ -374,6 +384,10 @@
 @media screen and (max-width: 479px) {
   .news-featured-side {
     grid-template-columns: 1fr;
+  }
+
+  .news-card--featured {
+    aspect-ratio: 16 / 9;
   }
 
   .news-list-link {

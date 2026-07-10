@@ -60,7 +60,7 @@ useSeo({
     :image="page?.headerImage"
   />
 
-  <main class="agenda-main">
+  <main v-if="groupedEvents.length" class="agenda-main">
     <div class="agenda-wrapper">
       <div v-for="group in groupedEvents" :key="group.key" v-reveal class="agenda-month">
         <h2 class="agenda-month-title">{{ group.key }}</h2>
@@ -93,7 +93,13 @@ useSeo({
         </article>
       </div>
 
-      <p v-if="!groupedEvents.length" class="agenda-empty">{{ page?.emptyMessage ?? 'Er zijn momenteel geen evenementen gepland.' }}</p>
     </div>
   </main>
+
+  <section v-else class="page-empty">
+    <div class="page-empty-inner">
+      <p class="page-empty-text">{{ page?.emptyMessage ?? 'Er zijn momenteel geen evenementen gepland. Hou deze pagina in de gaten, of lees intussen ons nieuws.' }}</p>
+      <NuxtLink to="/nieuws" class="btn btn-green">Lees ons nieuws</NuxtLink>
+    </div>
+  </section>
 </template>

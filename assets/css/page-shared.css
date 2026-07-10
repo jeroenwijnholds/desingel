@@ -291,6 +291,31 @@
   margin-top: 8px;
 }
 
+/* ==================== LEGE STAAT (nieuws & agenda) ==================== */
+
+.page-empty {
+  background-color: var(--white);
+  padding: var(--section-pad) var(--page-pad);
+  text-align: center;
+}
+
+.page-empty-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.page-empty-text {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--text);
+  text-wrap: balance;
+}
+
 /* ==================== RESPONSIVE ==================== */
 
 @media screen and (max-width: 991px) {

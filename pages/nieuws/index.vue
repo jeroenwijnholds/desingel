@@ -132,5 +132,10 @@ useSeo({
     </div>
   </section>
 
-  <p v-if="!articles.length" class="nieuws-empty">{{ page?.emptyMessage ?? 'Er zijn nog geen nieuwsartikelen gepubliceerd.' }}</p>
+  <section v-if="!articles.length" class="page-empty">
+    <div class="page-empty-inner">
+      <p class="page-empty-text">{{ page?.emptyMessage ?? 'Er zijn nog geen nieuwsartikelen gepubliceerd. Kom binnenkort terug voor verhalen van het land.' }}</p>
+      <NuxtLink to="/agenda" class="btn btn-green">Bekijk de agenda</NuxtLink>
+    </div>
+  </section>
 </template>
