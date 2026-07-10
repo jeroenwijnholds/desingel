@@ -43,16 +43,9 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
    robots.txt volgen automatisch mee via `NUXT_PUBLIC_SITE_URL`).
 4. Daarna het Webflow-abonnement opzeggen (staat anders door te lopen).
 
-### Oude galerijdata opruimen (klein, geen haast)
+### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 
-De code-kant is al gedaan (10 juli 2026): de homepage leest alléén nog
-uit `fotoGalerij` (coalesce-fallback verwijderd). Rest alleen de data:
-
-1. `node scripts/eenmalig/unset-legacy-gallery.mjs` (gebruikt
-   `SANITY_TOKEN` uit `.env`; verwijdert het veld van het live document —
-   vooraf geverifieerd dat `fotoGalerij` dezelfde 9 foto's bevat).
-2. Daarna het verborgen `galleryImages`-veld uit
-   `studio/schemas/homePage.ts` halen en de Studio opnieuw deployen.
-
-Het veld blijft tot die tijd bewust in het schema staan (verborgen),
-anders toont Studio "unknown fields"-waarschuwingen op het document.
+Data geünset met `scripts/eenmalig/unset-legacy-gallery.mjs` (akkoord
+Jeroen), verborgen veld uit `studio/schemas/homePage.ts` verwijderd en
+de Studio opnieuw gedeployed. Geverifieerd: `fotoGalerij` bevat de
+9 foto's, het oude veld is `null`.

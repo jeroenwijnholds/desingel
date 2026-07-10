@@ -90,15 +90,6 @@ export default defineType({
       ],
       validation: Rule => Rule.max(3),
     }),
-    // Verouderd: de galerij is verhuisd naar het eigen document "Fotogalerij".
-    // Veld blijft verborgen staan tot de oude data is opgeruimd (zie NOG-TE-DOEN).
-    defineField({
-      name: 'galleryImages',
-      title: 'Galerij-afbeeldingen (verouderd — zie Fotogalerij)',
-      type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
-      hidden: true,
-    }),
     defineField({
       name: 'galleryLabel',
       title: 'Galerij kop-label',
