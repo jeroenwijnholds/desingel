@@ -56,8 +56,12 @@
   --shadow-lg: 0 16px 56px rgba(54, 72, 56, 0.18);
 
   /* Layout */
-  --container-max: 1140px;
-  --page-pad: clamp(16px, calc(10vw - 32px), 120px);
+  --container-max: 1280px;
+  /* Fluid zijmarge; de max()-term begrenst de content op brede schermen
+     (>1520px) op --container-max door de rest als marge te nemen. Het
+     percentage werkt alleen op full-bleed secties — gebruik dit token
+     dus uitsluitend als horizontale padding op sectie-niveau. */
+  --page-pad: max(clamp(16px, calc(10vw - 32px), 120px), calc((100% - var(--container-max)) / 2));
   --section-pad: clamp(64px, 9vw, 112px);
   --nav-height: 72px;
 }
@@ -493,13 +497,13 @@ h3 { font-size: var(--text-xl); }
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--white);
-  margin: 0 0 40px;
+  margin: 0 0 var(--space-10);
   text-wrap: balance;
 }
 
 @media screen and (max-width: 479px) {
   .hero-title {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
   }
 }
 
@@ -612,7 +616,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .intro-text {
-  margin-bottom: 40px;
+  margin-bottom: var(--space-10);
 }
 
 .section-title {
@@ -652,7 +656,7 @@ h3 { font-size: var(--text-xl); }
 .card-desc {
   color: var(--card-text);
   background-color: var(--brown-transparent);
-  padding: 30px;
+  padding: var(--space-8);
   line-height: 1.3;
 }
 
@@ -697,12 +701,12 @@ h3 { font-size: var(--text-xl); }
   }
 
   .card-container {
-    margin-bottom: 64px;
+    margin-bottom: var(--space-16);
   }
 
   .quote-block {
     margin-top: 0;
-    margin-bottom: 64px;
+    margin-bottom: var(--space-16);
   }
 
   .card-desc--intro {
@@ -730,7 +734,7 @@ h3 { font-size: var(--text-xl); }
     background-color: var(--green-transparent);
     margin-top: 0;
     /* --page-pad, zodat de kaarten uitlijnen met services/galerij/footer */
-    padding: 32px var(--page-pad);
+    padding: var(--space-8) var(--page-pad);
   }
 
   /* Mobiel: de twee hoofdkaarten zijn de blikvangers — liggende foto
@@ -740,7 +744,7 @@ h3 { font-size: var(--text-xl); }
   }
 
   .intro-text {
-    margin-bottom: 24px;
+    margin-bottom: var(--space-6);
   }
 
   .card-container {
@@ -773,7 +777,7 @@ h3 { font-size: var(--text-xl); }
    ============================================ */
 .services-section {
   display: flex;
-  padding-bottom: 60px;
+  padding-bottom: var(--space-16);
   padding-left: var(--page-pad);
   padding-right: var(--page-pad);
 }
@@ -849,13 +853,13 @@ h3 { font-size: var(--text-xl); }
   }
 
   .services-section {
-    margin-top: 24px;
-    padding-bottom: 24px;
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-6);
   }
 
   .services-wrapper {
     flex-flow: column;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .service-item {
@@ -934,20 +938,20 @@ h3 { font-size: var(--text-xl); }
    ============================================ */
 .gallery-section {
   background-color: var(--green-transparent);
-  margin-top: 48px;
+  margin-top: var(--space-12);
   padding: var(--space-12) var(--page-pad);
 }
 
 .gallery-grid {
   column-count: 3;
-  column-gap: 16px;
-  margin-top: 32px;
+  column-gap: var(--space-4);
+  margin-top: var(--space-8);
 }
 
 .gallery-thumb {
   display: block;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
   padding: 0;
   border: none;
   background: none;
@@ -975,16 +979,16 @@ h3 { font-size: var(--text-xl); }
 /* Mobile ≤767px */
 @media screen and (max-width: 767px) {
   .gallery-section {
-    margin-top: 8px;
+    margin-top: var(--space-2);
   }
 
   .gallery-grid {
     column-count: 2;
-    column-gap: 8px;
+    column-gap: var(--space-2);
   }
 
   .gallery-thumb {
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
   }
 }
 
