@@ -4,7 +4,7 @@ versions/
 _oud-statisch/
 
 # Lege mappen
-images/
+/images/
 
 # OS bestanden
 .DS_Store
