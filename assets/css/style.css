@@ -915,32 +915,24 @@ h3 { font-size: var(--text-xl); }
 /* ============================================
    QUOTE BLOCK
    ============================================ */
+/* Styling volgt het originele Webflow-ontwerp (.quoteblock/.quotetext):
+   rechts uitgelijnd, Playfair 24px vet, afzender licht en ingetogen */
 .quote-block {
   color: #6b6156;
-  text-align: center;
+  text-align: right;
 }
 
 .quote-text {
   margin-bottom: var(--space-1);
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 700;
-  line-height: 1.45;
-  text-wrap: balance;
+  line-height: 1.35;
 }
 
 .quote-sender {
-  text-align: right;
-}
-
-.quote-sender {
-  font-weight: 600;
+  font-weight: 400;
   font-size: var(--text-sm);
-  color: var(--green-light);
-}
-
-.quote-sender::before {
-  content: '— ';
 }
 
 /* Small mobile */
@@ -948,6 +940,10 @@ h3 { font-size: var(--text-xl); }
   .quote-block {
     margin-bottom: 0;
     padding-top: 32px;
+  }
+
+  .quote-text {
+    font-size: var(--text-base);
   }
 }
 
