@@ -11,10 +11,22 @@ interface Event {
   externalLink?: string
 }
 
-const QUERY = `*[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
-  _id, title, slug, category, date, timeRange, location, description, externalLink
+interface AgendaPage {
+  headerLabel?: string
+  headerTitle?: string
+  headerSubtitle?: string
+  headerImage?: any
+  emptyMessage?: string
+}
+
+const QUERY = `{
+  "events": *[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
+    _id, title, slug, category, date, timeRange, location, description, externalLink
+  },
+  "page": *[_type == "agendaPage" && !(_id in path("drafts.**"))][0]
 }`
-const { data } = useSanityQuery<Event[]>(QUERY)
+const { data } = useSanityQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
+const page = computed(() => data.value?.page)
 
 function formatDay(dateStr: string) {
   return new Date(dateStr).getDate().toString()
@@ -33,7 +45,7 @@ function formatMonthYear(dateStr: string) {
 const groupedEvents = computed(() => {
   const groups: { key: string; events: Event[] }[] = []
   const seen: Record<string, number> = {}
-  for (const event of data.value ?? []) {
+  for (const event of data.value?.events ?? []) {
     const key = formatMonthYear(event.date)
     if (seen[key] === undefined) {
       seen[key] = groups.length
@@ -52,9 +64,10 @@ useSeo({
 
 <template>
   <PageHeader
-    label="Belevenisboerderij de Singel"
-    title="Agenda"
-    subtitle="Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij."
+    :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
+    :title="page?.headerTitle ?? 'Agenda'"
+    :subtitle="page?.headerSubtitle ?? 'Kom langs bij een van onze evenementen en beleef de boerderij van dichtbij.'"
+    :image="page?.headerImage"
   />
 
   <main class="agenda-main">
@@ -90,7 +103,7 @@ useSeo({
         </article>
       </div>
 
-      <p v-if="!groupedEvents.length" class="agenda-empty">Er zijn momenteel geen evenementen gepland.</p>
+      <p v-if="!groupedEvents.length" class="agenda-empty">{{ page?.emptyMessage ?? 'Er zijn momenteel geen evenementen gepland.' }}</p>
     </div>
   </main>
 </template>
