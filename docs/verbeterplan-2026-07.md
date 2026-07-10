@@ -1,9 +1,24 @@
 # Verbeterplan — grondige sweep, 10 juli 2026
 
+> **Status (10 juli 2026, uitgevoerd op verzoek van Jeroen):** alle punten
+> zijn uitgevoerd, met deze uitzonderingen:
+> - **Punt 13 (galerijdata)**: het code-deel is klaar; het unsetten van de
+>   productiedata is een handmatige stap (script staat klaar, zie
+>   NOG-TE-DOEN) — productie-datamutaties draaien we niet automatisch.
+> - **Punt 15**: de optionele `InfoCard`- en icoon-componenten zijn niet
+>   gebouwd (de drie kerncomponenten wél).
+> - **Punt 14 slug-uniciteit**: Sanity's ingebouwde slug-uniciteitscheck
+>   dekt dit al per documenttype; geen custom code toegevoegd.
+> - **Punt 20 (px→tokens-migratie)**: bewust uitgesteld conform het plan
+>   zelf ("aparte, goed geverifieerde klus"); de token-gaten (punt 17)
+>   zijn wél gedicht.
+> - **Punt 19 (a11y)**: focus/tap/contrast/headings gedaan; de
+>   `error-summary-labels → anchors`-suggestie was cosmetisch en is
+>   overgeslagen.
+
 Resultaat van een codebase-brede review (frontend, Studio-schemas, CSS,
-config/CI). **Nog niets hiervan is uitgevoerd** — dit document is het plan;
-Jeroen kiest wat en in welke volgorde. Bevindingen met ⚠ zijn handmatig
-geverifieerd (grep/run), de rest komt uit code-review.
+config/CI). Bevindingen met ⚠ zijn handmatig geverifieerd (grep/run),
+de rest komt uit code-review.
 
 Per punt: wat, waarom, moeite (klein / middel / groot).
 
