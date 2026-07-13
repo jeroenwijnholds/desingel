@@ -11,7 +11,8 @@
 >   dekt dit al per documenttype; geen custom code toegevoegd.
 > - **Punt 20 (px→tokens-migratie)**: bewust uitgesteld conform het plan
 >   zelf ("aparte, goed geverifieerde klus"); de token-gaten (punt 17)
->   zijn wél gedicht.
+>   zijn wél gedicht. *Update 13 juli 2026: het homepage-deel is alsnog
+>   gedaan in de spacing-sweep; de overige pagina's staan nog open.*
 > - **Punt 19 (a11y)**: focus/tap/contrast/headings gedaan; de
 >   `error-summary-labels → anchors`-suggestie was cosmetisch en is
 >   overgeslagen.

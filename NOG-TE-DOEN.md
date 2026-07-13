@@ -1,6 +1,6 @@
 # Status migratie & beheer
 
-**Stand: 10 juli 2026 — de migratie is afgerond.** De site draait live op
+**Stand: 13 juli 2026 — de migratie is afgerond.** De site draait live op
 https://jeroenwijnholds.github.io/desingel/ en elke push naar `master`
 deployt automatisch. Alle eerdere handmatige stappen zijn gedaan:
 
@@ -42,6 +42,27 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
    en bouwt dan zonder `/desingel/`-padvoorvoegsel; sitemap.xml en
    robots.txt volgen automatisch mee via `NUXT_PUBLIC_SITE_URL`).
 4. Daarna het Webflow-abonnement opzeggen (staat anders door te lopen).
+
+### Dependency-beheer (periodiek, geen haast)
+
+Stand 13 juli 2026, na `npm update` + CI-modernisering (Actions op hun
+Node 24-releases, build op Node 22):
+
+- **5× moderate in `npm audit`** — allemaal dezelfde wortel: `uuid <11.1.1`
+  zit vastgepind via `@sanity/uuid` diep in `@nuxtjs/sanity`. Het kwetsbare
+  codepad (buf-argument, alleen in preview-tooling) raken wij niet, en de
+  enige npm-"fix" is een breaking downgrade. **Actie: niets** — bij een
+  volgende periodieke `npm update` lost dit vanzelf op zodra Sanity
+  upstream released.
+- **`@types/node` blijft bewust op 22.x**: de types horen de Node-versie
+  van de CI-build te volgen (nu 22). Pas samen verhogen met een
+  Node-bump in `.github/workflows/deploy.yml`.
+- **TypeScript blijft bewust op 5.9**: TS 7 (de native compiler) pas
+  instappen als Nuxt/`vue-tsc` hem officieel ondersteunen; onze typecheck
+  draait via vue-tsc.
+- **Werkwijze**: af en toe `npm outdated` + `npm update` draaien, en
+  daarna altijd lokaal `npm ci` vóór het committen van de lockfile (zie
+  de valkuil in CLAUDE.md — dit brak op 13 juli de deploy).
 
 ### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 

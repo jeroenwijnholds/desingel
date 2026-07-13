@@ -70,6 +70,10 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   `NUXT_APP_BASE_URL` en `NUXT_PUBLIC_SITE_URL` tijdens de build. Hardcode
   nooit absolute paden (`/images/...`) in templates of head-config; gebruik
   `~/assets/...` (Vite verwerkt baseURL) of `config.public.siteUrl`.
+- **`npm update` kan een lockfile schrijven die `npm ci` weigert** (interne
+  inconsistentie — zo brak de deploy op 13 juli 2026, lokaal onopgemerkt).
+  Draai na elke lockfile-wijziging lokaal `npm ci` vóór je commit; dat is
+  exact de check die CI doet.
 
 ## Architectuur
 
@@ -99,9 +103,9 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   **Na elke schemawijziging opnieuw deployen** (`npm run deploy` in
   `studio/`), anders werkt de gehoste Studio met het oude schema.
 - De fotogalerij is een eigen document (`fotoGalerij`, id `fotoGalerij`);
-  de homepage leest alléén daaruit. Het verouderde verborgen veld
-  `homePage.galleryImages` bevat nog data — opruimscript staat klaar
-  (zie NOG-TE-DOEN).
+  de homepage leest alléén daaruit. (Het verouderde veld
+  `homePage.galleryImages` is op 10 juli 2026 geleegd en uit het schema
+  verwijderd.)
 - `scripts/generate-sitemap.mjs` draait als onderdeel van `npm run build`
   en schrijft sitemap.xml + robots.txt op basis van de echt geprerenderde
   routes (site-URL uit `NUXT_PUBLIC_SITE_URL`).
@@ -127,8 +131,11 @@ in `nuxt.config.ts` geladen worden (geeft faux bold).
 Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
 - Fluid type: `--text-xs` t/m `--text-hero` (clamp-schaal)
 - Spacing: `--space-1` t/m `--space-24`
-- Layout: `--page-pad` (fluid zijmarge), `--section-pad`, `--nav-height`,
-  `--container-max`
+- Layout: `--page-pad` (fluid zijmarge; capt via een `max()`-term de
+  content op schermen breder dan ~1520px op `--container-max` (1280px).
+  Het percentage in die term klopt alleen als horizontale padding op
+  full-bleed secties — gebruik het token nergens anders voor),
+  `--section-pad`, `--nav-height`, `--container-max`
 - Vorm: `--radius-*`, `--shadow-*`
 - Kleur-extra's: `--surface-soft` (zachte groene sectie-achtergrond),
   `--error`/`--error-bg` (formulierfouten)
@@ -168,16 +175,27 @@ niet verstoren.
   gevonden nevenproblemen benoemen (de onbereikbare nieuwsartikelen vonden we
   ook "en passant" — dat soort vondsten altijd melden en meenemen).
 
-## Status & openstaande punten (10 juli 2026)
+## Status & openstaande punten (13 juli 2026)
 
 - **Migratie afgerond**: site live op GitHub Pages, Studio gehost op
   desingel.sanity.studio, Web3Forms werkt, Sanity-publish triggert een
-  rebuild. Details en beheersleutels in `NOG-TE-DOEN.md`.
+  rebuild, oude galerijdata opgeruimd. Details en beheersleutels in
+  `NOG-TE-DOEN.md`.
 - **Verbeterplan uitgevoerd** (`docs/verbeterplan-2026-07.md`, zie de
   statuskop daarin): SEO-infra (sitemap/robots/JSON-LD), typecheck in CI,
   alle paginateksten CMS-bewerkbaar, CSS-hygiëne + a11y, Studio-validaties.
-  Bewust uitgesteld: volledige px→token-migratie (plan-punt 20) en de
-  optionele InfoCard-/Icon-componenten.
+  Bewust uitgesteld: de optionele InfoCard-/Icon-componenten; de
+  px→token-migratie (plan-punt 20) is voor de homepage inmiddels gedaan
+  (spacing-sweep 10 juli), de overige pagina's nog niet.
+- **Spacing-sweep homepage** (10 juli): hero/intro/services/galerij volgen
+  overal `--page-pad` en de `--space-*`-tokens; content capt op 1280px.
+- **CI gemoderniseerd** (13 juli): alle GitHub Actions op hun
+  Node 24-releases, build op Node 22 (LTS tot april 2027).
 - **Nog open** (zie `NOG-TE-DOEN.md`): eigen domein omzetten (DNS wijst
-  nog naar de oude Webflow-site) en de oude galerijdata unsetten
-  (script staat klaar in `scripts/eenmalig/`).
+  nog naar de oude Webflow-site) en periodiek dependency-beheer (npm
+  audit-findings wachten op een upstream Sanity-release; majors bewust
+  uitgesteld).
+- **Bekend, content**: er staan nog Sanity-placeholderteksten live op de
+  homepage ("Diensten titel", "CTA titel", "Galerij titel" e.d.) —
+  invullen in de Studio, niet in code "fixen" (de code-fallbacks zijn wél
+  echte teksten).
