@@ -22,11 +22,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          # Node 20 is sinds april 2026 EOL; 22 is LTS tot april 2027
+          node-version: 22
           cache: npm
 
       - run: npm ci
@@ -36,7 +37,7 @@ jobs:
 
       - name: Configure Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build static site
         # npm run build = nuxt generate + sitemap.xml/robots.txt-generatie
@@ -48,7 +49,9 @@ jobs:
           NUXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
           NUXT_PUBLIC_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_ACCESS_KEY }}
 
-      - uses: actions/upload-pages-artifact@v3
+      # NB: sinds v4 gaan verborgen bestanden (dotfiles) niet meer mee in
+      # het artifact; onze Nuxt-output bevat er geen (gecontroleerd)
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: .output/public
 
@@ -60,4 +63,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
