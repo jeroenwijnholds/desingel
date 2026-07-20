@@ -68,6 +68,76 @@ export default defineType({
     // farmshopHours en responseTime zijn verwijderd: de site las ze nooit —
     // de contactpagina gebruikt contactPage.infoHours / infoResponseTime.
     defineField({
+      name: 'telephone',
+      title: 'Telefoonnummer',
+      type: 'string',
+      description:
+        'Internationaal formaat, bijv. +31 6 12345678. Leeg laten totdat dit bekend is — ' +
+        'structured data (Google/AI-assistenten) mag nooit een verzonnen telefoonnummer bevatten.',
+    }),
+    defineField({
+      name: 'socialLinks',
+      title: 'Social-media links',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'platform',
+              title: 'Platform',
+              type: 'string',
+              options: { list: ['Instagram', 'Facebook', 'TikTok', 'YouTube', 'LinkedIn'] },
+              validation: Rule => Rule.required(),
+            }),
+            defineField({ name: 'url', title: 'URL', type: 'url', validation: Rule => Rule.required() }),
+          ],
+          preview: { select: { title: 'platform', subtitle: 'url' } },
+        },
+      ],
+    }),
+    defineField({
+      name: 'openingHours',
+      title: 'Openingstijden (structured data)',
+      description:
+        'Machineleesbare openingstijden voor Google en AI-assistenten. Voor de weergavetekst ' +
+        'op de contactpagina: zie het veld "Openingstijden farmshop" op de Contact-pagina.',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'days',
+              title: 'Dagen',
+              type: 'array',
+              of: [{ type: 'string' }],
+              options: {
+                list: [
+                  { title: 'Maandag', value: 'monday' },
+                  { title: 'Dinsdag', value: 'tuesday' },
+                  { title: 'Woensdag', value: 'wednesday' },
+                  { title: 'Donderdag', value: 'thursday' },
+                  { title: 'Vrijdag', value: 'friday' },
+                  { title: 'Zaterdag', value: 'saturday' },
+                  { title: 'Zondag', value: 'sunday' },
+                ],
+              },
+              validation: Rule => Rule.required().min(1),
+            }),
+            defineField({ name: 'opens', title: 'Open vanaf (HH:mm)', type: 'string', validation: Rule => Rule.required() }),
+            defineField({ name: 'closes', title: 'Open tot (HH:mm)', type: 'string', validation: Rule => Rule.required() }),
+          ],
+          preview: {
+            select: { days: 'days', opens: 'opens', closes: 'closes' },
+            prepare: ({ days, opens, closes }: { days?: string[]; opens?: string; closes?: string }) => ({
+              title: `${(days ?? []).join(', ')} · ${opens ?? '?'}–${closes ?? '?'}`,
+            }),
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'footerCopyright',
       title: 'Copyright-tekst (footer)',
       type: 'string',
