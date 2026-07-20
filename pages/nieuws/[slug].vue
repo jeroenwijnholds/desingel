@@ -12,6 +12,7 @@ interface NieuwsArtikel {
   slug: { current: string }
   category: string
   publishedAt: string
+  _updatedAt: string
   author?: string
   excerpt: string
   readTime?: number
@@ -22,7 +23,7 @@ interface NieuwsArtikel {
 
 const route = useRoute()
 const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
-  title, slug, category, publishedAt, author, excerpt, readTime, featuredImage, body,
+  title, slug, category, publishedAt, _updatedAt, author, excerpt, readTime, featuredImage, body,
   relatedArticles[]->{_id, title, slug, featuredImage}
 }`
 const query = useSanityQuery<NieuwsArtikel>(QUERY, { slug: route.params.slug as string })
@@ -67,6 +68,7 @@ useJsonLd(() => article.value
       headline: article.value.title,
       description: article.value.excerpt,
       datePublished: article.value.publishedAt,
+      dateModified: article.value._updatedAt,
       ...(article.value.featuredImage
         ? { image: [img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
         : {}),
@@ -75,7 +77,12 @@ useJsonLd(() => article.value
           ? { '@type': 'Person', name: article.value.author }
           : { '@type': 'Organization', name: 'Belevenisboerderij de Singel' },
       ],
-      publisher: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Belevenisboerderij de Singel',
+        url: config.public.siteUrl,
+        logo: { '@type': 'ImageObject', url: `${config.public.siteUrl}/icon-512.png`, width: 512, height: 512 },
+      },
     }
   : null)
 </script>
