@@ -64,6 +64,15 @@ Node 24-releases, build op Node 22):
   daarna altijd lokaal `npm ci` vóór het committen van de lockfile (zie
   de valkuil in CLAUDE.md — dit brak op 13 juli de deploy).
 
+### Contactgegevens aanvullen voor structured data
+
+Sinds de SEO/GEO-optimalisatieronde (20 juli 2026) heeft Site-instellingen
+lege velden voor `telephone` en `socialLinks` (Instagram/Facebook e.d.). Ze
+staan bewust leeg — structured data mag geen verzonnen telefoonnummer of
+social-link bevatten. Vul ze in via de Studio zodra de gegevens bekend
+zijn; `components/AppFooter.vue` neemt ze dan automatisch mee in de
+LocalBusiness-JSON-LD (`telephone`/`sameAs`).
+
 ### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 
 Data geünset met `scripts/eenmalig/unset-legacy-gallery.mjs` (akkoord
