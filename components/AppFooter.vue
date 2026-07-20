@@ -1,8 +1,10 @@
 ﻿<script setup lang="ts">
-const QUERY = `*[_type == "siteSettings"][0]{ siteName, tagline, footerCopyright, navigation, owners, address, coordinates }`
+const QUERY = `*[_type == "siteSettings"][0]{ siteName, tagline, footerCopyright, navigation, owners, address, coordinates, telephone, socialLinks, openingHours }`
 
 interface NavItem { label: string; href: string; isButton: boolean }
 interface Owner { name: string; role: string }
+interface SocialLink { platform: string; url: string }
+interface OpeningHoursRule { days: string[]; opens: string; closes: string }
 interface SiteSettings {
   siteName: string
   tagline: string
@@ -11,11 +13,24 @@ interface SiteSettings {
   owners: Owner[]
   address: string
   coordinates?: { lat: number; lng: number }
+  telephone?: string
+  socialLinks?: SocialLink[]
+  openingHours?: OpeningHoursRule[]
 }
 
 const { data } = useSanityQuery<SiteSettings>(QUERY)
 
 const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
+
+const DAY_URI: Record<string, string> = {
+  monday: 'https://schema.org/Monday',
+  tuesday: 'https://schema.org/Tuesday',
+  wednesday: 'https://schema.org/Wednesday',
+  thursday: 'https://schema.org/Thursday',
+  friday: 'https://schema.org/Friday',
+  saturday: 'https://schema.org/Saturday',
+  sunday: 'https://schema.org/Sunday',
+}
 
 // Structured data voor Google: de boerderij als lokaal bedrijf.
 // De footer staat op elke pagina, dus dit staat site-breed één keer in de head.
@@ -24,14 +39,28 @@ useJsonLd(() => data.value
   ? {
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
+      '@id': config.public.siteUrl,
       name: data.value.siteName,
       description: data.value.tagline,
       url: config.public.siteUrl,
+      image: `${config.public.siteUrl}/og-default.jpg`,
       ...(data.value.address
         ? { address: { '@type': 'PostalAddress', streetAddress: data.value.address.replace(/\n/g, ', '), addressCountry: 'NL' } }
         : {}),
       ...(data.value.coordinates
         ? { geo: { '@type': 'GeoCoordinates', latitude: data.value.coordinates.lat, longitude: data.value.coordinates.lng } }
+        : {}),
+      ...(data.value.telephone ? { telephone: data.value.telephone } : {}),
+      ...(data.value.socialLinks?.length ? { sameAs: data.value.socialLinks.map(s => s.url) } : {}),
+      ...(data.value.openingHours?.length
+        ? {
+            openingHoursSpecification: data.value.openingHours.map(rule => ({
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: rule.days.map(d => DAY_URI[d]).filter(Boolean),
+              opens: rule.opens,
+              closes: rule.closes,
+            })),
+          }
         : {}),
     }
   : null)
