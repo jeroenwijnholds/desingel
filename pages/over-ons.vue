@@ -37,6 +37,11 @@ useSeo({
   title: 'Over Ons – Belevenisboerderij De Singel',
   description: 'Maak kennis met Victor en Mari Duurland, de boeren achter Belevenisboerderij de Singel in de Achterhoek.',
 })
+
+useBreadcrumbJsonLd([
+  { name: 'Home', path: '/' },
+  { name: 'Over Ons', path: '/over-ons' },
+])
 </script>
 
 <template>

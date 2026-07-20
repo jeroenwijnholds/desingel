@@ -50,6 +50,11 @@ useSeo({
   title: 'Agenda – Belevenisboerderij De Singel',
   description: 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
 })
+
+useBreadcrumbJsonLd([
+  { name: 'Home', path: '/' },
+  { name: 'Agenda', path: '/agenda' },
+])
 </script>
 
 <template>

@@ -51,6 +51,14 @@ useSeo({
   publishedTime: () => article.value?.publishedAt,
 })
 
+useBreadcrumbJsonLd(() => article.value
+  ? [
+      { name: 'Home', path: '/' },
+      { name: 'Nieuws', path: '/nieuws' },
+      { name: article.value.title, path: `/nieuws/${article.value.slug.current}` },
+    ]
+  : null)
+
 const config = useRuntimeConfig()
 useJsonLd(() => article.value
   ? {

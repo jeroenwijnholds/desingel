@@ -38,6 +38,11 @@ useSeo({
   title: 'De Boerderij – Belevenisboerderij De Singel',
   description: 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
 })
+
+useBreadcrumbJsonLd([
+  { name: 'Home', path: '/' },
+  { name: 'De Boerderij', path: '/de-boerderij' },
+])
 </script>
 
 <template>

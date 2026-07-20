@@ -40,6 +40,14 @@ useSeo({
     : undefined,
 })
 
+useBreadcrumbJsonLd(() => event.value
+  ? [
+      { name: 'Home', path: '/' },
+      { name: 'Agenda', path: '/agenda' },
+      { name: event.value.title, path: `/evenement/${event.value.slug.current}` },
+    ]
+  : null)
+
 const config = useRuntimeConfig()
 useJsonLd(() => event.value
   ? {

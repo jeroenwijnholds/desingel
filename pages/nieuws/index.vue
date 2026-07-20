@@ -39,6 +39,11 @@ useSeo({
   title: 'Nieuws – Belevenisboerderij De Singel',
   description: 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
 })
+
+useBreadcrumbJsonLd([
+  { name: 'Home', path: '/' },
+  { name: 'Nieuws', path: '/nieuws' },
+])
 </script>
 
 <template>
