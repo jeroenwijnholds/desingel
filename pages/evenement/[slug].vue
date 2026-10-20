@@ -56,15 +56,39 @@ useBreadcrumbJsonLd(() => event.value
   : null)
 
 const config = useRuntimeConfig()
+
+// Begin/eind in NL-tijd volgens het getoonde tijdvak (zie useEventTimes)
+const times = computed(() => event.value ? getEventTimes(event.value.date, event.value.timeRange) : null)
+const calendar = computed(() => {
+  if (!event.value || !times.value) return null
+  const input = {
+    title: event.value.title,
+    slug: event.value.slug.current,
+    times: times.value,
+    location: event.value.location,
+    description: event.value.description,
+    url: `${config.public.siteUrl}/evenement/${event.value.slug.current}`,
+  }
+  return { ics: icsHref(input), google: googleCalendarHref(input) }
+})
+// Contactformulier vooraf invullen met dit evenement
+const contactLink = computed(() => ({ path: '/contact', query: event.value ? { over: event.value.title } : {} }))
 useJsonLd(() => event.value
   ? {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: event.value.title,
-      startDate: event.value.date,
+      ...(times.value && !times.value.allDay
+        ? { startDate: isoAmsterdam(times.value.start!), endDate: isoAmsterdam(times.value.end!) }
+        : { startDate: times.value?.day ?? event.value.date }),
+      eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
       ...(event.value.description ? { description: event.value.description } : {}),
-      ...(event.value.location ? { location: { '@type': 'Place', name: event.value.location } } : {}),
+      // Google vereist een adres bij Place; evenementen zijn vaak elders
+      // (Enschede, Varsseveld), dus de locatietekst zelf — niet het boerderijadres.
+      ...(event.value.location
+        ? { location: { '@type': 'Place', name: event.value.location, address: event.value.location } }
+        : {}),
       ...(hasImage(event.value.featuredImage)
         ? { image: [img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
         : {}),
@@ -121,7 +145,7 @@ useJsonLd(() => event.value
         <div v-else class="event-section">
           <p>Meer informatie over dit evenement volgt binnenkort.</p>
         </div>
-        <NuxtLink to="/contact" class="btn btn-green event-contact-btn">Neem contact op</NuxtLink>
+        <NuxtLink :to="contactLink" class="btn btn-green event-contact-btn">Neem contact op</NuxtLink>
       </article>
 
       <aside class="event-sidebar">
@@ -158,7 +182,16 @@ useJsonLd(() => event.value
             </li>
           </ul>
           <div class="event-info-actions">
-            <NuxtLink to="/contact" class="btn btn-green">Neem contact op</NuxtLink>
+            <NuxtLink :to="contactLink" class="btn btn-green">Neem contact op</NuxtLink>
+            <template v-if="calendar && !isVoorbij">
+              <a :href="calendar.ics" :download="`${event.slug.current}.ics`" class="event-external-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                Zet in je agenda
+              </a>
+              <a :href="calendar.google" class="event-calendar-alt" target="_blank" rel="noopener noreferrer">
+                of zet hem in Google Agenda<span class="visually-hidden"> (opent in nieuw tabblad)</span>
+              </a>
+            </template>
             <a v-if="event.externalLink" :href="event.externalLink" class="event-external-btn" target="_blank" rel="noopener noreferrer">
               Bezoek evenement website
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
