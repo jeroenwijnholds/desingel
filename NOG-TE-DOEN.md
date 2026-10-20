@@ -75,14 +75,41 @@ vue 3.5.44, sanity 5.31). Tussen juli en oktober was dit opgelopen naar
   daarna altijd lokaal `npm ci` vóór het committen van de lockfile (zie
   de valkuil in CLAUDE.md — dit brak op 13 juli de deploy).
 
-### Contactgegevens aanvullen voor structured data
+### Contactgegevens aanvullen (Studio → Site-instellingen)
 
-Sinds de SEO/GEO-optimalisatieronde (20 juli 2026) heeft Site-instellingen
-lege velden voor `telephone` en `socialLinks` (Instagram/Facebook e.d.). Ze
-staan bewust leeg — structured data mag geen verzonnen telefoonnummer of
-social-link bevatten. Vul ze in via de Studio zodra de gegevens bekend
-zijn; `components/AppFooter.vue` neemt ze dan automatisch mee in de
-LocalBusiness-JSON-LD (`telephone`/`sameAs`).
+Site-instellingen heeft lege velden voor `email` (sinds oktober 2026),
+`telephone` en `socialLinks` (Instagram/Facebook e.d.). Ze staan bewust
+leeg — de site en structured data mogen geen verzonnen gegevens bevatten.
+Zodra ze ingevuld zijn verschijnen ze vanzelf: klikbaar in de footer en de
+"Praktisch"-kaart op de contactpagina, de foutmelding van het formulier
+noemt het e-mailadres, en de LocalBusiness-JSON-LD neemt ze mee
+(`email`/`telephone`/`sameAs`).
+
+### Content in de Studio bijwerken (oktober 2026)
+
+- **Privacytekst onder het contactformulier** (Contact-pagina →
+  "Privacytekst onder het formulier") zegt nu dat gegevens "nooit gedeeld
+  met derden" worden. Dat klopt niet: berichten lopen via Web3Forms.
+  Voorstel: *"Je gegevens gebruiken we alleen om je vraag te beantwoorden.
+  Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet
+  voor andere doelen gebruikt."*
+- **Alt-teksten bij de 12 galerijfoto's** (Fotogalerij): ontbreken nu,
+  waardoor schermlezers alleen "Foto 1 vergroten" horen.
+- **Tijdvak vs. tijd in het datumveld bij evenementen**: bij het
+  Kerstcircus staat 15:00 opgeslagen en "14:00 – 21:00" als tijdvak. De
+  site gebruikt het tijdvak (voor "Zet in je agenda" en Google); de
+  Studio-herinrichting (fase 5) maakt hier één invoer van.
+
+### Cookiebanner + privacyverklaring (besloten 20 oktober 2026)
+
+De Google Maps-kaart op de contactpagina blijft bewust direct laden
+(keuze Jeroen). Die zet Google-cookies zonder toestemming; daarvoor komt
+later een cookiebanner. Neem daarin mee:
+- de kaart pas laden na toestemming (anders heeft de banner geen effect),
+  met de "Plan je route"-link als altijd-werkend alternatief;
+- een korte privacy- en cookieverklaring (wie is verantwoordelijk,
+  Web3Forms voor het formulier, Google Maps, Sanity-CDN voor foto's),
+  gelinkt vanuit de banner, de footer en de tekst onder het formulier.
 
 ### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 
