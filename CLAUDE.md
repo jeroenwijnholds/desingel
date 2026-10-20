@@ -105,7 +105,13 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   (structured data), `useDateFormat` (alle nl-NL-datumformattering, altijd
   in Europe/Amsterdam — de build draait in UTC; `isPastDay` voor
   "is dit evenement voorbij?"),
-  `usePortableTextComponents` (gedeelde body-afbeelding-renderer).
+  `usePortableTextComponents` (gedeelde body-afbeelding- en citaatrenderer),
+  `useSiteSettings` (**dé** bron voor Site-instellingen in componenten — geen
+  eigen siteSettings-query meer schrijven; plus `openingHoursParts`/
+  `formatOpeningHours`, `telHref`, `routeHref`), `useEventTimes`
+  (`getEventTimes`: begin/eind in NL-tijd uit het getoonde tijdvak — dat is
+  leidend, de tijd in het datumveld wijkt in de praktijk af; plus
+  `isoAmsterdam`, `icsHref`, `googleCalendarHref`).
 - `studio/` — Sanity Studio (v5). Deskstructuur in `sanity.config.ts`:
   singletons (Homepage, De Boerderij, Over Ons, Contact, Fotogalerij,
   Site-instellingen) zijn niet aan te maken/verwijderen; documentnieuws en
