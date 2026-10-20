@@ -19,8 +19,10 @@ interface AgendaPage {
   emptyMessage?: string
 }
 
+// Grove voorselectie op de server (alles van de afgelopen 24 uur en later);
+// de exacte "vanaf vandaag"-grens in NL-tijd bepaalt isPastDay hieronder.
 const QUERY = `{
-  "events": *[_type == "event" && !(_id in path("drafts.**"))] | order(date asc) {
+  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(date) >= dateTime(now()) - 60*60*24] | order(date asc) {
     _id, title, slug, category, date, timeRange, location, description, externalLink
   },
   "page": *[_type == "agendaPage" && !(_id in path("drafts.**"))][0]
@@ -28,12 +30,14 @@ const QUERY = `{
 const { data } = useSanityQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
 const page = computed(() => data.value?.page)
 
-const { formatDay, formatWeekday, formatMonthYear } = useDateFormat()
+const { formatDay, formatWeekday, formatMonthYear, isPastDay } = useDateFormat()
 
 const groupedEvents = computed(() => {
   const groups: { key: string; events: Event[] }[] = []
   const byKey: Record<string, { key: string; events: Event[] }> = {}
-  for (const event of data.value?.events ?? []) {
+  // Ook in de browser filteren: de statische HTML is zo oud als de laatste
+  // build, dus tussen twee (dagelijkse) builds kan er een evenement verlopen.
+  for (const event of (data.value?.events ?? []).filter(e => !isPastDay(e.date))) {
     const key = formatMonthYear(event.date)
     let group = byKey[key]
     if (!group) {

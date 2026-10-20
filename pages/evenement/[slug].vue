@@ -29,7 +29,14 @@ query.then(() => {
 }).catch(() => {})
 
 const img = useSanityImg()
-const { formatChipDate } = useDateFormat()
+const { formatChipDate, isPastDay } = useDateFormat()
+
+// Verlopen evenementen worden niet meer gegenereerd, maar een pagina uit
+// een eerdere build kan nog live staan tot de volgende (dagelijkse) build.
+// Pas na mount bepalen, zodat de SSR-HTML niet van de client afwijkt.
+const now = ref<Date | null>(null)
+onMounted(() => { now.value = new Date() })
+const isVoorbij = computed(() => !!(now.value && event.value && isPastDay(event.value.date, now.value)))
 const portableTextComponents = usePortableTextComponents()
 
 useSeo({
@@ -107,6 +114,9 @@ useJsonLd(() => event.value
     <div class="event-layout">
 
       <article class="event-main">
+        <p v-if="isVoorbij" class="event-past-notice" role="status">
+          Dit evenement is voorbij. <NuxtLink to="/agenda">Bekijk de komende evenementen</NuxtLink>
+        </p>
         <PortableText v-if="event.body?.length" :value="event.body" :components="portableTextComponents" />
         <div v-else class="event-section">
           <p>Meer informatie over dit evenement volgt binnenkort.</p>

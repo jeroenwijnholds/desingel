@@ -44,5 +44,10 @@ export function useDateFormat() {
     formatMonthYear(dateStr: string) {
       return capitalize(fmt(dateStr, { month: 'long', year: 'numeric' }))
     },
+    /** true als de (NL-)kalenderdag van dateStr vóór vandaag ligt — een evenement van vandaag telt nog mee */
+    isPastDay(dateStr: string, now: Date = new Date()) {
+      const day = (s: string) => fmt(s, { year: 'numeric', month: '2-digit', day: '2-digit' }, 'en-CA')
+      return day(dateStr) < day(now.toISOString())
+    },
   }
 }
