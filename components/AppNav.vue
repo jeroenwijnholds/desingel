@@ -1,10 +1,5 @@
 ﻿<script setup lang="ts">
-const QUERY = `*[_type == "siteSettings"][0]{ siteName, navigation }`
-
-interface NavItem { label: string; href: string; isButton: boolean }
-interface SiteSettings { siteName: string; navigation: NavItem[] }
-
-const { data } = useContentQuery<SiteSettings>(QUERY)
+const { data } = useSiteSettings()
 
 const route = useRoute()
 const isHome = computed(() => route.path === '/')
@@ -97,14 +92,14 @@ onUnmounted(() => {
     <div id="hoofdmenu" class="nav-menu">
       <ul class="nav-links">
         <li
-          v-for="item in (data?.navigation ?? []).filter((n: NavItem) => !n.isButton)"
+          v-for="item in (data?.navigation ?? []).filter(n => !n.isButton)"
           :key="item.href"
         >
           <NuxtLink :to="item.href" @click="closeMenu">{{ item.label }}</NuxtLink>
         </li>
       </ul>
       <NuxtLink
-        v-for="item in (data?.navigation ?? []).filter((n: NavItem) => n.isButton)"
+        v-for="item in (data?.navigation ?? []).filter(n => n.isButton)"
         :key="item.href"
         :to="item.href"
         class="btn btn-green"

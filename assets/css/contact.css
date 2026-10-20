@@ -301,6 +301,34 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.contact-info-route {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px; /* tap target */
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contact-info-route svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.contact-info-value--link {
+  display: inline-block;
+  padding: var(--space-2) 0; /* tap target */
+  margin: calc(-1 * var(--space-2)) 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+  word-break: break-word;
+}
+
 .contact-info-link:hover {
   gap: 10px;
 }

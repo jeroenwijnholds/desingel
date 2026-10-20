@@ -69,11 +69,21 @@ export default defineType({
     // farmshopHours en responseTime zijn verwijderd: de site las ze nooit —
     // de contactpagina gebruikt contactPage.infoHours / infoResponseTime.
     defineField({
+      name: 'email',
+      title: 'E-mailadres',
+      type: 'string',
+      description:
+        'Wordt getoond in de footer en op de contactpagina (ook als alternatief als het ' +
+        'formulier niet werkt). Leeg laten = nergens zichtbaar.',
+      validation: Rule => Rule.email().error('Dit lijkt geen geldig e-mailadres.'),
+    }),
+    defineField({
       name: 'telephone',
       title: 'Telefoonnummer',
       type: 'string',
       description:
-        'Internationaal formaat, bijv. +31 6 12345678. Leeg laten totdat dit bekend is — ' +
+        'Internationaal formaat, bijv. +31 6 12345678. Wordt klikbaar getoond in de footer en op ' +
+        'de contactpagina. Leeg laten totdat dit bekend is — ' +
         'structured data (Google/AI-assistenten) mag nooit een verzonnen telefoonnummer bevatten.',
     }),
     defineField({
@@ -99,10 +109,11 @@ export default defineType({
     }),
     defineField({
       name: 'openingHours',
-      title: 'Openingstijden (structured data)',
+      title: 'Openingstijden farmshop',
       description:
-        'Machineleesbare openingstijden voor Google en AI-assistenten. Voor de weergavetekst ' +
-        'op de contactpagina: zie het veld "Openingstijden farmshop" op de Contact-pagina.',
+        'Getoond op de homepage (blok "Binnenkort") en gebruikt door Google en AI-assistenten. ' +
+        'Let op: de contactpagina gebruikt (nog) het veld "Openingstijden farmshop" op de ' +
+        'Contact-pagina — houd die twee gelijk.',
       type: 'array',
       of: [
         {

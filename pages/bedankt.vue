@@ -1,4 +1,14 @@
 <script setup lang="ts">
+// Reactietijd uit het CMS (Contact-pagina), zodat hij niet uit de pas loopt
+// met de contactpagina — stond hier eerder hardcoded.
+const { data } = useContentQuery<{ infoResponseTime?: string } | null>(
+  `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]{ infoResponseTime }`
+)
+const responseTime = computed(() => {
+  const t = data.value?.infoResponseTime?.trim() || 'Binnen 2 werkdagen'
+  return t.charAt(0).toLowerCase() + t.slice(1)
+})
+
 useSeo({
   title: 'Bedankt voor je bericht – Belevenisboerderij De Singel',
   description: 'We hebben je bericht ontvangen en nemen zo snel mogelijk contact met je op.',
@@ -17,7 +27,7 @@ useSeo({
       </div>
       <p class="bedankt-label">Belevenisboerderij de Singel</p>
       <h1 class="bedankt-title">Bedankt voor je bericht!</h1>
-      <p class="bedankt-sub">We hebben je bericht ontvangen en nemen normaal gesproken binnen 2 werkdagen contact met je op.</p>
+      <p class="bedankt-sub">We hebben je bericht ontvangen en nemen normaal gesproken {{ responseTime }} contact met je op.</p>
       <div class="bedankt-actions">
         <NuxtLink to="/" class="btn btn-green">Terug naar de homepage</NuxtLink>
         <NuxtLink to="/agenda" class="bedankt-link">Bekijk onze evenementen</NuxtLink>

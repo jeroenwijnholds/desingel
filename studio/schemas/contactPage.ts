@@ -43,7 +43,15 @@ export default defineType({
       type: 'array',
       of: [{ type: 'string' }],
     }),
-    defineField({ name: 'privacyNotice', title: 'Privacyverklaring-tekst', type: 'text', rows: 2 }),
+    defineField({
+      name: 'privacyNotice',
+      title: 'Privacytekst onder het formulier',
+      type: 'text',
+      rows: 2,
+      description:
+        'Let op: berichten lopen via de formulierdienst Web3Forms (een derde partij). ' +
+        'Schrijf dus niet dat gegevens "nooit met derden gedeeld" worden.',
+    }),
   ],
   preview: { prepare: () => ({ title: 'Contact pagina' }) },
 })

@@ -15,17 +15,21 @@ interface ContactPage {
 }
 
 const QUERY = `{
-  "page": *[_type == "contactPage" && !(_id in path("drafts.**"))][0],
-  "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ coordinates }
+  "page": *[_type == "contactPage" && !(_id in path("drafts.**"))][0]
 }`
-const { data } = useContentQuery<{ page: ContactPage; settings?: { coordinates?: { lat: number; lng: number } } }>(QUERY)
+const { data } = useContentQuery<{ page: ContactPage }>(QUERY)
 const page = computed(() => data.value?.page)
+const { data: settings } = useSiteSettings()
 
-// Kaart volgt de coördinaten uit Site-instellingen; fallback = huidige locatie
+// Kaart en routelink volgen de coördinaten uit Site-instellingen; fallback = huidige locatie
+const coordinates = computed(() => settings.value?.coordinates ?? { lat: 51.9479284, lng: 6.5100125 })
 const mapSrc = computed(() => {
-  const { lat = 51.9479284, lng = 6.5100125 } = data.value?.settings?.coordinates ?? {}
+  const { lat, lng } = coordinates.value
   return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
 })
+
+const DEFAULT_SUBJECTS = ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders']
+const subjectOptions = computed(() => page.value?.subjectOptions?.length ? page.value.subjectOptions : DEFAULT_SUBJECTS)
 
 const config = useRuntimeConfig()
 
@@ -51,6 +55,17 @@ const MAX = { naam: 100, email: 254, telefoonnummer: 30, bericht: 5000 }
 const subject = computed(() =>
   `Contactformulier: ${form.onderwerp || 'algemene vraag'} – ${form.naam.trim() || 'onbekend'}`
 )
+
+// Vooraf invullen vanaf een evenementpagina (/contact?over=<titel>): onderwerp
+// = de evenement-optie uit het CMS, bericht begint met de titel. Pas na mount,
+// want de statische HTML kent geen query-string.
+const route = useRoute()
+onMounted(() => {
+  const over = typeof route.query.over === 'string' ? route.query.over.slice(0, 120) : ''
+  if (!over) return
+  form.onderwerp = subjectOptions.value.find(o => /evenement/i.test(o)) ?? ''
+  if (!form.bericht) form.bericht = `Ik heb een vraag over ${over}:\n\n`
+})
 
 const errors = reactive<{ naam?: string; email?: string; bericht?: string }>({})
 const status = ref<'idle' | 'sending' | 'error'>('idle')
@@ -220,7 +235,7 @@ useBreadcrumbJsonLd([
               <select id="onderwerp" v-model="form.onderwerp" class="form-input form-select" name="onderwerp">
                 <option value="">Kies een onderwerp</option>
                 <option
-                  v-for="option in (page?.subjectOptions ?? ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders'])"
+                  v-for="option in subjectOptions"
                   :key="option"
                   :value="option"
                 >{{ option }}</option>
@@ -252,11 +267,13 @@ useBreadcrumbJsonLd([
             <button type="submit" class="btn btn-green contact-submit" :disabled="status === 'sending'">
               {{ status === 'sending' ? 'Versturen…' : 'Verstuur bericht' }}
             </button>
-            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens worden alleen gebruikt om je vraag te beantwoorden en nooit gedeeld met derden.' }}</p>
+            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}</p>
           </div>
 
           <p v-if="status === 'error'" class="form-error form-error--submit" role="alert">
-            Het versturen is helaas niet gelukt. Probeer het later opnieuw, of mail ons rechtstreeks.
+            Het versturen is helaas niet gelukt.
+            <template v-if="settings?.email">Probeer het later opnieuw, of mail ons op <a :href="`mailto:${settings.email}`">{{ settings.email }}</a>.</template>
+            <template v-else>Probeer het later opnieuw.</template>
           </p>
         </form>
       </section>
@@ -270,6 +287,24 @@ useBreadcrumbJsonLd([
               <div>
                 <span class="contact-info-label">Adres</span>
                 <span class="contact-info-value">{{ page?.infoAddress ?? 'Achterhoek, Gelderland' }}</span>
+                <a :href="routeHref(coordinates)" class="contact-info-route" target="_blank" rel="noopener noreferrer">
+                  Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </li>
+            <li v-if="settings?.telephone">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <div>
+                <span class="contact-info-label">Telefoon</span>
+                <a :href="telHref(settings.telephone)" class="contact-info-value contact-info-value--link">{{ settings.telephone }}</a>
+              </div>
+            </li>
+            <li v-if="settings?.email">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
+              <div>
+                <span class="contact-info-label">E-mail</span>
+                <a :href="`mailto:${settings.email}`" class="contact-info-value contact-info-value--link">{{ settings.email }}</a>
               </div>
             </li>
             <li>
