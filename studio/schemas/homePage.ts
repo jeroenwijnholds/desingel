@@ -1,5 +1,5 @@
 import { defineType, defineField } from 'sanity'
-import { imageField } from './lib'
+import { imageField, linkValidation } from './lib'
 
 const serviceCard = {
   type: 'object',
@@ -118,6 +118,7 @@ export default defineType({
       name: 'ctaPrimaryHref',
       title: 'CTA primaire URL',
       type: 'string',
+      validation: linkValidation,
       group: 'cta',
       description: 'Interne link zoals /agenda of een volledige URL.',
     }),
@@ -126,6 +127,7 @@ export default defineType({
       name: 'ctaSecondaryHref',
       title: 'CTA secundaire URL',
       type: 'string',
+      validation: linkValidation,
       group: 'cta',
       description: 'Interne link zoals /over-ons of een volledige URL.',
     }),

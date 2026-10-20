@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { linkValidation } from './lib'
 
 export default defineType({
   name: 'siteSettings',
@@ -25,7 +26,7 @@ export default defineType({
           type: 'object',
           fields: [
             defineField({ name: 'label', title: 'Label', type: 'string', validation: Rule => Rule.required() }),
-            defineField({ name: 'href', title: 'URL', type: 'string', validation: Rule => Rule.required() }),
+            defineField({ name: 'href', title: 'URL', type: 'string', validation: Rule => linkValidation(Rule.required()) }),
             defineField({ name: 'isButton', title: 'Als knop weergeven', type: 'boolean', initialValue: false }),
           ],
           preview: {

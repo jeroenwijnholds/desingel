@@ -1,5 +1,5 @@
 import { defineType, defineField } from 'sanity'
-import { imageField } from './lib'
+import { imageField, linkValidation } from './lib'
 
 export default defineType({
   name: 'boerderijPage',
@@ -77,6 +77,7 @@ export default defineType({
       name: 'ctaPrimaryHref',
       title: 'CTA primaire URL',
       type: 'string',
+      validation: linkValidation,
       description: 'Interne link zoals /agenda of een volledige URL.',
     }),
     defineField({ name: 'ctaSecondaryLabel', title: 'CTA secundaire knoptekst', type: 'string' }),
@@ -84,6 +85,7 @@ export default defineType({
       name: 'ctaSecondaryHref',
       title: 'CTA secundaire URL',
       type: 'string',
+      validation: linkValidation,
       description: 'Interne link zoals /contact of een volledige URL.',
     }),
   ],

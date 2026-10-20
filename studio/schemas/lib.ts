@@ -1,8 +1,22 @@
-import { defineField } from 'sanity'
+import { defineField, type StringRule } from 'sanity'
 
 export const HOTSPOT_UITLEG =
   'Tip: klik op "Edit hotspot" op de foto en sleep de cirkel naar het belangrijkste ' +
   'deel (bijv. het dier). De website houdt dat deel dan op elk schermformaat in beeld.'
+
+/**
+ * Validatie voor vrije link-velden (knoppen, menu): alleen een pad op deze
+ * site (/agenda) of een http(s)-, mailto:- of tel:-link. Houdt typfouten
+ * zonder slash (die een kapotte relatieve link gaven) en javascript:-links
+ * tegen. `//` vooraan (protocol-relatief) telt niet als intern pad.
+ */
+export const linkValidation = (Rule: StringRule) =>
+  Rule.custom(value => {
+    if (!value) return true
+    return /^(\/(?!\/)|https?:\/\/|mailto:|tel:)/i.test(value.trim())
+      ? true
+      : 'Begin met / voor een pagina op deze site (bijv. /agenda), of met https:// voor een externe website.'
+  })
 
 /** Alt-tekstveld met vriendelijke waarschuwing (blokkeert publiceren niet). */
 const altField = defineField({
