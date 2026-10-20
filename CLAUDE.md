@@ -44,6 +44,12 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   live op belevenisboerderij-desingel.nl (tot de DNS-omzetting). Bij
   twijfel over hoe iets "hoort": haal daar de markup/CSS op (stylesheet
   op cdn.prod.website-files.com) in plaats van te gissen vanaf screenshots.
+- **Query's gaan via `useContentQuery`**, niet rechtstreeks via
+  `useSanityQuery`: de wrapper laat de prerender falen (500 → `nuxt
+  generate` stopt) als Sanity een fout geeft. Zonder die wrapper slikt
+  `useAsyncData` de fout in en werd een lege site gedeployd (getest met een
+  ongeldig project-ID: exit 0, 16 routes). Verder identiek aan
+  `useSanityQuery`, dus onderstaande regel geldt ook voor de wrapper.
 - **`useSanityQuery` zonder `await`** (bewuste keuze, tegen hydration-flash):
   de `status`-ref wordt `'success'` **vóórdat** de `data`-ref gevuld is (dat
   gebeurt een microtask later in de module). Voor "bestaat dit document?"-checks
@@ -85,7 +91,10 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   `PageHeader` (dé paginakop; props label/title/subtitle/image — image is
   een Sanity-afbeelding als achtergrond met gradient-overlay),
   `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared).
-- `composables/` — `useImageUrl` (ruwe Sanity image-builder),
+- `composables/` — `useContentQuery` (zie Valkuilen), `useImageUrl` (ruwe
+  Sanity image-builder; exporteert ook `hasImage()` — **gebruik die in elke
+  `v-if` op een afbeeldingsveld**, een object met alleen een alt-tekst is
+  truthy maar heeft geen foto),
   `useSanityImg` (**gebruik deze voor elke afbeelding**: levert
   src/srcset/sizes/width/height met WebP via `auto=format`; mét `aspect`
   snijdt Sanity server-side rond de hotspot, zónder `aspect` komt de hotspot
@@ -93,7 +102,9 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   redacteuren sturen de uitsnede dus via "Edit hotspot" in Studio),
   `useSeo` (title/description/canonical/OG per pagina; accepteert getters;
   `type: 'article'` + `publishedTime` voor artikelen), `useJsonLd`
-  (structured data), `useDateFormat` (alle nl-NL-datumformattering),
+  (structured data), `useDateFormat` (alle nl-NL-datumformattering, altijd
+  in Europe/Amsterdam — de build draait in UTC; `isPastDay` voor
+  "is dit evenement voorbij?"),
   `usePortableTextComponents` (gedeelde body-afbeelding-renderer).
 - `studio/` — Sanity Studio (v5). Deskstructuur in `sanity.config.ts`:
   singletons (Homepage, De Boerderij, Over Ons, Contact, Fotogalerij,
