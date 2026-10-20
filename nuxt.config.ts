@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     '@fontsource/source-sans-3/400-italic.css',
     '@fontsource/source-sans-3/600-italic.css',
     '~/assets/css/style.css',
+    '~/assets/css/components.css',
     '~/assets/css/page-header.css',
     '~/assets/css/page-shared.css',
     '~/assets/css/agenda.css',

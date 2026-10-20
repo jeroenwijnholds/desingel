@@ -52,9 +52,9 @@ useBreadcrumbJsonLd([
   <section class="boerderij-intro">
     <div class="boerderij-intro-inner" :class="{ 'boerderij-intro-inner--no-photo': !hasIntroImage }">
 
-      <div class="boerderij-intro-text">
+      <div class="boerderij-intro-text stack">
         <p class="section-label dark-green">{{ page?.introLabel ?? 'Achterhoek, Gelderland' }}</p>
-        <h1 class="boerderij-title">{{ page?.introTitle ?? 'Een bijzondere plek in de Achterhoek' }}</h1>
+        <h1 class="display-title">{{ page?.introTitle ?? 'Een bijzondere plek in de Achterhoek' }}</h1>
         <p class="boerderij-lead">{{ page?.introText }}</p>
         <ul class="boerderij-intro-meta">
           <li>

@@ -17,119 +17,44 @@ useSeo({
 </script>
 
 <template>
-  <div class="bedankt-main">
-    <div class="bedankt-inner">
+  <div class="status-page">
+    <div class="status-page-inner stack">
       <div class="bedankt-icon" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
       </div>
-      <p class="bedankt-label">Belevenisboerderij de Singel</p>
-      <h1 class="bedankt-title">Bedankt voor je bericht!</h1>
-      <p class="bedankt-sub">We hebben je bericht ontvangen en nemen normaal gesproken {{ responseTime }} contact met je op.</p>
-      <div class="bedankt-actions">
+      <p class="section-label dark-green">Belevenisboerderij de Singel</p>
+      <h1 class="display-title">Bedankt voor je bericht!</h1>
+      <p class="status-page-sub">We hebben je bericht ontvangen en nemen normaal gesproken {{ responseTime }} contact met je op.</p>
+      <div class="status-page-actions">
         <NuxtLink to="/" class="btn btn-green">Terug naar de homepage</NuxtLink>
-        <NuxtLink to="/agenda" class="bedankt-link">Bekijk onze evenementen</NuxtLink>
+        <NuxtLink to="/agenda" class="link-arrow">
+          Bekijk onze evenementen
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.bedankt-main {
-  min-height: 70vh;
+/* Opbouw: .status-page in components.css; alleen het icoon is eigen */
+.bedankt-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 24px;
-  background-color: var(--white);
-}
-
-.bedankt-inner {
-  max-width: 560px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.bedankt-icon {
   width: 72px;
   height: 72px;
+  margin-bottom: var(--space-2);
   border-radius: 50%;
-  background-color: #eef6e9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
+  background-color: var(--surface-soft);
   color: var(--green-light);
 }
 
 .bedankt-icon svg {
   width: 36px;
   height: 36px;
-}
-
-.bedankt-label {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--green-text);
-}
-
-.bedankt-title {
-  font-family: var(--font-display);
-  font-size: 42px;
-  font-weight: 700;
-  color: var(--green-dark);
-  line-height: 1.15;
-  margin: 0;
-}
-
-.bedankt-sub {
-  font-family: var(--font-body);
-  font-size: 17px;
-  line-height: 1.75;
-  color: var(--text);
-  opacity: 0.7;
-  max-width: 46ch;
-  margin-top: 4px;
-}
-
-.bedankt-actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.bedankt-link {
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--green-text);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.bedankt-link:hover {
-  opacity: 0.75;
-}
-
-@media screen and (max-width: 479px) {
-  .bedankt-title {
-    font-size: 32px;
-  }
-
-  .bedankt-actions {
-    flex-direction: column;
-    gap: 16px;
-  }
 }
 </style>

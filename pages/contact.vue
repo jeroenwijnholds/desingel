@@ -144,199 +144,199 @@ useBreadcrumbJsonLd([
     :image="page?.headerImage"
   />
 
-  <div class="contact-main" id="contact-form">
-    <div class="contact-layout">
+  <div id="contact-form" class="sidebar-layout">
 
-      <section class="contact-form-section" aria-labelledby="form-heading">
-        <h2 class="contact-form-heading" id="form-heading">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
-        <p class="contact-form-intro">{{ page?.formIntro ?? 'Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.' }}</p>
+    <section class="contact-form-section" aria-labelledby="form-heading">
+      <h2 id="form-heading" class="subsection-title">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
+      <p class="contact-form-intro">{{ page?.formIntro ?? 'Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.' }}</p>
 
-        <form
-          class="contact-form"
-          action="https://api.web3forms.com/submit"
-          method="POST"
-          :novalidate="hydrated"
-          @submit.prevent="onSubmit"
+      <form
+        class="contact-form"
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        :novalidate="hydrated"
+        @submit.prevent="onSubmit"
+      >
+        <!-- Alleen gebruikt bij verzenden zonder JS (zie script) -->
+        <input type="hidden" name="access_key" :value="config.public.web3formsKey" />
+        <input type="hidden" name="subject" :value="subject" />
+        <input type="hidden" name="from_name" value="Belevenisboerderij de Singel" />
+        <input type="hidden" name="redirect" :value="bedanktUrl" />
+        <!-- Honeypot: wij checken hem in onSubmit, Web3Forms server-side bij een no-JS-post -->
+        <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+        <div
+          v-if="errorList.length"
+          ref="errorSummary"
+          class="form-error-summary"
+          role="alert"
+          tabindex="-1"
         >
-          <!-- Alleen gebruikt bij verzenden zonder JS (zie script) -->
-          <input type="hidden" name="access_key" :value="config.public.web3formsKey" />
-          <input type="hidden" name="subject" :value="subject" />
-          <input type="hidden" name="from_name" value="Belevenisboerderij de Singel" />
-          <input type="hidden" name="redirect" :value="bedanktUrl" />
-          <!-- Honeypot: wij checken hem in onSubmit, Web3Forms server-side bij een no-JS-post -->
-          <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
-
-          <div
-            v-if="errorList.length"
-            ref="errorSummary"
-            class="form-error-summary"
-            role="alert"
-            tabindex="-1"
-          >
-            <p class="form-error-summary-title">Het formulier is nog niet compleet:</p>
-            <ul>
-              <li v-for="err in errorList" :key="err.field">
-                <label :for="err.field">{{ err.msg }}</label>
-              </li>
-            </ul>
-          </div>
-
-          <div class="form-row form-row--two">
-            <div class="form-group">
-              <label class="form-label" for="naam">
-                Naam <span class="form-required" aria-hidden="true">*</span>
-              </label>
-              <input
-                id="naam"
-                v-model="form.naam"
-                class="form-input"
-                type="text"
-                name="naam"
-                :maxlength="MAX.naam"
-                minlength="2"
-                autocomplete="name"
-                placeholder="Jouw naam"
-                required
-                :aria-invalid="errors.naam ? 'true' : undefined"
-                :aria-describedby="errors.naam ? 'naam-error' : undefined"
-              />
-              <p v-if="errors.naam" id="naam-error" class="form-error">{{ errors.naam }}</p>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="email">
-                E-mailadres <span class="form-required" aria-hidden="true">*</span>
-              </label>
-              <input
-                id="email"
-                v-model="form.email"
-                class="form-input"
-                type="email"
-                name="email"
-                :maxlength="MAX.email"
-                autocomplete="email"
-                placeholder="jouw@emailadres.nl"
-                required
-                :aria-invalid="errors.email ? 'true' : undefined"
-                :aria-describedby="errors.email ? 'email-error' : undefined"
-              />
-              <p v-if="errors.email" id="email-error" class="form-error">{{ errors.email }}</p>
-            </div>
-          </div>
-
-          <div class="form-row form-row--two">
-            <div class="form-group">
-              <label class="form-label" for="telefoonnummer">
-                Telefoonnummer <span class="form-optional">– optioneel</span>
-              </label>
-              <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" :maxlength="MAX.telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="onderwerp">Onderwerp</label>
-              <select id="onderwerp" v-model="form.onderwerp" class="form-input form-select" name="onderwerp">
-                <option value="">Kies een onderwerp</option>
-                <option
-                  v-for="option in subjectOptions"
-                  :key="option"
-                  :value="option"
-                >{{ option }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="bericht">
-              Bericht <span class="form-required" aria-hidden="true">*</span>
-            </label>
-            <textarea
-              id="bericht"
-              v-model="form.bericht"
-              class="form-input form-textarea"
-              name="bericht"
-              :maxlength="MAX.bericht"
-              minlength="10"
-              placeholder="Waar kunnen we je mee helpen?"
-              rows="6"
-              required
-              :aria-invalid="errors.bericht ? 'true' : undefined"
-              :aria-describedby="errors.bericht ? 'bericht-error' : undefined"
-            ></textarea>
-            <p v-if="errors.bericht" id="bericht-error" class="form-error">{{ errors.bericht }}</p>
-          </div>
-
-          <div class="form-footer">
-            <button type="submit" class="btn btn-green contact-submit" :disabled="status === 'sending'">
-              {{ status === 'sending' ? 'Versturen…' : 'Verstuur bericht' }}
-            </button>
-            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}</p>
-          </div>
-
-          <p v-if="status === 'error'" class="form-error form-error--submit" role="alert">
-            Het versturen is helaas niet gelukt.
-            <template v-if="settings?.email">Probeer het later opnieuw, of mail ons op <a :href="`mailto:${settings.email}`">{{ settings.email }}</a>.</template>
-            <template v-else>Probeer het later opnieuw.</template>
-          </p>
-        </form>
-      </section>
-
-      <aside class="contact-info-col">
-        <div class="contact-info-card">
-          <h2 class="contact-info-heading">Praktisch</h2>
-          <ul class="contact-info-list">
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <div>
-                <span class="contact-info-label">Adres</span>
-                <span class="contact-info-value">{{ page?.infoAddress ?? 'Achterhoek, Gelderland' }}</span>
-                <a :href="routeHref(coordinates)" class="contact-info-route" target="_blank" rel="noopener noreferrer">
-                  Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                </a>
-              </div>
-            </li>
-            <li v-if="settings?.telephone">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <div>
-                <span class="contact-info-label">Telefoon</span>
-                <a :href="telHref(settings.telephone)" class="contact-info-value contact-info-value--link">{{ settings.telephone }}</a>
-              </div>
-            </li>
-            <li v-if="settings?.email">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
-              <div>
-                <span class="contact-info-label">E-mail</span>
-                <a :href="`mailto:${settings.email}`" class="contact-info-value contact-info-value--link">{{ settings.email }}</a>
-              </div>
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <div>
-                <span class="contact-info-label">Eigenaren</span>
-                <span class="contact-info-value">{{ page?.infoOwners ?? 'Victor & Mari Duurland' }}</span>
-              </div>
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <div>
-                <span class="contact-info-label">Reactietijd</span>
-                <span class="contact-info-value">{{ page?.infoResponseTime ?? 'Binnen 2 werkdagen' }}</span>
-              </div>
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              <div>
-                <span class="contact-info-label">Farmshop open</span>
-                <span class="contact-info-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 – 17:00' }}</span>
-              </div>
+          <p class="form-error-summary-title">Het formulier is nog niet compleet:</p>
+          <ul>
+            <li v-for="err in errorList" :key="err.field">
+              <label :for="err.field">{{ err.msg }}</label>
             </li>
           </ul>
-          <NuxtLink to="/agenda" class="contact-info-link">
+        </div>
+
+        <div class="form-row form-row--two">
+          <div class="form-group">
+            <label class="form-label" for="naam">
+              Naam <span class="form-required" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="naam"
+              v-model="form.naam"
+              class="form-input"
+              type="text"
+              name="naam"
+              :maxlength="MAX.naam"
+              minlength="2"
+              autocomplete="name"
+              placeholder="Jouw naam"
+              required
+              :aria-invalid="errors.naam ? 'true' : undefined"
+              :aria-describedby="errors.naam ? 'naam-error' : undefined"
+            />
+            <p v-if="errors.naam" id="naam-error" class="form-error">{{ errors.naam }}</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">
+              E-mailadres <span class="form-required" aria-hidden="true">*</span>
+            </label>
+            <input
+              id="email"
+              v-model="form.email"
+              class="form-input"
+              type="email"
+              name="email"
+              :maxlength="MAX.email"
+              autocomplete="email"
+              placeholder="jouw@emailadres.nl"
+              required
+              :aria-invalid="errors.email ? 'true' : undefined"
+              :aria-describedby="errors.email ? 'email-error' : undefined"
+            />
+            <p v-if="errors.email" id="email-error" class="form-error">{{ errors.email }}</p>
+          </div>
+        </div>
+
+        <div class="form-row form-row--two">
+          <div class="form-group">
+            <label class="form-label" for="telefoonnummer">
+              Telefoonnummer <span class="form-optional">– optioneel</span>
+            </label>
+            <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" :maxlength="MAX.telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="onderwerp">Onderwerp</label>
+            <select id="onderwerp" v-model="form.onderwerp" class="form-input form-select" name="onderwerp">
+              <option value="">Kies een onderwerp</option>
+              <option
+                v-for="option in subjectOptions"
+                :key="option"
+                :value="option"
+              >{{ option }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bericht">
+            Bericht <span class="form-required" aria-hidden="true">*</span>
+          </label>
+          <textarea
+            id="bericht"
+            v-model="form.bericht"
+            class="form-input form-textarea"
+            name="bericht"
+            :maxlength="MAX.bericht"
+            minlength="10"
+            placeholder="Waar kunnen we je mee helpen?"
+            rows="6"
+            required
+            :aria-invalid="errors.bericht ? 'true' : undefined"
+            :aria-describedby="errors.bericht ? 'bericht-error' : undefined"
+          ></textarea>
+          <p v-if="errors.bericht" id="bericht-error" class="form-error">{{ errors.bericht }}</p>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn btn-green contact-submit" :disabled="status === 'sending'">
+            {{ status === 'sending' ? 'Versturen…' : 'Verstuur bericht' }}
+          </button>
+          <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}</p>
+        </div>
+
+        <p v-if="status === 'error'" class="form-error form-error--submit" role="alert">
+          Het versturen is helaas niet gelukt.
+          <template v-if="settings?.email">Probeer het later opnieuw, of mail ons op <a :href="`mailto:${settings.email}`">{{ settings.email }}</a>.</template>
+          <template v-else>Probeer het later opnieuw.</template>
+        </p>
+      </form>
+    </section>
+
+    <aside class="sidebar-layout-aside">
+      <div class="info-card info-card--reflow">
+        <h2 class="section-label section-label--sm bright-green">Praktisch</h2>
+        <ul class="info-card-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <span class="info-card-label">Adres</span>
+              <span class="info-card-value">{{ page?.infoAddress ?? 'Achterhoek, Gelderland' }}</span>
+              <a :href="routeHref(coordinates)" class="contact-info-route" target="_blank" rel="noopener noreferrer">
+                Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </li>
+          <li v-if="settings?.telephone">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <span class="info-card-label">Telefoon</span>
+              <a :href="telHref(settings.telephone)" class="info-card-value contact-info-value--link">{{ settings.telephone }}</a>
+            </div>
+          </li>
+          <li v-if="settings?.email">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
+            <div>
+              <span class="info-card-label">E-mail</span>
+              <a :href="`mailto:${settings.email}`" class="info-card-value contact-info-value--link">{{ settings.email }}</a>
+            </div>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div>
+              <span class="info-card-label">Eigenaren</span>
+              <span class="info-card-value">{{ page?.infoOwners ?? 'Victor & Mari Duurland' }}</span>
+            </div>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <span class="info-card-label">Reactietijd</span>
+              <span class="info-card-value">{{ page?.infoResponseTime ?? 'Binnen 2 werkdagen' }}</span>
+            </div>
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div>
+              <span class="info-card-label">Farmshop open</span>
+              <span class="info-card-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 – 17:00' }}</span>
+            </div>
+          </li>
+        </ul>
+        <div class="info-card-actions">
+          <NuxtLink to="/agenda" class="link-arrow link-arrow--on-dark">
             Bekijk alle evenementen
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </NuxtLink>
         </div>
-      </aside>
+      </div>
+    </aside>
 
-    </div>
   </div>
 
   <section class="contact-map-section" aria-label="Locatie op de kaart">

@@ -99,24 +99,24 @@ useJsonLd(() => event.value
 
 <template>
   <div v-if="event">
-    <header class="event-hero">
-      <div v-if="hasImage(event.featuredImage)" class="event-hero-image-wrap">
+    <header class="detail-hero">
+      <div v-if="hasImage(event.featuredImage)" class="detail-hero-image-wrap">
         <img
           v-bind="img(event.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="event.featuredImage.alt ?? event.title"
-          class="event-hero-img"
+          class="detail-hero-img event-hero-img"
           loading="eager"
           fetchpriority="high"
         />
       </div>
-      <div class="event-hero-content">
-        <NuxtLink to="/agenda" class="event-breadcrumb">
+      <div class="detail-hero-content">
+        <NuxtLink to="/agenda" class="breadcrumb">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Terug naar agenda
         </NuxtLink>
-        <div class="event-hero-bottom">
+        <div class="detail-hero-bottom stack">
           <p class="section-label bright-green">{{ event.category }}</p>
-          <h1 class="event-hero-title">{{ event.title }}</h1>
+          <h1 class="display-title display-title--on-dark">{{ event.title }}</h1>
           <div class="event-hero-chips">
             <span class="event-chip">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -135,56 +135,56 @@ useJsonLd(() => event.value
       </div>
     </header>
 
-    <div class="event-layout">
+    <div class="sidebar-layout">
 
-      <article class="event-main">
+      <article>
         <p v-if="isVoorbij" class="event-past-notice" role="status">
           Dit evenement is voorbij. <NuxtLink to="/agenda">Bekijk de komende evenementen</NuxtLink>
         </p>
-        <PortableText v-if="event.body?.length" :value="event.body" :components="portableTextComponents" />
-        <div v-else class="event-section">
-          <p>Meer informatie over dit evenement volgt binnenkort.</p>
+        <div class="prose">
+          <PortableText v-if="event.body?.length" :value="event.body" :components="portableTextComponents" />
+          <p v-else>Meer informatie over dit evenement volgt binnenkort.</p>
         </div>
         <NuxtLink :to="contactLink" class="btn btn-green event-contact-btn">Neem contact op</NuxtLink>
       </article>
 
-      <aside class="event-sidebar">
-        <div class="event-info-card">
-          <h2 class="event-info-heading">Praktisch</h2>
-          <ul class="event-info-list">
+      <aside class="sidebar-layout-aside">
+        <div class="info-card info-card--reflow">
+          <h2 class="section-label section-label--sm bright-green">Praktisch</h2>
+          <ul class="info-card-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               <div>
-                <span class="event-info-label">Datum</span>
-                <span class="event-info-value">{{ formatChipDate(event.date) }}</span>
+                <span class="info-card-label">Datum</span>
+                <span class="info-card-value">{{ formatChipDate(event.date) }}</span>
               </div>
             </li>
             <li v-if="event.timeRange">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <div>
-                <span class="event-info-label">Tijd</span>
-                <span class="event-info-value">{{ event.timeRange }}</span>
+                <span class="info-card-label">Tijd</span>
+                <span class="info-card-value">{{ event.timeRange }}</span>
               </div>
             </li>
             <li v-if="event.location">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <div>
-                <span class="event-info-label">Locatie</span>
-                <span class="event-info-value">{{ event.location }}</span>
+                <span class="info-card-label">Locatie</span>
+                <span class="info-card-value">{{ event.location }}</span>
               </div>
             </li>
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
               <div>
-                <span class="event-info-label">Type</span>
-                <span class="event-info-value">{{ event.category }}</span>
+                <span class="info-card-label">Type</span>
+                <span class="info-card-value">{{ event.category }}</span>
               </div>
             </li>
           </ul>
-          <div class="event-info-actions">
+          <div class="info-card-actions">
             <NuxtLink :to="contactLink" class="btn btn-green">Neem contact op</NuxtLink>
             <template v-if="calendar && !isVoorbij">
-              <a :href="calendar.ics" :download="`${event.slug.current}.ics`" class="event-external-btn">
+              <a :href="calendar.ics" :download="`${event.slug.current}.ics`" class="btn btn-outline btn-outline--on-dark">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
                 Zet in je agenda
               </a>
@@ -192,8 +192,8 @@ useJsonLd(() => event.value
                 of zet hem in Google Agenda<span class="visually-hidden"> (opent in nieuw tabblad)</span>
               </a>
             </template>
-            <a v-if="event.externalLink" :href="event.externalLink" class="event-external-btn" target="_blank" rel="noopener noreferrer">
-              Bezoek evenement website
+            <a v-if="event.externalLink" :href="event.externalLink" class="btn btn-outline btn-outline--on-dark" target="_blank" rel="noopener noreferrer">
+              Bezoek evenement website<span class="visually-hidden"> (opent in nieuw tabblad)</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
           </div>

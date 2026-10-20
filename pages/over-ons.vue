@@ -52,9 +52,9 @@ useBreadcrumbJsonLd([
   <section class="about-intro">
     <div class="about-intro-inner" :class="{ 'about-intro-inner--no-photo': !hasFamilyPhoto }">
 
-      <div class="about-intro-text">
+      <div class="about-intro-text stack">
         <p class="section-label dark-green">{{ page?.introLabel ?? 'Victor & Mari Duurland' }}</p>
-        <h1 class="about-title">{{ page?.introTitle ?? 'Hallo, wij zijn Victor en Mari' }}</h1>
+        <h1 class="display-title">{{ page?.introTitle ?? 'Hallo, wij zijn Victor en Mari' }}</h1>
         <p class="about-lead">{{ page?.introText }}</p>
         <ul class="about-intro-meta">
           <li>
@@ -85,9 +85,7 @@ useBreadcrumbJsonLd([
 
   <section class="about-story">
     <div v-reveal class="about-story-inner">
-      <div class="about-story-label-row">
-        <p class="section-label dark-green">{{ page?.storyLabel ?? 'Ons verhaal' }}</p>
-      </div>
+      <p class="section-label dark-green">{{ page?.storyLabel ?? 'Ons verhaal' }}</p>
       <h2 class="section-title">{{ page?.storyTitle ?? 'Van passie naar praktijk' }}</h2>
       <div class="about-story-columns">
         <p v-for="(column, i) in (page?.storyColumns ?? [])" :key="i">{{ column }}</p>

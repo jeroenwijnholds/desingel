@@ -30,7 +30,7 @@ const QUERY = `{
 const { data } = useContentQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
 const page = computed(() => data.value?.page)
 
-const { formatDay, formatWeekday, formatMonthYear, isPastDay } = useDateFormat()
+const { formatDay, formatWeekday, formatMonthYear, formatChipDate, isPastDay } = useDateFormat()
 
 const groupedEvents = computed(() => {
   const groups: { key: string; events: Event[] }[] = []
@@ -72,16 +72,17 @@ useBreadcrumbJsonLd([
   <div v-if="groupedEvents.length" class="agenda-main">
     <div class="agenda-wrapper">
       <div v-for="group in groupedEvents" :key="group.key" v-reveal class="agenda-month">
-        <h2 class="agenda-month-title">{{ group.key }}</h2>
+        <h2 class="section-label dark-green list-heading">{{ group.key }}</h2>
 
         <article v-for="event in group.events" :key="event._id" class="agenda-item">
-          <div class="agenda-date">
-            <span class="agenda-day">{{ formatDay(event.date) }}</span>
-            <span class="agenda-weekday">{{ formatWeekday(event.date) }}</span>
+          <div class="date-tile" aria-hidden="true">
+            <span class="date-tile-day">{{ formatDay(event.date) }}</span>
+            <span class="date-tile-sub">{{ formatWeekday(event.date) }}</span>
           </div>
           <div class="agenda-content">
-            <p class="agenda-label">{{ event.category }}</p>
+            <p class="section-label section-label--sm dark-green">{{ event.category }}</p>
             <h3 class="agenda-title">{{ event.title }}</h3>
+            <p class="visually-hidden">{{ formatChipDate(event.date) }}</p>
             <p v-if="event.description" class="agenda-desc">{{ event.description }}</p>
             <p v-if="event.timeRange || event.location" class="agenda-meta">
               <span v-if="event.timeRange">{{ event.timeRange }}</span>
@@ -89,11 +90,11 @@ useBreadcrumbJsonLd([
               <span v-if="event.location">{{ event.location }}</span>
             </p>
             <div class="agenda-actions">
-              <NuxtLink :to="`/evenement/${event.slug.current}`" class="agenda-btn agenda-btn--internal">
+              <NuxtLink :to="`/evenement/${event.slug.current}`" class="btn btn-outline btn-sm">
                 Lees meer<span class="visually-hidden"> over {{ event.title }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </NuxtLink>
-              <a v-if="event.externalLink" :href="event.externalLink" class="agenda-btn agenda-btn--external" target="_blank" rel="noopener noreferrer">
+              <a v-if="event.externalLink" :href="event.externalLink" class="btn btn-outline btn-sm agenda-btn-external" target="_blank" rel="noopener noreferrer">
                 Bezoek website<span class="visually-hidden"> van {{ event.title }} (opent in nieuw tabblad)</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               </a>

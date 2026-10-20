@@ -21,7 +21,7 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
       return () => {
         const val = props.value
         if (!hasImage(val)) return null
-        return h('figure', { class: 'article-figure' }, [
+        return h('figure', { class: 'prose-figure' }, [
           h('img', {
             ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
             alt: val.alt ?? '',
@@ -34,9 +34,10 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
   })
 
   // De Studio-stijl "Citaat" kwam als kale <blockquote> zonder styling
-  // binnen; .article-quote (nieuws-artikel.css) was nergens aan gekoppeld.
+  // binnen; de citaatstijl was nergens aan gekoppeld (stijl: .prose-quote
+  // in components.css).
   const Blockquote: FunctionalComponent = (_, { slots }) =>
-    h('blockquote', { class: 'article-quote' }, slots.default?.())
+    h('blockquote', { class: 'prose-quote' }, slots.default?.())
 
   return {
     types: { image: PortableTextImage },

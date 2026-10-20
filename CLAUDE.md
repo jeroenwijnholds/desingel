@@ -131,8 +131,11 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   (optionele waarde = vertraging in ms; slaat elementen over die al in beeld
   zijn en respecteert reduced-motion).
 - `assets/css/` — globaal geladen (volgorde in `nuxt.config.ts`):
-  `style.css` (tokens + home + nav/footer/modal), `page-header.css`,
-  `page-shared.css` (over-ons + de-boerderij patronen), rest per pagina.
+  `style.css` (tokens + home + nav/footer/modal), **`components.css`**
+  (gedeelde UI-patronen, zie Designsysteem), `page-header.css`,
+  `page-shared.css` (over-ons + de-boerderij patronen, CTA-blok, lege
+  staat), rest per pagina — paginabestanden bevatten alleen nog wat écht
+  paginaspecifiek is.
   **Alle CSS is globaal** — geef nieuwe selectors unieke, paginaspecifieke
   prefixes en definieer nooit dezelfde class in twee bestanden (dat was de
   `.page-header`-bug: laadvolgorde bepaalde stilletjes de styling).
@@ -152,8 +155,21 @@ Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
   content op schermen breder dan ~1520px op `--container-max` (1280px).
   Het percentage in die term klopt alleen als horizontale padding op
   full-bleed secties — gebruik het token nergens anders voor),
-  `--section-pad`, `--nav-height`, `--container-max`
-- Vorm: `--radius-*`, `--shadow-*`
+  `--section-pad`, `--nav-height`, `--container-max`, `--sticky-top`
+- **Eén raster**: links uitgelijnde layouts (grids, intro-splits,
+  detailpagina's, contact) volgen allemaal `--page-pad`, zodat ze op
+  dezelfde linkerrand staan als homepage, nav en footer — geen eigen
+  `max-width: 1100px` e.d. Gecentreerde composities kiezen één van
+  `--container-text` (760), `--container-mid` (960) of
+  `--container-narrow` (600).
+- Vorm: `--radius-*` (`--radius-card` = 16px voor alle UI-kaarten),
+  `--shadow-*`, `--shadow-card-hover` + `--lift-card-hover` (overal
+  dezelfde kaart-hover), `--overlay-hero`/`-header`/`-card` (foto-overlays,
+  alle in het merkgroen).
+- **Hoekig vs. rond** (bewust): de foto-collage op de homepage (diensten-
+  en kaartfoto's met overlappende tekstblokken) is hoekig, zoals in het
+  Webflow-origineel. Alle UI-kaarten (info-, nieuws-, waardenkaarten)
+  zijn `--radius-card`, knoppen pill-vormig.
 - Kleur-extra's: `--surface-soft` (zachte groene sectie-achtergrond),
   `--error`/`--error-bg` (formulierfouten)
 - **Contrast**: lichtgroen `#658457` haalt met wit maar 4,2:1 (onder AA).
@@ -169,6 +185,18 @@ Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
 - **Landmarks**: `layouts/default.vue` levert de enige `<main>` (+ skip-link,
   route-aankondiging, focus na navigatie). Pagina's gebruiken dus géén
   eigen `<main>`; alleen `error.vue` (rendert buiten de layout).
+
+Gedeelde componenten in `components.css` — **gebruik deze, maak geen
+paginakopie**: `.display-title` (+`--on-dark`; de h1 van elke subpagina),
+`.subsection-title`, `.section-label--sm`, `.list-heading`, `.stack`
+(verticale gap + automatische label→titel-afstand; vervangt negatieve
+marges), `.btn-outline` (+`--on-dark`), `.btn-sm`, `.link-arrow`
+(+`--on-dark`), `.breadcrumb`, `.date-tile`, `.info-card`
+(+`--reflow` voor tablet), `.sidebar-layout`, `.detail-hero*`, `.prose`
+(+ `.prose-quote`/`.prose-figure` voor Portable Text), `.status-page`.
+Let op specificiteit: `components.css` laadt ná `style.css`; een
+homepage-verfijning op zo'n component heeft een dubbele class nodig
+(zie `.info-card.upcoming-card`).
 
 Conventies: sectielabels zijn uppercase met `letter-spacing: 0.14em`
 (`.section-label`, kies `dark-green` op licht en `bright-green` op donker —

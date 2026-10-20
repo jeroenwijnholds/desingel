@@ -111,7 +111,7 @@ useBreadcrumbJsonLd([
 
   <section v-if="archive.length" class="news-archive">
     <div class="news-archive-inner">
-      <h2 class="news-archive-heading">{{ page?.archiveHeading ?? 'Meer van de boerderij' }}</h2>
+      <h2 class="section-label dark-green list-heading">{{ page?.archiveHeading ?? 'Meer van de boerderij' }}</h2>
       <div class="news-list">
         <article v-for="article in archive" :key="article._id" class="news-list-item">
           <NuxtLink :to="`/nieuws/${article.slug.current}`" class="news-list-link">

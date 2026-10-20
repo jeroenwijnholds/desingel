@@ -27,7 +27,7 @@ const imageAttrs = computed(() =>
     </div>
     <div class="page-header-inner">
       <p v-if="label" class="section-label bright-green">{{ label }}</p>
-      <h1 class="page-header-title">{{ title }}</h1>
+      <h1 class="display-title display-title--on-dark">{{ title }}</h1>
       <p v-if="subtitle" class="page-header-sub">{{ subtitle }}</p>
     </div>
   </header>
