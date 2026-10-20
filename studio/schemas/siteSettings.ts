@@ -36,9 +36,42 @@ export default defineType({
       ],
     }),
     defineField({
+      name: 'announcement',
+      title: 'Tijdelijke mededeling',
+      type: 'object',
+      description:
+        'Een balk bovenaan elke pagina, bijv. "Farmshop gesloten t/m 3 november". ' +
+        'Verdwijnt vanzelf na de einddatum. Leeg laten = geen balk.',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        defineField({
+          name: 'text',
+          title: 'Tekst',
+          type: 'string',
+          description: 'Kort houden: maximaal 90 tekens, zodat het op een telefoon op twee regels past.',
+          validation: Rule => Rule.max(90),
+        }),
+        defineField({
+          name: 'link',
+          title: 'Link (optioneel)',
+          type: 'string',
+          description: 'Bijv. /agenda of een volledige URL; de hele balk wordt dan klikbaar.',
+          validation: linkValidation,
+        }),
+        defineField({
+          name: 'until',
+          title: 'Tonen tot en met',
+          type: 'date',
+          options: { dateFormat: 'DD-MM-YYYY' },
+          description: 'Leeg = blijft staan tot je de tekst weghaalt.',
+        }),
+      ],
+    }),
+    defineField({
       name: 'owners',
       title: 'Eigenaren',
       type: 'array',
+      description: 'Getoond in de footer en op de contactpagina ("Victor & Mari Duurland").',
       of: [
         {
           type: 'object',
@@ -55,15 +88,30 @@ export default defineType({
       title: 'Adres',
       type: 'text',
       rows: 3,
+      description: 'Getoond in de footer, op de contactpagina en op de homepage, en gebruikt door Google.',
     }),
     defineField({
       name: 'coordinates',
       title: 'Coördinaten (Google Maps)',
-      description: 'Bepaalt waar de kaart op de contactpagina op inzoomt.',
+      description:
+        'Bepaalt de kaart op de contactpagina en de "Plan je route"-knoppen. Zo vind je ze: ' +
+        'klik in Google Maps met de rechtermuisknop op de boerderij en klik op de bovenste ' +
+        'regel (bijv. 51.94792, 6.51001) — die staan dan op je klembord. Het eerste getal is ' +
+        'de breedtegraad, het tweede de lengtegraad.',
       type: 'object',
       fields: [
-        defineField({ name: 'lat', title: 'Breedtegraad', type: 'number' }),
-        defineField({ name: 'lng', title: 'Lengtegraad', type: 'number' }),
+        defineField({
+          name: 'lat',
+          title: 'Breedtegraad',
+          type: 'number',
+          validation: Rule => Rule.min(50.7).max(53.6).error('Dat ligt niet in Nederland (verwacht iets rond 51,9). Lengte- en breedtegraad omgedraaid?'),
+        }),
+        defineField({
+          name: 'lng',
+          title: 'Lengtegraad',
+          type: 'number',
+          validation: Rule => Rule.min(3.3).max(7.3).error('Dat ligt niet in Nederland (verwacht iets rond 6,5). Lengte- en breedtegraad omgedraaid?'),
+        }),
       ],
     }),
     // farmshopHours en responseTime zijn verwijderd: de site las ze nooit —
@@ -81,6 +129,8 @@ export default defineType({
       name: 'telephone',
       title: 'Telefoonnummer',
       type: 'string',
+      validation: Rule =>
+        Rule.regex(/^\+?[\d\s()-]{8,20}$/, { name: 'telefoonnummer' }).error('Alleen cijfers, spaties, haakjes, - en een + vooraan, bijv. +31 6 12345678.'),
       description:
         'Internationaal formaat, bijv. +31 6 12345678. Wordt klikbaar getoond in de footer en op ' +
         'de contactpagina. Leeg laten totdat dit bekend is — ' +
@@ -111,9 +161,8 @@ export default defineType({
       name: 'openingHours',
       title: 'Openingstijden farmshop',
       description:
-        'Getoond op de homepage (blok "Binnenkort") en gebruikt door Google en AI-assistenten. ' +
-        'Let op: de contactpagina gebruikt (nog) het veld "Openingstijden farmshop" op de ' +
-        'Contact-pagina — houd die twee gelijk.',
+        'Eén regel per tijdvak. Getoond op de homepage en de contactpagina, en gebruikt door ' +
+        'Google en AI-assistenten.',
       type: 'array',
       of: [
         {
@@ -137,8 +186,8 @@ export default defineType({
               },
               validation: Rule => Rule.required().min(1),
             }),
-            defineField({ name: 'opens', title: 'Open vanaf (HH:mm)', type: 'string', validation: Rule => Rule.required() }),
-            defineField({ name: 'closes', title: 'Open tot (HH:mm)', type: 'string', validation: Rule => Rule.required() }),
+            defineField({ name: 'opens', title: 'Open vanaf (uu:mm)', type: 'string', validation: Rule => Rule.required().regex(/^([01]\d|2[0-3]):[0-5]\d$/, { name: 'tijd', invert: false }).error('Gebruik uu:mm, bijv. 09:30 of 17:00.') }),
+            defineField({ name: 'closes', title: 'Open tot (uu:mm)', type: 'string', validation: Rule => Rule.required().regex(/^([01]\d|2[0-3]):[0-5]\d$/, { name: 'tijd', invert: false }).error('Gebruik uu:mm, bijv. 09:30 of 17:00.') }),
           ],
           preview: {
             select: { days: 'days', opens: 'opens', closes: 'closes' },

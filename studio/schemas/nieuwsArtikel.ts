@@ -52,18 +52,26 @@ export default defineType({
       title: 'Inleiding / samenvatting',
       type: 'text',
       rows: 3,
-      validation: Rule => Rule.required(),
+      description: 'Staat onder de titel, in het nieuwsoverzicht én is de beschrijving die Google toont. Ideaal maximaal 160 tekens.',
+      validation: Rule => [
+        Rule.required(),
+        Rule.max(160).warning('Langer dan 160 tekens: Google kapt de beschrijving af.'),
+      ],
     }),
     defineField({
       name: 'readTime',
       title: 'Leestijd (minuten)',
       type: 'number',
+      description: 'Laat leeg: de website berekent de leestijd dan zelf uit de tekst.',
+      validation: Rule => Rule.integer().min(1).max(60),
     }),
     imageField({
       name: 'featuredImage',
       title: 'Uitgelichte afbeelding',
       description: 'De grote foto bovenaan het artikel; ook zichtbaar op de nieuwsoverzichtspagina.',
+      recommended: 'Zonder foto oogt het artikel in het nieuwsoverzicht als een leeg groen vlak.',
     }),
+
     defineField({
       name: 'body',
       title: 'Artikel-inhoud',
@@ -91,17 +99,30 @@ export default defineType({
       name: 'relatedArticles',
       title: 'Gerelateerde artikelen',
       type: 'array',
-      of: [{ type: 'reference', to: [{ type: 'nieuwsArtikel' }] }],
-      validation: Rule => Rule.max(3),
+      description: 'Maximaal 3; verschijnen in de zijkolom als "Meer nieuws".',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'nieuwsArtikel' }],
+          // Een artikel kan niet naar zichzelf verwijzen
+          options: {
+            filter: ({ document }) => ({
+              filter: '_id != $id',
+              params: { id: String(document._id).replace(/^drafts\./, '') },
+            }),
+          },
+        },
+      ],
+      validation: Rule => Rule.max(3).unique(),
     }),
   ],
   preview: {
-    select: { title: 'title', subtitle: 'publishedAt' },
-    prepare({ title, subtitle }: { title: string; subtitle: string }) {
-      return {
-        title,
-        subtitle: subtitle ? new Date(subtitle).toLocaleDateString('nl-NL') : '',
-      }
+    select: { title: 'title', publishedAt: 'publishedAt', category: 'category', media: 'featuredImage' },
+    prepare({ title, publishedAt, category, media }: { title?: string; publishedAt?: string; category?: string; media?: unknown }) {
+      const when = publishedAt
+        ? new Date(publishedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/Amsterdam' })
+        : 'Nog niet gepland'
+      return { title: title ?? 'Naamloos artikel', subtitle: [when, category].filter(Boolean).join(' · '), media: media as any }
     },
   },
   orderings: [

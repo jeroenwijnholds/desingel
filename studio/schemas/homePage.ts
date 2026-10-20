@@ -1,5 +1,5 @@
 import { defineType, defineField } from 'sanity'
-import { imageField, linkValidation } from './lib'
+import { imageField, ctaFields, seoFields, SEO_GROUP } from './lib'
 
 const serviceCard = {
   type: 'object',
@@ -23,6 +23,7 @@ export default defineType({
     { name: 'binnenkort', title: 'Binnenkort (agenda)' },
     { name: 'galerij', title: 'Galerij-kop' },
     { name: 'cta', title: 'Blok onderaan' },
+    SEO_GROUP,
   ],
   fields: [
     defineField({
@@ -120,39 +121,8 @@ export default defineType({
       description: 'Klein label boven de fotogalerij, bijv. "De boerderij in beeld". De foto\'s zelf staan onder "Fotogalerij".',
     }),
     defineField({ name: 'galleryTitle', title: 'Galerij titel', type: 'string', group: 'galerij' }),
-    defineField({
-      name: 'ctaLabel',
-      title: 'CTA kop-label',
-      type: 'string',
-      group: 'cta',
-      description: 'Klein label boven het blok onderaan, bijv. "Kom langs".',
-    }),
-    defineField({ name: 'ctaTitle', title: 'CTA titel', type: 'string', group: 'cta' }),
-    defineField({ name: 'ctaText', title: 'CTA tekst', type: 'text', rows: 3, group: 'cta' }),
-    defineField({
-      name: 'ctaPrimaryLabel',
-      title: 'CTA primaire knoptekst',
-      type: 'string',
-      group: 'cta',
-      description: 'Tekst op de groene knop in het "Kom langs"-blok onderaan.',
-    }),
-    defineField({
-      name: 'ctaPrimaryHref',
-      title: 'CTA primaire URL',
-      type: 'string',
-      validation: linkValidation,
-      group: 'cta',
-      description: 'Interne link zoals /agenda of een volledige URL.',
-    }),
-    defineField({ name: 'ctaSecondaryLabel', title: 'CTA secundaire knoptekst', type: 'string', group: 'cta' }),
-    defineField({
-      name: 'ctaSecondaryHref',
-      title: 'CTA secundaire URL',
-      type: 'string',
-      validation: linkValidation,
-      group: 'cta',
-      description: 'Interne link zoals /over-ons of een volledige URL.',
-    }),
+    ...ctaFields({ group: 'cta', primaryExample: '/agenda', secondaryExample: '/over-ons' }),
+    ...seoFields(),
   ],
   preview: { prepare: () => ({ title: 'Homepage' }) },
 })
