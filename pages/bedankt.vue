@@ -7,7 +7,7 @@ useSeo({
 </script>
 
 <template>
-  <main class="bedankt-main">
+  <div class="bedankt-main">
     <div class="bedankt-inner">
       <div class="bedankt-icon" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -23,7 +23,7 @@ useSeo({
         <NuxtLink to="/agenda" class="bedankt-link">Bekijk onze evenementen</NuxtLink>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <style scoped>
@@ -68,7 +68,7 @@ useSeo({
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--green-light);
+  color: var(--green-text);
 }
 
 .bedankt-title {
@@ -103,7 +103,7 @@ useSeo({
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
-  color: var(--green-light);
+  color: var(--green-text);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

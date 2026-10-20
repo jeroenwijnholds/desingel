@@ -18,8 +18,9 @@ function goHome() {
 
 <template>
   <div>
+    <a href="#inhoud" class="skip-link">Direct naar de inhoud</a>
     <AppNav />
-    <main class="error-main">
+    <main id="inhoud" class="error-main" tabindex="-1">
       <div class="error-inner">
         <p class="error-code" aria-hidden="true">{{ error.statusCode }}</p>
         <p class="error-label">Belevenisboerderij de Singel</p>
@@ -76,7 +77,7 @@ function goHome() {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--green-light);
+  color: var(--green-text);
 }
 
 .error-title {
@@ -110,7 +111,7 @@ function goHome() {
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--green-light);
+  color: var(--green-text);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

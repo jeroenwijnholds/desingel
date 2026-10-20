@@ -129,7 +129,7 @@ useBreadcrumbJsonLd([
     :image="page?.headerImage"
   />
 
-  <main class="contact-main" id="contact-form">
+  <div class="contact-main" id="contact-form">
     <div class="contact-layout">
 
       <section class="contact-form-section" aria-labelledby="form-heading">
@@ -302,7 +302,7 @@ useBreadcrumbJsonLd([
       </aside>
 
     </div>
-  </main>
+  </div>
 
   <section class="contact-map-section" aria-label="Locatie op de kaart">
     <iframe

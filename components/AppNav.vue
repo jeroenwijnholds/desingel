@@ -75,6 +75,7 @@ onUnmounted(() => {
   <nav
     ref="navEl"
     class="nav"
+    aria-label="Hoofdmenu"
     :class="{ 'nav--open': isMenuOpen, 'nav--scrolled': isScrolled || !isHome }"
   >
     <NuxtLink to="/" class="nav-logo" @click="closeMenu">
@@ -84,6 +85,7 @@ onUnmounted(() => {
     <button
       class="nav-hamburger"
       :aria-expanded="isMenuOpen"
+      aria-controls="hoofdmenu"
       :aria-label="isMenuOpen ? 'Menu sluiten' : 'Menu openen'"
       @click="toggleMenu"
     >
@@ -92,7 +94,7 @@ onUnmounted(() => {
       <span></span>
     </button>
 
-    <div class="nav-menu">
+    <div id="hoofdmenu" class="nav-menu">
       <ul class="nav-links">
         <li
           v-for="item in (data?.navigation ?? []).filter((n: NavItem) => !n.isButton)"

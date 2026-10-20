@@ -38,6 +38,10 @@ useSeo({
   description: 'Maak kennis met Victor en Mari Duurland, de boeren achter Belevenisboerderij de Singel in de Achterhoek.',
 })
 
+// Zonder foto geen leeg kader of "foto volgt"-badge voor bezoekers:
+// het fotoblok vervalt en de intro wordt één kolom.
+const hasFamilyPhoto = computed(() => hasImage(page.value?.familyPhoto))
+
 useBreadcrumbJsonLd([
   { name: 'Home', path: '/' },
   { name: 'Over Ons', path: '/over-ons' },
@@ -46,7 +50,7 @@ useBreadcrumbJsonLd([
 
 <template>
   <section class="about-intro">
-    <div class="about-intro-inner">
+    <div class="about-intro-inner" :class="{ 'about-intro-inner--no-photo': !hasFamilyPhoto }">
 
       <div class="about-intro-text">
         <p class="section-label dark-green">{{ page?.introLabel ?? 'Victor & Mari Duurland' }}</p>
@@ -64,19 +68,14 @@ useBreadcrumbJsonLd([
         </ul>
       </div>
 
-      <div class="about-photo-wrap">
+      <div v-if="page && hasImage(page.familyPhoto)" class="about-photo-wrap">
         <figure class="about-photo-frame">
           <img
-            v-if="page && hasImage(page.familyPhoto)"
             v-bind="img(page.familyPhoto, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             :alt="page.familyPhoto.alt ?? 'Victor, Mari en de kinderen van de Singel'"
             loading="eager"
             fetchpriority="high"
           />
-          <div v-else class="about-photo-placeholder-badge">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Familiefoto volgt
-          </div>
         </figure>
         <p class="about-photo-caption">{{ page?.photoCaption ?? 'Victor, Mari en de dieren van de Singel · Achterhoek' }}</p>
       </div>

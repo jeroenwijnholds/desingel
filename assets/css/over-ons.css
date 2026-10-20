@@ -20,32 +20,6 @@
   font-weight: 600;
 }
 
-/* --- Placeholder badge (remove when real photo is added) --- */
-.about-photo-placeholder-badge {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(54, 72, 56, 0.82);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-radius: 100em;
-  padding: 7px 14px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--green-accent);
-  letter-spacing: 0.04em;
-}
-
-.about-photo-placeholder-badge svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-}
-
 /* --- Farm photo focal point --- */
 .about-farm-photo img {
   object-position: center 60%;

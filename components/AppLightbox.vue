@@ -85,7 +85,7 @@ onUnmounted(() => {
       ref="thumbEls"
       type="button"
       class="gallery-thumb"
-      :aria-label="img.alt || `Foto ${i + 1} vergroten`"
+      :aria-label="img.alt ? `${img.alt} – vergroten` : `Foto ${i + 1} vergroten`"
       @click="open(i)"
     >
       <img

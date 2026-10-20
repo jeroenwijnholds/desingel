@@ -69,7 +69,7 @@ useBreadcrumbJsonLd([
     :image="page?.headerImage"
   />
 
-  <main v-if="groupedEvents.length" class="agenda-main">
+  <div v-if="groupedEvents.length" class="agenda-main">
     <div class="agenda-wrapper">
       <div v-for="group in groupedEvents" :key="group.key" v-reveal class="agenda-month">
         <h2 class="agenda-month-title">{{ group.key }}</h2>
@@ -90,11 +90,11 @@ useBreadcrumbJsonLd([
             </p>
             <div class="agenda-actions">
               <NuxtLink :to="`/evenement/${event.slug.current}`" class="agenda-btn agenda-btn--internal">
-                Lees meer
+                Lees meer<span class="visually-hidden"> over {{ event.title }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </NuxtLink>
               <a v-if="event.externalLink" :href="event.externalLink" class="agenda-btn agenda-btn--external" target="_blank" rel="noopener noreferrer">
-                Bezoek website
+                Bezoek website<span class="visually-hidden"> van {{ event.title }} (opent in nieuw tabblad)</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
               </a>
             </div>
@@ -103,7 +103,7 @@ useBreadcrumbJsonLd([
       </div>
 
     </div>
-  </main>
+  </div>
 
   <section v-else class="page-empty">
     <div class="page-empty-inner">

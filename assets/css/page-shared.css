@@ -42,6 +42,13 @@
   align-items: center;
 }
 
+/* Zonder introfoto: één kolom met een leesbare regellengte */
+.about-intro-inner--no-photo,
+.boerderij-intro-inner--no-photo {
+  grid-template-columns: 1fr;
+  max-width: 760px;
+}
+
 .about-intro-text,
 .boerderij-intro-text {
   display: flex;
@@ -91,7 +98,7 @@
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: var(--green-light);
+  color: var(--green-text);
   letter-spacing: 0.03em;
 }
 

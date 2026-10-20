@@ -1,5 +1,5 @@
 import type { PortableTextVueComponents } from '@portabletext/vue'
-import { defineComponent, h, type PropType } from 'vue'
+import { defineComponent, h, type FunctionalComponent, type PropType } from 'vue'
 
 /**
  * Gedeelde PortableText-componenten voor artikel- en evenement-body's
@@ -33,7 +33,13 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
     },
   })
 
+  // De Studio-stijl "Citaat" kwam als kale <blockquote> zonder styling
+  // binnen; .article-quote (nieuws-artikel.css) was nergens aan gekoppeld.
+  const Blockquote: FunctionalComponent = (_, { slots }) =>
+    h('blockquote', { class: 'article-quote' }, slots.default?.())
+
   return {
     types: { image: PortableTextImage },
+    block: { blockquote: Blockquote },
   } as Partial<PortableTextVueComponents>
 }

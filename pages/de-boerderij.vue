@@ -39,6 +39,9 @@ useSeo({
   description: 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
 })
 
+// Zonder foto geen leeg kader: het fotoblok vervalt en de intro wordt één kolom.
+const hasIntroImage = computed(() => hasImage(page.value?.introImage))
+
 useBreadcrumbJsonLd([
   { name: 'Home', path: '/' },
   { name: 'De Boerderij', path: '/de-boerderij' },
@@ -47,7 +50,7 @@ useBreadcrumbJsonLd([
 
 <template>
   <section class="boerderij-intro">
-    <div class="boerderij-intro-inner">
+    <div class="boerderij-intro-inner" :class="{ 'boerderij-intro-inner--no-photo': !hasIntroImage }">
 
       <div class="boerderij-intro-text">
         <p class="section-label dark-green">{{ page?.introLabel ?? 'Achterhoek, Gelderland' }}</p>
@@ -65,10 +68,9 @@ useBreadcrumbJsonLd([
         </ul>
       </div>
 
-      <div class="boerderij-photo-wrap">
+      <div v-if="page && hasImage(page.introImage)" class="boerderij-photo-wrap">
         <figure class="boerderij-photo-frame">
           <img
-            v-if="page && hasImage(page.introImage)"
             v-bind="img(page.introImage, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             :alt="page.introImage.alt ?? 'Belevenisboerderij de Singel in de Achterhoek'"
             loading="eager"
