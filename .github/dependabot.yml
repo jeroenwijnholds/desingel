@@ -1,0 +1,11 @@
+# Houdt de op commit-SHA vastgepinde GitHub Actions in deploy.yml actueel.
+# (npm-dependencies bewust niet: die updaten we handmatig, met `npm ci`
+# als controle — zie de lockfile-valkuil in CLAUDE.md.)
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
