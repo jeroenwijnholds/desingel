@@ -4,7 +4,7 @@ const QUERY = `*[_type == "siteSettings"][0]{ siteName, navigation }`
 interface NavItem { label: string; href: string; isButton: boolean }
 interface SiteSettings { siteName: string; navigation: NavItem[] }
 
-const { data } = useSanityQuery<SiteSettings>(QUERY)
+const { data } = useContentQuery<SiteSettings>(QUERY)
 
 const route = useRoute()
 const isHome = computed(() => route.path === '/')

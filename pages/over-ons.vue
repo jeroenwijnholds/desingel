@@ -28,7 +28,7 @@ interface OverOnsPage {
 }
 
 const QUERY = `*[_type == "overOnsPage" && !(_id in path("drafts.**"))][0]`
-const { data } = useSanityQuery<OverOnsPage>(QUERY)
+const { data } = useContentQuery<OverOnsPage>(QUERY)
 const page = computed(() => data.value)
 
 const img = useSanityImg()

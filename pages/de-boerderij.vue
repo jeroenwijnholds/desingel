@@ -29,7 +29,7 @@ interface BoerderijPage {
 }
 
 const QUERY = `*[_type == "boerderijPage" && !(_id in path("drafts.**"))][0]`
-const { data } = useSanityQuery<BoerderijPage>(QUERY)
+const { data } = useContentQuery<BoerderijPage>(QUERY)
 const page = computed(() => data.value)
 
 const img = useSanityImg()

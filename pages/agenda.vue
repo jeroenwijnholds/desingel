@@ -27,7 +27,7 @@ const QUERY = `{
   },
   "page": *[_type == "agendaPage" && !(_id in path("drafts.**"))][0]
 }`
-const { data } = useSanityQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
+const { data } = useContentQuery<{ events: Event[]; page?: AgendaPage }>(QUERY)
 const page = computed(() => data.value?.page)
 
 const { formatDay, formatWeekday, formatMonthYear, isPastDay } = useDateFormat()

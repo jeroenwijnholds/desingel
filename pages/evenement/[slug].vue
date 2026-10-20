@@ -16,7 +16,7 @@ interface Event {
 
 const route = useRoute()
 const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const query = useSanityQuery<Event>(QUERY, { slug: route.params.slug as string })
+const query = useContentQuery<Event>(QUERY, { slug: route.params.slug as string })
 const { data } = query
 const event = computed(() => data.value)
 

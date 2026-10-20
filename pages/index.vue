@@ -38,7 +38,7 @@ const QUERY = `{
   "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ siteName }
 }`
 
-const { data } = useSanityQuery<{ page: HomePage; gallery: any[]; settings: { siteName: string } }>(QUERY)
+const { data } = useContentQuery<{ page: HomePage; gallery: any[]; settings: { siteName: string } }>(QUERY)
 
 const page = computed(() => data.value?.page)
 const settings = computed(() => data.value?.settings)

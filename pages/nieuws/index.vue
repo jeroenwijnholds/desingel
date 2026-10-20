@@ -24,7 +24,7 @@ const QUERY = `{
   },
   "page": *[_type == "nieuwsPage" && !(_id in path("drafts.**"))][0]
 }`
-const { data } = useSanityQuery<{ articles: NieuwsArtikel[]; page?: NieuwsPage }>(QUERY)
+const { data } = useContentQuery<{ articles: NieuwsArtikel[]; page?: NieuwsPage }>(QUERY)
 const page = computed(() => data.value?.page)
 
 const articles = computed(() => data.value?.articles ?? [])

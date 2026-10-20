@@ -18,7 +18,7 @@ interface SiteSettings {
   openingHours?: OpeningHoursRule[]
 }
 
-const { data } = useSanityQuery<SiteSettings>(QUERY)
+const { data } = useContentQuery<SiteSettings>(QUERY)
 
 const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
 

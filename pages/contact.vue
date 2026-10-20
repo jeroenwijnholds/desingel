@@ -18,7 +18,7 @@ const QUERY = `{
   "page": *[_type == "contactPage" && !(_id in path("drafts.**"))][0],
   "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ coordinates }
 }`
-const { data } = useSanityQuery<{ page: ContactPage; settings?: { coordinates?: { lat: number; lng: number } } }>(QUERY)
+const { data } = useContentQuery<{ page: ContactPage; settings?: { coordinates?: { lat: number; lng: number } } }>(QUERY)
 const page = computed(() => data.value?.page)
 
 // Kaart volgt de coördinaten uit Site-instellingen; fallback = huidige locatie
