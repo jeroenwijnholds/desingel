@@ -151,7 +151,7 @@
   margin: 0 0 var(--space-8);
   padding: var(--space-4) var(--space-5);
   background: var(--surface-soft);
-  border-left: 4px solid var(--green-dark);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
   font-size: var(--text-base);
   color: var(--green-dark);
