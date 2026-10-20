@@ -25,6 +25,9 @@ interface OverOnsPage {
   ctaPrimaryHref?: string
   ctaSecondaryLabel?: string
   ctaSecondaryHref?: string
+  seoTitle?: string
+  seoDescription?: string
+  quoteAuthor?: string
 }
 
 const QUERY = `*[_type == "overOnsPage" && !(_id in path("drafts.**"))][0]`
@@ -33,9 +36,10 @@ const page = computed(() => data.value)
 
 const img = useSanityImg()
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'Over Ons – Belevenisboerderij De Singel',
-  description: 'Maak kennis met Victor en Mari Duurland, de boeren achter Belevenisboerderij de Singel in de Achterhoek.',
+  title: () => page.value?.seoTitle || 'Over Ons – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Maak kennis met Victor en Mari Duurland, de boeren achter Belevenisboerderij de Singel in de Achterhoek.',
 })
 
 // Zonder foto geen leeg kader of "foto volgt"-badge voor bezoekers:
@@ -96,7 +100,7 @@ useBreadcrumbJsonLd([
   <section v-if="page?.victorQuote" class="about-quote-section">
     <div v-reveal class="about-quote-inner">
       <blockquote class="about-quote">{{ page.victorQuote }}</blockquote>
-      <p class="about-quote-author">– Victor Duurland</p>
+      <p class="about-quote-author">– {{ page.quoteAuthor || 'Victor Duurland' }}</p>
     </div>
   </section>
 

@@ -33,6 +33,8 @@ interface HomePage {
   ctaPrimaryHref?: string
   ctaSecondaryLabel?: string
   ctaSecondaryHref?: string
+  seoTitle?: string
+  seoDescription?: string
 }
 
 interface UpcomingEvent {
@@ -40,6 +42,7 @@ interface UpcomingEvent {
   title: string
   slug: { current: string }
   date: string
+  endDate?: string
   timeRange?: string
   location?: string
 }
@@ -49,8 +52,8 @@ interface UpcomingEvent {
 const QUERY = `{
   "page": *[_type == "homePage" && !(_id in path("drafts.**"))][0],
   "gallery": *[_id == "fotoGalerij"][0].images,
-  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(date) >= dateTime(now()) - 60*60*24] | order(date asc)[0...4] {
-    _id, title, slug, date, timeRange, location
+  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(coalesce(endDate, date)) >= dateTime(now()) - 60*60*24] | order(date asc)[0...4] {
+    _id, title, slug, date, endDate, timeRange, location
   }
 }`
 
@@ -60,7 +63,7 @@ const page = computed(() => data.value?.page)
 const { data: settings } = useSiteSettings()
 
 const { formatDay, formatMonthShort, formatChipDate, formatDatetime, isPastDay } = useDateFormat()
-const upcomingEvents = computed(() => (data.value?.events ?? []).filter(e => !isPastDay(e.date)).slice(0, 3))
+const upcomingEvents = computed(() => (data.value?.events ?? []).filter(e => !isPastDay(eventLastDate(e))).slice(0, 3))
 const openingHours = computed(() => openingHoursParts(settings.value?.openingHours))
 
 const imageUrl = useImageUrl()
@@ -146,9 +149,10 @@ onUnmounted(() => {
 })
 
 useSeo({
-  // Regio + aanbod in de titel: daar zoeken mensen op ("boerderij Achterhoek")
-  title: 'Belevenisboerderij De Singel – farmshop & boerderijbeleving in de Achterhoek',
-  description: 'Belevenisboerderij in de Achterhoek: farmshop met eigen producten, boerderij op locatie en evenementen. Kom langs en beleef het boerenleven van dichtbij.',
+  // Regio + aanbod in de titel: daar zoeken mensen op ("boerderij Achterhoek").
+  // Overschrijfbaar via de Studio-groep "Google (SEO)".
+  title: () => page.value?.seoTitle || 'Belevenisboerderij De Singel – farmshop & boerderijbeleving in de Achterhoek',
+  description: () => page.value?.seoDescription || 'Belevenisboerderij in de Achterhoek: farmshop met eigen producten, boerderij op locatie en evenementen. Kom langs en beleef het boerenleven van dichtbij.',
 })
 </script>
 
@@ -250,7 +254,7 @@ useSeo({
                 <span class="upcoming-title">{{ event.title }}</span>
                 <span class="upcoming-meta">
                   <time :datetime="formatDatetime(event.date)">{{ formatChipDate(event.date) }}</time>
-                  <template v-if="event.timeRange"> · {{ event.timeRange }}</template>
+                  <template v-if="eventTimeLabel(event)"> · {{ eventTimeLabel(event) }}</template>
                   <template v-if="event.location"> · {{ event.location }}</template>
                 </span>
               </span>

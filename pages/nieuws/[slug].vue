@@ -38,6 +38,24 @@ query.then(() => {
   }
 }).catch(() => {})
 
+// Teksten van het blok onderaan, gedeeld door alle artikelen (Studio → Nieuws pagina)
+const { data: nieuwsPage } = useContentQuery<{ articleCtaLabel?: string; articleCtaTitle?: string; articleCtaText?: string } | null>(
+  `*[_type == "nieuwsPage" && !(_id in path("drafts.**"))][0]{ articleCtaLabel, articleCtaTitle, articleCtaText }`
+)
+
+// Leestijd: ingevuld in de Studio, anders berekend (≈200 woorden per minuut)
+const readTime = computed(() => {
+  if (!article.value) return null
+  if (article.value.readTime) return article.value.readTime
+  const words = (article.value.body ?? [])
+    .flatMap((block: any) => block?.children ?? [])
+    .map((child: any) => String(child?.text ?? ''))
+    .join(' ')
+    .split(/\s+/)
+    .filter(Boolean).length
+  return words ? Math.max(1, Math.round(words / 200)) : null
+})
+
 const img = useSanityImg()
 const { formatDate, formatDatetime } = useDateFormat()
 const portableTextComponents = usePortableTextComponents()
@@ -147,11 +165,11 @@ useJsonLd(() => article.value
                 <span class="info-card-value">{{ article.author }}</span>
               </div>
             </li>
-            <li v-if="article.readTime">
+            <li v-if="readTime">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <div>
                 <span class="info-card-label">Leestijd</span>
-                <span class="info-card-value">± {{ article.readTime }} minuten</span>
+                <span class="info-card-value">± {{ readTime }} {{ readTime === 1 ? 'minuut' : 'minuten' }}</span>
               </div>
             </li>
           </ul>
@@ -180,9 +198,9 @@ useJsonLd(() => article.value
     </div>
 
     <CtaBlock
-      label="Meer van de boerderij"
-      title="Blijf op de hoogte van het boerderijleven"
-      text="Verhalen over dieren, seizoenen, de farmshop en het dagelijkse leven op de Singel."
+      :label="nieuwsPage?.articleCtaLabel || 'Meer van de boerderij'"
+      :title="nieuwsPage?.articleCtaTitle || 'Blijf op de hoogte van het boerderijleven'"
+      :text="nieuwsPage?.articleCtaText || 'Verhalen over dieren, seizoenen, de farmshop en het dagelijkse leven op de Singel.'"
       primary-href="/nieuws"
       primary-label="Bekijk alle nieuws"
       secondary-href="/agenda"

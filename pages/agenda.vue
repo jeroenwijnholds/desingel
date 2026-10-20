@@ -5,6 +5,7 @@ interface Event {
   slug: { current: string }
   category: string
   date: string
+  endDate?: string
   timeRange?: string
   location?: string
   description?: string
@@ -17,13 +18,15 @@ interface AgendaPage {
   headerSubtitle?: string
   headerImage?: any
   emptyMessage?: string
+  seoTitle?: string
+  seoDescription?: string
 }
 
 // Grove voorselectie op de server (alles van de afgelopen 24 uur en later);
 // de exacte "vanaf vandaag"-grens in NL-tijd bepaalt isPastDay hieronder.
 const QUERY = `{
-  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(date) >= dateTime(now()) - 60*60*24] | order(date asc) {
-    _id, title, slug, category, date, timeRange, location, description, externalLink
+  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(coalesce(endDate, date)) >= dateTime(now()) - 60*60*24] | order(date asc) {
+    _id, title, slug, category, date, endDate, timeRange, location, description, externalLink
   },
   "page": *[_type == "agendaPage" && !(_id in path("drafts.**"))][0]
 }`
@@ -37,7 +40,7 @@ const groupedEvents = computed(() => {
   const byKey: Record<string, { key: string; events: Event[] }> = {}
   // Ook in de browser filteren: de statische HTML is zo oud als de laatste
   // build, dus tussen twee (dagelijkse) builds kan er een evenement verlopen.
-  for (const event of (data.value?.events ?? []).filter(e => !isPastDay(e.date))) {
+  for (const event of (data.value?.events ?? []).filter(e => !isPastDay(eventLastDate(e)))) {
     const key = formatMonthYear(event.date)
     let group = byKey[key]
     if (!group) {
@@ -50,9 +53,10 @@ const groupedEvents = computed(() => {
   return groups
 })
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'Agenda – Belevenisboerderij De Singel',
-  description: 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
+  title: () => page.value?.seoTitle || 'Agenda – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
 })
 
 useBreadcrumbJsonLd([
@@ -84,9 +88,9 @@ useBreadcrumbJsonLd([
             <h3 class="agenda-title">{{ event.title }}</h3>
             <p class="visually-hidden">{{ formatChipDate(event.date) }}</p>
             <p v-if="event.description" class="agenda-desc">{{ event.description }}</p>
-            <p v-if="event.timeRange || event.location" class="agenda-meta">
-              <span v-if="event.timeRange">{{ event.timeRange }}</span>
-              <template v-if="event.timeRange && event.location"> · </template>
+            <p v-if="eventTimeLabel(event) || event.location" class="agenda-meta">
+              <span v-if="eventTimeLabel(event)">{{ eventTimeLabel(event) }}</span>
+              <template v-if="eventTimeLabel(event) && event.location"> · </template>
               <span v-if="event.location">{{ event.location }}</span>
             </p>
             <div class="agenda-actions">

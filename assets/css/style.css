@@ -83,13 +83,21 @@
      dus uitsluitend als horizontale padding op sectie-niveau. */
   --page-pad: max(clamp(16px, calc(10vw - 32px), 120px), calc((100% - var(--container-max)) / 2));
   --section-pad: clamp(64px, 9vw, 112px);
-  --nav-height: 72px;
+  --nav-base: 72px; /* hoogte van de nav zelf */
+  --nav-height: var(--nav-base); /* alles wat onder de vaste kop moet beginnen */
   /* Links uitgelijnde layouts volgen --page-pad (max 1280px, gelijk aan
      homepage en footer). Gecentreerde composities kiezen één van deze: */
   --container-text:   760px; /* agenda, citaat, paginakop, lopende tekst */
   --container-mid:    960px; /* tweekoloms verhaal */
   --container-narrow: 600px; /* CTA-blok, lege staat, statuspagina */
   --sticky-top: calc(var(--nav-height) + var(--space-4)); /* zijkolommen onder de vaste nav */
+  --announcement-height: 44px; /* tijdelijke mededeling (AppAnnouncement), max 2 regels */
+}
+
+/* Met een mededelingsbalk schuift alles wat met --nav-height rekent
+   (paginakoppen, sticky kolommen, scroll-padding) vanzelf mee */
+html.has-announcement {
+  --nav-height: calc(var(--nav-base) + var(--announcement-height));
 }
 
 /* --- Reset & Base --- */
@@ -307,6 +315,50 @@ h3 { font-size: var(--text-xl); }
   width: 15px;
   height: 15px;
   flex-shrink: 0;
+}
+
+/* ============================================
+   MEDEDELING (AppAnnouncement)
+   ============================================ */
+.announcement {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000; /* boven de nav (9999) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--announcement-height);
+  padding: 0 var(--space-4);
+  background-color: var(--yellow);
+  color: var(--black);
+  text-align: center;
+}
+
+.announcement-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.announcement-text--link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.has-announcement .nav {
+  top: var(--announcement-height);
+}
+
+@media screen and (max-width: 479px) {
+  .announcement-text {
+    font-size: var(--text-xs);
+  }
 }
 
 /* ============================================

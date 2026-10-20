@@ -16,6 +16,8 @@ interface NieuwsPage {
   headerImage?: any
   archiveHeading?: string
   emptyMessage?: string
+  seoTitle?: string
+  seoDescription?: string
 }
 
 const QUERY = `{
@@ -35,9 +37,10 @@ const archive = computed(() => articles.value.slice(3))
 const img = useSanityImg()
 const { formatDate, formatDatetime } = useDateFormat()
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'Nieuws – Belevenisboerderij De Singel',
-  description: 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
+  title: () => page.value?.seoTitle || 'Nieuws – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
 })
 
 useBreadcrumbJsonLd([

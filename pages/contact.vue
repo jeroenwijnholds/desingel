@@ -12,6 +12,8 @@ interface ContactPage {
   infoResponseTime?: string
   subjectOptions?: string[]
   privacyNotice?: string
+  seoTitle?: string
+  seoDescription?: string
 }
 
 const QUERY = `{
@@ -27,6 +29,14 @@ const mapSrc = computed(() => {
   const { lat, lng } = coordinates.value
   return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
 })
+
+// Eén bron: adres, eigenaren en openingstijden uit Site-instellingen (net als
+// footer en homepage). De oude Contact-velden alleen nog als terugval.
+const infoAddress = computed(() => settings.value?.address || page.value?.infoAddress || 'Achterhoek, Gelderland')
+const infoOwners = computed(() => formatOwners(settings.value?.owners) || page.value?.infoOwners || 'Victor & Mari Duurland')
+const infoHours = computed(() =>
+  formatOpeningHours(settings.value?.openingHours).join('\n') || page.value?.infoHours || 'Zaterdag & zondag, 10:00 – 17:00'
+)
 
 const DEFAULT_SUBJECTS = ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders']
 const subjectOptions = computed(() => page.value?.subjectOptions?.length ? page.value.subjectOptions : DEFAULT_SUBJECTS)
@@ -125,9 +135,10 @@ async function onSubmit() {
   }
 }
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'Contact – Belevenisboerderij De Singel',
-  description: 'Neem contact op met Belevenisboerderij de Singel: stel je vraag over de farmshop, evenementen of de boerderij op locatie.',
+  title: () => page.value?.seoTitle || 'Contact – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Neem contact op met Belevenisboerderij de Singel: stel je vraag over de farmshop, evenementen of de boerderij op locatie.',
 })
 
 useBreadcrumbJsonLd([
@@ -285,7 +296,7 @@ useBreadcrumbJsonLd([
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             <div>
               <span class="info-card-label">Adres</span>
-              <span class="info-card-value">{{ page?.infoAddress ?? 'Achterhoek, Gelderland' }}</span>
+              <span class="info-card-value">{{ infoAddress }}</span>
               <a :href="routeHref(coordinates)" class="contact-info-route" target="_blank" rel="noopener noreferrer">
                 Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -310,7 +321,7 @@ useBreadcrumbJsonLd([
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <div>
               <span class="info-card-label">Eigenaren</span>
-              <span class="info-card-value">{{ page?.infoOwners ?? 'Victor & Mari Duurland' }}</span>
+              <span class="info-card-value">{{ infoOwners }}</span>
             </div>
           </li>
           <li>
@@ -324,7 +335,7 @@ useBreadcrumbJsonLd([
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             <div>
               <span class="info-card-label">Farmshop open</span>
-              <span class="info-card-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 – 17:00' }}</span>
+              <span class="info-card-value">{{ infoHours }}</span>
             </div>
           </li>
         </ul>

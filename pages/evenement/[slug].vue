@@ -6,6 +6,7 @@ interface Event {
   slug: { current: string }
   category: string
   date: string
+  endDate?: string
   timeRange?: string
   location?: string
   description?: string
@@ -36,7 +37,7 @@ const { formatChipDate, isPastDay } = useDateFormat()
 // Pas na mount bepalen, zodat de SSR-HTML niet van de client afwijkt.
 const now = ref<Date | null>(null)
 onMounted(() => { now.value = new Date() })
-const isVoorbij = computed(() => !!(now.value && event.value && isPastDay(event.value.date, now.value)))
+const isVoorbij = computed(() => !!(now.value && event.value && isPastDay(eventLastDate(event.value), now.value)))
 const portableTextComponents = usePortableTextComponents()
 
 useSeo({
@@ -58,7 +59,7 @@ useBreadcrumbJsonLd(() => event.value
 const config = useRuntimeConfig()
 
 // Begin/eind in NL-tijd volgens het getoonde tijdvak (zie useEventTimes)
-const times = computed(() => event.value ? getEventTimes(event.value.date, event.value.timeRange) : null)
+const times = computed(() => event.value ? getEventTimes(event.value.date, event.value.timeRange, event.value.endDate) : null)
 const calendar = computed(() => {
   if (!event.value || !times.value) return null
   const input = {
@@ -72,6 +73,7 @@ const calendar = computed(() => {
   return { ics: icsHref(input), google: googleCalendarHref(input) }
 })
 // Contactformulier vooraf invullen met dit evenement
+const timeLabel = computed(() => event.value ? eventTimeLabel(event.value) : undefined)
 const contactLink = computed(() => ({ path: '/contact', query: event.value ? { over: event.value.title } : {} }))
 useJsonLd(() => event.value
   ? {
@@ -122,9 +124,9 @@ useJsonLd(() => event.value
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               {{ formatChipDate(event.date) }}
             </span>
-            <span v-if="event.timeRange" class="event-chip">
+            <span v-if="timeLabel" class="event-chip">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              {{ event.timeRange }}
+              {{ timeLabel }}
             </span>
             <span v-if="event.location" class="event-chip">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -159,11 +161,11 @@ useJsonLd(() => event.value
                 <span class="info-card-value">{{ formatChipDate(event.date) }}</span>
               </div>
             </li>
-            <li v-if="event.timeRange">
+            <li v-if="timeLabel">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <div>
                 <span class="info-card-label">Tijd</span>
-                <span class="info-card-value">{{ event.timeRange }}</span>
+                <span class="info-card-value">{{ timeLabel }}</span>
               </div>
             </li>
             <li v-if="event.location">

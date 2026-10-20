@@ -38,8 +38,36 @@ function amsterdamTime(day: string, h: number, m: number) {
   return new Date(guess - amsterdamOffset(guess))
 }
 
-export function getEventTimes(dateStr: string, timeRange?: string): EventTimes {
-  const day = new Date(dateStr).toLocaleDateString('en-CA', { timeZone: TZ })
+/** De tijdvelden van een evenement zoals de queries ze ophalen */
+export interface EventWhen {
+  date: string
+  endDate?: string
+  /** verouderd vrij tijdvak ("14:00 – 21:00"); alleen gebruikt zonder endDate */
+  timeRange?: string
+}
+
+const nlDay = (s: string) => new Date(s).toLocaleDateString('en-CA', { timeZone: TZ })
+const nlTime = (s: string) => new Date(s).toLocaleTimeString('nl-NL', { timeZone: TZ, hour: '2-digit', minute: '2-digit' })
+
+/** Laatste moment van een evenement (eind, anders begin) — voor "is dit voorbij?" */
+export const eventLastDate = (e: EventWhen) => e.endDate ?? e.date
+
+/**
+ * Tijdtekst voor bezoekers: "14:00 – 21:00" uit begin/eind als er een
+ * eindtijd is (meerdaags: "t/m zo 21 december"), anders het oude tijdvak.
+ */
+export function eventTimeLabel(e: EventWhen): string | undefined {
+  if (e.endDate) {
+    if (nlDay(e.date) === nlDay(e.endDate)) return `${nlTime(e.date)} – ${nlTime(e.endDate)}`
+    return `t/m ${new Date(e.endDate).toLocaleDateString('nl-NL', { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'long' })}`
+  }
+  return e.timeRange?.trim() || undefined
+}
+
+export function getEventTimes(dateStr: string, timeRange?: string, endDate?: string): EventTimes {
+  const day = nlDay(dateStr)
+  // Nieuwe invoer: echte begin- en eindtijd
+  if (endDate) return { day, allDay: false, start: new Date(dateStr), end: new Date(endDate) }
   const times = [...(timeRange ?? '').matchAll(/(\d{1,2})[:.](\d{2})/g)]
     .map(m => [Number(m[1]), Number(m[2])] as const)
     .filter(([h, m]) => h < 24 && m < 60)

@@ -26,6 +26,9 @@ interface BoerderijPage {
   ctaPrimaryHref?: string
   ctaSecondaryLabel?: string
   ctaSecondaryHref?: string
+  seoTitle?: string
+  seoDescription?: string
+  quoteAuthor?: string
 }
 
 const QUERY = `*[_type == "boerderijPage" && !(_id in path("drafts.**"))][0]`
@@ -34,9 +37,10 @@ const page = computed(() => data.value)
 
 const img = useSanityImg()
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'De Boerderij – Belevenisboerderij De Singel',
-  description: 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
+  title: () => page.value?.seoTitle || 'De Boerderij – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Ontdek Belevenisboerderij de Singel: een kleinschalige boerderij in de Achterhoek waar bijzondere dieren en wilde natuur samenkomen.',
 })
 
 // Zonder foto geen leeg kader: het fotoblok vervalt en de intro wordt één kolom.
@@ -96,7 +100,7 @@ useBreadcrumbJsonLd([
   <section v-if="page?.victorQuote" class="boerderij-quote-section">
     <div v-reveal class="boerderij-quote-inner">
       <blockquote class="boerderij-quote">{{ page.victorQuote }}</blockquote>
-      <p class="boerderij-quote-author">– Victor Duurland</p>
+      <p class="boerderij-quote-author">– {{ page.quoteAuthor || 'Victor Duurland' }}</p>
     </div>
   </section>
 

@@ -19,6 +19,7 @@ function goHome() {
 <template>
   <div>
     <a href="#inhoud" class="skip-link">Direct naar de inhoud</a>
+    <AppAnnouncement />
     <AppNav />
     <main id="inhoud" class="status-page" tabindex="-1">
       <div class="status-page-inner stack">

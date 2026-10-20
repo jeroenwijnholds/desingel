@@ -21,11 +21,12 @@ export interface SiteSettings {
   email?: string
   socialLinks?: SocialLink[]
   openingHours?: OpeningHoursRule[]
+  announcement?: { text?: string; link?: string; until?: string }
 }
 
 const QUERY = `*[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{
   siteName, tagline, footerCopyright, navigation, owners, address, coordinates,
-  telephone, email, socialLinks, openingHours
+  telephone, email, socialLinks, openingHours, announcement
 }`
 
 export function useSiteSettings() {
@@ -61,6 +62,25 @@ export function openingHoursParts(rules?: OpeningHoursRule[]): { days: string; t
 /** "Zaterdag & zondag, 10:00 – 17:00" */
 export const formatOpeningHours = (rules?: OpeningHoursRule[]) =>
   openingHoursParts(rules).map(p => `${p.days}, ${p.time}`)
+
+/**
+ * "Victor & Mari Duurland" uit [{ name: 'Victor Duurland' }, { name: 'Mari Duurland' }]:
+ * bij een gedeelde achternaam alleen de voornamen samenvoegen.
+ */
+export function formatOwners(owners?: Owner[]): string {
+  const names = (owners ?? []).map(o => o.name?.trim()).filter((n): n is string => !!n)
+  if (names.length < 2) return names[0] ?? ''
+  const split = names.map(n => {
+    const i = n.lastIndexOf(' ')
+    return i > 0 ? [n.slice(0, i), n.slice(i + 1)] as const : [n, ''] as const
+  })
+  const surname = split[0]![1]
+  if (surname && split.every(([, s]) => s === surname)) {
+    const firsts = split.map(([f]) => f)
+    return `${firsts.slice(0, -1).join(', ')} & ${firsts[firsts.length - 1]} ${surname}`
+  }
+  return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`
+}
 
 /** tel:-link zonder spaties/streepjes; "+31 6 12345678" → "tel:+31612345678" */
 export const telHref = (tel: string) => `tel:${tel.replace(/[^\d+]/g, '')}`
