@@ -8,12 +8,20 @@
   /* Colors */
   --green-dark:             #364838;
   --green-light:            #658457;
+  /* AA-veilige varianten van --green-light (dat zelf maar 4,2:1 haalt met
+     wit). Zo licht mogelijk gehouden, zodat het merkgroen herkenbaar blijft:
+     --green-text  voor kleine groene tekst/labels; ≥4,5:1 op wit,
+                   --surface-soft én de groene introband (#e5e9d6)
+     --green-button als knopvlak met witte tekst (4,6:1; 4,5% donkerder)
+     --green-light zelf alleen nog voor vlakken, iconen en grote tekst. */
+  --green-text:             #556f49;
+  --green-button:           #607e53;
   --green-dark-transparent: #364838cc;
   --green-transparent:      #d4dbba99;
   --green-accent:           #d1f2c2;
   --brown-transparent:      #cfb8a0e6;
   --card-text:              #290707;
-  --card-heading:           #5d624d;
+  --card-heading:           #4e5241; /* was #5d624d: 3,6:1 op de bruine dienstenkaart, nu 4,5:1 */
   --yellow:                 #f6c204;
   --white:                  #ffffff;
   --black:                  #000000;
@@ -22,6 +30,8 @@
   --surface-soft:           #f0f5ec; /* zachte groene sectie-achtergrond */
   --error:                  #b3261e;
   --error-bg:               #fdf1f0;
+  /* Focusring: donkergroen op licht; donkere secties zetten hem op wit */
+  --focus-ring:             var(--green-dark);
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
@@ -101,6 +111,51 @@ a {
   color: inherit;
 }
 
+/* --- Toegankelijkheid --- */
+
+/* Eén focusring voor de hele site; specifieke componenten verfijnen alleen
+   offset/radius. Kleur via --focus-ring (wit binnen donkere secties). */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* <main> krijgt na een routewissel programmatisch focus (layouts/default.vue);
+   dat hoort geen zichtbare ring rond de hele pagina te geven. */
+main:focus {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 10000; /* boven de vaste nav (9999) */
+  padding: var(--space-3) var(--space-5);
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--green-dark);
+}
+
 /* --- Typography --- */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
@@ -161,17 +216,13 @@ h3 { font-size: var(--text-xl); }
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--green-dark);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .btn-green {
-  background-color: var(--green-light);
+  background-color: var(--green-button);
   color: var(--white);
-}
-
-.btn-green:focus-visible {
-  outline-color: var(--white);
 }
 
 .btn-yellow {
@@ -206,7 +257,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .section-label.dark-green {
-  color: var(--green-light);
+  color: var(--green-text);
 }
 
 /* --- Hero link --- */
@@ -246,6 +297,7 @@ h3 { font-size: var(--text-xl); }
    NAV
    ============================================ */
 .nav {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: fixed;
   top: 0;
   left: 0;
@@ -282,7 +334,9 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-logo:focus-visible {
-  outline: 2px solid var(--white);
+  /* op de homepage is het logo vóór scrollen onzichtbaar, maar wel focusbaar */
+  opacity: 1;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -330,7 +384,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-links a:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -353,7 +407,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-hamburger:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -381,6 +435,7 @@ h3 { font-size: var(--text-xl); }
    HERO
    ============================================ */
 .hero {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: relative;
   display: flex;
   min-height: 80vh;
@@ -962,7 +1017,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .gallery-thumb:focus-visible {
-  outline: 3px solid var(--green-dark);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -996,6 +1051,7 @@ h3 { font-size: var(--text-xl); }
    MODAL
    ============================================ */
 .modal {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   display: none;
   position: fixed;
   inset: 0;
@@ -1040,7 +1096,7 @@ h3 { font-size: var(--text-xl); }
 
 .modal-close:focus-visible,
 .modal-nav:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 4px;
   opacity: 1;
@@ -1093,6 +1149,7 @@ h3 { font-size: var(--text-xl); }
    FOOTER
    ============================================ */
 .footer {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   background-color: var(--green-dark);
   color: var(--white);
   padding: var(--space-16) var(--page-pad) 0;
@@ -1169,7 +1226,7 @@ h3 { font-size: var(--text-xl); }
 .footer-bottom {
   padding: 20px 0;
   font-size: 13px;
-  opacity: 0.5;
+  opacity: 0.75; /* 0.5 gaf 3,8:1 op donkergroen; 0.75 = 6,3:1 */
 }
 
 /* ============================================
@@ -1182,12 +1239,18 @@ h3 { font-size: var(--text-xl); }
   z-index: 999;
   display: none;
   opacity: 0;
+  /* onzichtbaar = ook niet tikbaar en niet focusbaar (anders vangt hij
+     rechtsonder tikken af en krijgt hij toetsenbordfocus) */
+  visibility: hidden;
+  pointer-events: none;
   transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
 }
 
 .cta-fixed--visible {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
 }
 

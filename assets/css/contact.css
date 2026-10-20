@@ -2,18 +2,6 @@
    CONTACT PAGE — contact.css
    ============================================ */
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* ==================== CONTACT MAIN ==================== */
 
 .contact-main {
@@ -88,7 +76,7 @@
 }
 
 .form-required {
-  color: var(--green-light);
+  color: var(--green-text);
   margin-left: 1px;
 }
 
@@ -233,6 +221,7 @@
 }
 
 .contact-info-card {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   background-color: var(--green-dark);
   border-radius: 16px;
   padding: 32px;
@@ -294,6 +283,7 @@
   font-weight: 600;
   color: var(--white);
   line-height: 1.5;
+  white-space: pre-line; /* adres en openingstijden zijn meerregelig in het CMS */
 }
 
 .contact-info-link {

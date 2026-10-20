@@ -7,6 +7,7 @@
    ============================================ */
 
 .page-header {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: relative;
   min-height: clamp(380px, 50svh, 560px);
   display: flex;

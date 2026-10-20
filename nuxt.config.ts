@@ -27,6 +27,10 @@ export default defineNuxtConfig({
     '@fontsource/source-sans-3/400.css',
     '@fontsource/source-sans-3/600.css',
     '@fontsource/source-sans-3/700.css',
+    // echte cursieven voor <em> in CMS-teksten, bijschriften en het verhaal
+    // (anders maakt de browser een scheve nep-cursief); laden pas bij gebruik
+    '@fontsource/source-sans-3/400-italic.css',
+    '@fontsource/source-sans-3/600-italic.css',
     '~/assets/css/style.css',
     '~/assets/css/page-header.css',
     '~/assets/css/page-shared.css',

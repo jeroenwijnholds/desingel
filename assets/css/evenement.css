@@ -5,6 +5,7 @@
 /* ==================== HERO ==================== */
 
 .event-hero {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: relative;
   min-height: 520px;
   display: flex;
@@ -236,6 +237,7 @@
 }
 
 .event-info-card {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   background-color: var(--green-dark);
   border-radius: 16px;
   padding: 32px;
