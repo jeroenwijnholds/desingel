@@ -21,6 +21,9 @@ interface HomePage {
   servicesIntro?: string
   primaryServices: Service[]
   secondaryServices: SecondaryService[]
+  upcomingLabel?: string
+  upcomingTitle?: string
+  upcomingEmptyText?: string
   galleryLabel?: string
   galleryTitle?: string
   ctaLabel?: string
@@ -32,16 +35,33 @@ interface HomePage {
   ctaSecondaryHref?: string
 }
 
+interface UpcomingEvent {
+  _id: string
+  title: string
+  slug: { current: string }
+  date: string
+  timeRange?: string
+  location?: string
+}
+
+// Eén extra evenement ophalen: als het eerste vandaag al voorbij blijkt
+// (isPastDay, NL-tijd) blijven er toch drie over.
 const QUERY = `{
   "page": *[_type == "homePage" && !(_id in path("drafts.**"))][0],
   "gallery": *[_id == "fotoGalerij"][0].images,
-  "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ siteName }
+  "events": *[_type == "event" && !(_id in path("drafts.**")) && dateTime(date) >= dateTime(now()) - 60*60*24] | order(date asc)[0...4] {
+    _id, title, slug, date, timeRange, location
+  }
 }`
 
-const { data } = useContentQuery<{ page: HomePage; gallery: any[]; settings: { siteName: string } }>(QUERY)
+const { data } = useContentQuery<{ page: HomePage; gallery: any[]; events: UpcomingEvent[] }>(QUERY)
 
 const page = computed(() => data.value?.page)
-const settings = computed(() => data.value?.settings)
+const { data: settings } = useSiteSettings()
+
+const { formatDay, formatMonthShort, formatChipDate, formatDatetime, isPastDay } = useDateFormat()
+const upcomingEvents = computed(() => (data.value?.events ?? []).filter(e => !isPastDay(e.date)).slice(0, 3))
+const openingHours = computed(() => openingHoursParts(settings.value?.openingHours))
 
 const imageUrl = useImageUrl()
 const img = useSanityImg()
@@ -50,18 +70,37 @@ const img = useSanityImg()
 // media-query voor mobiel blijft werken (inline background-image zou die
 // overriden). Zonder ingevulde foto geldt de CSS-fallback (gebundelde
 // hero-desktop/mobile.jpg). Hotspot stuurt de background-position.
+const heroUrl = (source: any, width: number) => imageUrl(source).width(width).auto('format').quality(75).url()
+
 const heroStyle = computed(() => {
   const style: Record<string, string> = {}
   const addImage = (source: any, suffix: string, width: number) => {
     if (!source?.asset?._ref) return
-    style[`--hero-bg${suffix}`] = `url('${imageUrl(source).width(width).auto('format').quality(75).url()}')`
+    style[`--hero-bg${suffix}`] = `url('${heroUrl(source, width)}')`
     if (source.hotspot) {
       style[`--hero-pos${suffix}`] = `${(source.hotspot.x * 100).toFixed(1)}% ${(source.hotspot.y * 100).toFixed(1)}%`
     }
   }
   addImage(page.value?.heroImage, '', 2000)
-  addImage(page.value?.heroImageMobile, '-mobile', 1080)
+  // Zonder aparte mobiele foto een 1080px-versie van de desktopfoto, i.p.v.
+  // de 2000px-versie op een telefoon
+  addImage(hasImage(page.value?.heroImageMobile) ? page.value?.heroImageMobile : page.value?.heroImage, '-mobile', 1080)
   return Object.keys(style).length ? style : undefined
+})
+
+// De hero is het grootste element bij het laden (LCP), maar als CSS-
+// achtergrond ontdekt de browser hem pas na het parsen van de stylesheet.
+// Preload met dezelfde URL's en breakpoints als style.css (≤479px = mobiel).
+useHead(() => {
+  const desktop = page.value?.heroImage
+  if (!hasImage(desktop)) return {}
+  const mobile = hasImage(page.value?.heroImageMobile) ? page.value?.heroImageMobile : desktop
+  return {
+    link: [
+      { rel: 'preload', as: 'image', href: heroUrl(desktop, 2000), media: '(min-width: 480px)', fetchpriority: 'high' },
+      { rel: 'preload', as: 'image', href: heroUrl(mobile, 1080), media: '(max-width: 479px)', fetchpriority: 'high' },
+    ],
+  }
 })
 
 const galleryImages = computed(() =>
@@ -107,7 +146,8 @@ onUnmounted(() => {
 })
 
 useSeo({
-  title: 'Belevenisboerderij De Singel',
+  // Regio + aanbod in de titel: daar zoeken mensen op ("boerderij Achterhoek")
+  title: 'Belevenisboerderij De Singel – farmshop & boerderijbeleving in de Achterhoek',
   description: 'Belevenisboerderij in de Achterhoek: farmshop met eigen producten, boerderij op locatie en evenementen. Kom langs en beleef het boerenleven van dichtbij.',
 })
 </script>
@@ -191,6 +231,54 @@ useSeo({
           <p>{{ service.description }}</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section v-reveal class="upcoming-section" aria-labelledby="upcoming-title">
+    <div class="upcoming-inner">
+      <div class="upcoming-main">
+        <p class="section-label dark-green">{{ page?.upcomingLabel ?? 'Agenda' }}</p>
+        <h2 id="upcoming-title" class="section-title">{{ page?.upcomingTitle ?? 'Binnenkort op de Singel' }}</h2>
+        <ul v-if="upcomingEvents.length" class="upcoming-list">
+          <li v-for="event in upcomingEvents" :key="event._id">
+            <NuxtLink :to="`/evenement/${event.slug.current}`" class="upcoming-item">
+              <span class="upcoming-date" aria-hidden="true">
+                <span class="upcoming-day">{{ formatDay(event.date) }}</span>
+                <span class="upcoming-month">{{ formatMonthShort(event.date) }}</span>
+              </span>
+              <span class="upcoming-text">
+                <span class="upcoming-title">{{ event.title }}</span>
+                <span class="upcoming-meta">
+                  <time :datetime="formatDatetime(event.date)">{{ formatChipDate(event.date) }}</time>
+                  <template v-if="event.timeRange"> · {{ event.timeRange }}</template>
+                  <template v-if="event.location"> · {{ event.location }}</template>
+                </span>
+              </span>
+              <svg class="upcoming-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </NuxtLink>
+          </li>
+        </ul>
+        <p v-else class="upcoming-empty">{{ page?.upcomingEmptyText ?? 'Er staan op dit moment geen evenementen gepland. Houd de agenda in de gaten – of kom langs bij de farmshop.' }}</p>
+        <NuxtLink to="/agenda" class="upcoming-all">
+          Bekijk de hele agenda
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </NuxtLink>
+      </div>
+
+      <aside v-if="openingHours.length || settings?.coordinates" class="upcoming-card" aria-label="Farmshop">
+        <p class="section-label bright-green">Farmshop open</p>
+        <p v-for="line in openingHours" :key="line.days + line.time" class="upcoming-hours">
+          {{ line.days }}, <span class="upcoming-hours-time">{{ line.time }}</span>
+        </p>
+        <p v-if="settings?.address" class="upcoming-address">{{ settings.address }}</p>
+        <a
+          v-if="settings?.coordinates"
+          :href="routeHref(settings.coordinates)"
+          class="btn btn-yellow upcoming-route"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span></a>
+      </aside>
     </div>
   </section>
 

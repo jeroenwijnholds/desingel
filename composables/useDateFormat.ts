@@ -40,6 +40,10 @@ export function useDateFormat() {
     formatWeekday(dateStr: string) {
       return capitalize(fmt(dateStr, { weekday: 'short' })).slice(0, 2)
     },
+    /** "dec" — maand-afkorting in de datumtegel op de homepage */
+    formatMonthShort(dateStr: string) {
+      return fmt(dateStr, { month: 'short' }).replace('.', '')
+    },
     /** "April 2026" — maandkop in de agendalijst */
     formatMonthYear(dateStr: string) {
       return capitalize(fmt(dateStr, { month: 'long', year: 'numeric' }))

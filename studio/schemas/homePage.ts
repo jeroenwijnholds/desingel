@@ -20,6 +20,7 @@ export default defineType({
   groups: [
     { name: 'hero', title: 'Hero (bovenaan)', default: true },
     { name: 'diensten', title: 'Diensten' },
+    { name: 'binnenkort', title: 'Binnenkort (agenda)' },
     { name: 'galerij', title: 'Galerij-kop' },
     { name: 'cta', title: 'Blok onderaan' },
   ],
@@ -89,6 +90,27 @@ export default defineType({
         },
       ],
       validation: Rule => Rule.max(3),
+    }),
+    defineField({
+      name: 'upcomingLabel',
+      title: 'Binnenkort kop-label',
+      type: 'string',
+      group: 'binnenkort',
+      description: 'Klein label boven het blok met de eerstvolgende evenementen, bijv. "Agenda". De evenementen zelf komen automatisch uit de Agenda; de openingstijden uit Site-instellingen.',
+    }),
+    defineField({
+      name: 'upcomingTitle',
+      title: 'Binnenkort titel',
+      type: 'string',
+      group: 'binnenkort',
+      description: 'Bijv. "Binnenkort op de Singel".',
+    }),
+    defineField({
+      name: 'upcomingEmptyText',
+      title: 'Tekst als er geen evenementen gepland zijn',
+      type: 'text',
+      rows: 2,
+      group: 'binnenkort',
     }),
     defineField({
       name: 'galleryLabel',
