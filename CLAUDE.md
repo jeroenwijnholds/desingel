@@ -135,7 +135,7 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
 
 Identiteit: donkergroen `#364838`, lichtgroen `#658457`, accentgroen
 `#d1f2c2`, geel `#f6c204`, Playfair Display (koppen, 400/700/900 + italic)
-en Source Sans 3 (body, 400/600/700), self-hosted via @fontsource —
+en Source Sans 3 (body, 400/600/700 + italic 400/600), self-hosted via @fontsource —
 **geen Google Fonts-links terugzetten** en geen gewichten gebruiken die niet
 in `nuxt.config.ts` geladen worden (geeft faux bold).
 
@@ -150,6 +150,19 @@ Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
 - Vorm: `--radius-*`, `--shadow-*`
 - Kleur-extra's: `--surface-soft` (zachte groene sectie-achtergrond),
   `--error`/`--error-bg` (formulierfouten)
+- **Contrast**: lichtgroen `#658457` haalt met wit maar 4,2:1 (onder AA).
+  Gebruik voor kleine groene tekst `--green-text` en als knopvlak met
+  witte tekst `--green-button`; `--green-light` alleen voor vlakken,
+  iconen en grote tekst. Nieuwe kleurcombinaties narekenen (axe doet het
+  in de viewport-check).
+- **Focus**: één ring via `--focus-ring` + de globale `:focus-visible`-regel
+  in `style.css`. Op een nieuwe donkere container zet je alleen
+  `--focus-ring: var(--white)` in diens eigen regel; nooit een losse
+  outline-kleur per component (zo was de ring van `.btn-green` wit, dus
+  onzichtbaar op licht).
+- **Landmarks**: `layouts/default.vue` levert de enige `<main>` (+ skip-link,
+  route-aankondiging, focus na navigatie). Pagina's gebruiken dus géén
+  eigen `<main>`; alleen `error.vue` (rendert buiten de layout).
 
 Conventies: sectielabels zijn uppercase met `letter-spacing: 0.14em`
 (`.section-label`, kies `dark-green` op licht en `bright-green` op donker —
@@ -165,15 +178,20 @@ targets minimaal ~44px op mobiel.
 ```powershell
 # PowerShell (Git Bash verhaspelt de routes naar Windows-paden!)
 $env:ROUTES = "/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt"
-node scripts/viewport-check.mjs          # overflow-check 6 breedtes per route
-$env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots
+node scripts/viewport-check.mjs          # overflow 6 breedtes + axe (WCAG AA) op 375/1440
+$env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots (→ %TEMP%\desingel-shots, of SHOT_DIR)
 ```
+
+Axe-bevindingen van ernst serious/critical laten het script falen
+(`$env:AXE = "0"` slaat axe over). De Google Maps-iframe is uitgesloten.
 
 Bij frontend-wijzigingen minimaal: build groen → overflow-check → screenshots
 op 375/1440 bekijken (Read op de PNG's) → toetsenbord-walkthrough voor
 interactieve elementen (menu, lightbox, formulier: Tab/Escape/pijltjes).
 Het script zet `reducedMotion: 'reduce'` zodat scroll-reveals screenshots
-niet verstoren.
+niet verstoren. Let op bij eigen Playwright-checks onder reduced motion: de
+globale guard geeft élke property een transitie van 0,01ms, dus lees
+berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
 
 ## Werkwijze
 
