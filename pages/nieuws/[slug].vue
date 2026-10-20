@@ -45,7 +45,7 @@ const portableTextComponents = usePortableTextComponents()
 useSeo({
   title: () => article.value ? `${article.value.title} – Belevenisboerderij De Singel` : 'Nieuws – Belevenisboerderij De Singel',
   description: () => article.value?.excerpt ?? 'Nieuws van Belevenisboerderij de Singel.',
-  image: () => article.value?.featuredImage
+  image: () => article.value && hasImage(article.value.featuredImage)
     ? img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
   type: 'article',
@@ -69,7 +69,7 @@ useJsonLd(() => article.value
       description: article.value.excerpt,
       datePublished: article.value.publishedAt,
       dateModified: article.value._updatedAt,
-      ...(article.value.featuredImage
+      ...(hasImage(article.value.featuredImage)
         ? { image: [img(article.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
         : {}),
       author: [
@@ -90,7 +90,7 @@ useJsonLd(() => article.value
 <template>
   <div v-if="article">
     <header class="article-hero">
-      <div v-if="article.featuredImage" class="article-hero-image-wrap">
+      <div v-if="hasImage(article.featuredImage)" class="article-hero-image-wrap">
         <img
           v-bind="img(article.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="article.featuredImage.alt ?? article.title"
@@ -162,7 +162,7 @@ useJsonLd(() => article.value
           <ul class="article-related-list">
             <li v-for="related in article.relatedArticles" :key="related._id">
               <NuxtLink :to="`/nieuws/${related.slug.current}`" class="article-related-link">
-                <div v-if="related.featuredImage" class="article-related-img">
+                <div v-if="hasImage(related.featuredImage)" class="article-related-img">
                   <img
                     v-bind="img(related.featuredImage, { widths: [120, 200], sizes: '72px' })"
                     :alt="related.featuredImage.alt ?? related.title"

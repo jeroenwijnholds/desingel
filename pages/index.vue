@@ -65,7 +65,7 @@ const heroStyle = computed(() => {
 })
 
 const galleryImages = computed(() =>
-  (data.value?.gallery ?? []).map((source: any) => {
+  (data.value?.gallery ?? []).filter(hasImage).map((source: any) => {
     const thumb = img(source, {
       widths: [400, 800, 1200],
       sizes: '(max-width: 767px) 50vw, 33vw',
@@ -140,7 +140,7 @@ useSeo({
         </div>
         <div class="card-container">
           <img
-            v-if="page.primaryServices[0].image"
+            v-if="hasImage(page.primaryServices[0].image)"
             v-bind="img(page.primaryServices[0].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[0].image.alt ?? page.primaryServices[0].title"
             class="card-image"
@@ -156,7 +156,7 @@ useSeo({
       <div v-if="page?.primaryServices?.[1]" class="content-block">
         <div class="card-container">
           <img
-            v-if="page.primaryServices[1].image"
+            v-if="hasImage(page.primaryServices[1].image)"
             v-bind="img(page.primaryServices[1].image, { widths: [400, 800, 1200], sizes: '(max-width: 1180px) 100vw, 46vw', aspect: 1.5 })"
             :alt="page.primaryServices[1].image.alt ?? page.primaryServices[1].title"
             class="card-image"
@@ -180,7 +180,7 @@ useSeo({
     <div class="services-wrapper">
       <div v-for="(service, i) in page.secondaryServices" :key="service.title" v-reveal="i * 100" class="service-item">
         <img
-          v-if="service.image"
+          v-if="hasImage(service.image)"
           v-bind="img(service.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 32vw' })"
           :alt="service.image.alt ?? service.title"
           class="service-image"

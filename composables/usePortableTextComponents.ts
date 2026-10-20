@@ -20,7 +20,7 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
     setup(props) {
       return () => {
         const val = props.value
-        if (!val) return null
+        if (!hasImage(val)) return null
         return h('figure', { class: 'article-figure' }, [
           h('img', {
             ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),

@@ -62,7 +62,7 @@ useBreadcrumbJsonLd([
           <NuxtLink :to="`/nieuws/${hero.slug.current}`" class="news-card-link">
             <div class="news-card-img-wrap">
               <img
-                v-if="hero.featuredImage"
+                v-if="hasImage(hero.featuredImage)"
                 v-bind="img(hero.featuredImage, { widths: [600, 900, 1400], sizes: '(max-width: 767px) 100vw, 62vw' })"
                 :alt="hero.featuredImage.alt ?? hero.title"
                 loading="eager"
@@ -88,7 +88,7 @@ useBreadcrumbJsonLd([
             <NuxtLink :to="`/nieuws/${article.slug.current}`" class="news-card-link">
               <div class="news-card-img-wrap">
                 <img
-                  v-if="article.featuredImage"
+                  v-if="hasImage(article.featuredImage)"
                   v-bind="img(article.featuredImage, { widths: [400, 600, 900], sizes: '(max-width: 767px) 50vw, 33vw' })"
                   :alt="article.featuredImage.alt ?? article.title"
                   loading="lazy"
@@ -117,7 +117,7 @@ useBreadcrumbJsonLd([
           <NuxtLink :to="`/nieuws/${article.slug.current}`" class="news-list-link">
             <div class="news-list-img-wrap">
               <img
-                v-if="article.featuredImage"
+                v-if="hasImage(article.featuredImage)"
                 v-bind="img(article.featuredImage, { widths: [200, 400], sizes: '(max-width: 767px) 88px, 160px' })"
                 :alt="article.featuredImage.alt ?? article.title"
                 loading="lazy"

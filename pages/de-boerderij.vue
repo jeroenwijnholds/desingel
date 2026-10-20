@@ -68,7 +68,7 @@ useBreadcrumbJsonLd([
       <div class="boerderij-photo-wrap">
         <figure class="boerderij-photo-frame">
           <img
-            v-if="page?.introImage"
+            v-if="page && hasImage(page.introImage)"
             v-bind="img(page.introImage, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             :alt="page.introImage.alt ?? 'Belevenisboerderij de Singel in de Achterhoek'"
             loading="eager"
@@ -104,7 +104,7 @@ useBreadcrumbJsonLd([
       <h2 class="section-title boerderij-highlights-title">{{ page?.highlightsTitle ?? 'Wat je aantreft' }}</h2>
       <div class="boerderij-cards">
         <article v-for="(highlight, i) in page.highlights" :key="highlight.title" v-reveal="i * 100" class="boerderij-card">
-          <div v-if="highlight.image" class="boerderij-card-img-wrap">
+          <div v-if="hasImage(highlight.image)" class="boerderij-card-img-wrap">
             <img
               v-bind="img(highlight.image, { widths: [400, 600, 900], sizes: '(max-width: 767px) 100vw, 33vw' })"
               :alt="highlight.image.alt ?? highlight.title"
@@ -120,7 +120,7 @@ useBreadcrumbJsonLd([
     </div>
   </section>
 
-  <div v-if="page?.fullWidthPhoto" class="boerderij-farm-photo">
+  <div v-if="page && hasImage(page.fullWidthPhoto)" class="boerderij-farm-photo">
     <img
       v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       :alt="page.fullWidthPhoto.alt ?? 'De Singel – Achterhoek'"

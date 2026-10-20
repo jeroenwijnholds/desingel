@@ -10,7 +10,7 @@ const props = defineProps<{
 const img = useSanityImg()
 
 const imageAttrs = computed(() =>
-  props.image ? img(props.image, { widths: [768, 1280, 1920], sizes: '100vw' }) : null
+  hasImage(props.image) ? img(props.image, { widths: [768, 1280, 1920], sizes: '100vw' }) : null
 )
 </script>
 

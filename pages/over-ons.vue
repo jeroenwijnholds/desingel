@@ -67,7 +67,7 @@ useBreadcrumbJsonLd([
       <div class="about-photo-wrap">
         <figure class="about-photo-frame">
           <img
-            v-if="page?.familyPhoto"
+            v-if="page && hasImage(page.familyPhoto)"
             v-bind="img(page.familyPhoto, { widths: [480, 900, 1200], sizes: '(max-width: 991px) 100vw, 50vw', aspect: 0.8 })"
             :alt="page.familyPhoto.alt ?? 'Victor, Mari en de kinderen van de Singel'"
             loading="eager"
@@ -116,7 +116,7 @@ useBreadcrumbJsonLd([
     </div>
   </section>
 
-  <div v-if="page?.fullWidthPhoto" class="about-farm-photo">
+  <div v-if="page && hasImage(page.fullWidthPhoto)" class="about-farm-photo">
     <img
       v-bind="img(page.fullWidthPhoto, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
       :alt="page.fullWidthPhoto.alt ?? 'Belevenisboerderij de Singel in de Achterhoek'"

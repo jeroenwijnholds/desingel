@@ -42,7 +42,7 @@ const portableTextComponents = usePortableTextComponents()
 useSeo({
   title: () => event.value ? `${event.value.title} – Belevenisboerderij De Singel` : 'Evenement – Belevenisboerderij De Singel',
   description: () => event.value?.description ?? 'Evenement van Belevenisboerderij de Singel.',
-  image: () => event.value?.featuredImage
+  image: () => event.value && hasImage(event.value.featuredImage)
     ? img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src
     : undefined,
 })
@@ -65,7 +65,7 @@ useJsonLd(() => event.value
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
       ...(event.value.description ? { description: event.value.description } : {}),
       ...(event.value.location ? { location: { '@type': 'Place', name: event.value.location } } : {}),
-      ...(event.value.featuredImage
+      ...(hasImage(event.value.featuredImage)
         ? { image: [img(event.value.featuredImage, { widths: [1200], sizes: '1200px', aspect: 1200 / 630 }).src] }
         : {}),
       organizer: { '@type': 'Organization', name: 'Belevenisboerderij de Singel', url: config.public.siteUrl },
@@ -76,7 +76,7 @@ useJsonLd(() => event.value
 <template>
   <div v-if="event">
     <header class="event-hero">
-      <div v-if="event.featuredImage" class="event-hero-image-wrap">
+      <div v-if="hasImage(event.featuredImage)" class="event-hero-image-wrap">
         <img
           v-bind="img(event.featuredImage, { widths: [768, 1200, 1600, 2000], sizes: '100vw' })"
           :alt="event.featuredImage.alt ?? event.title"
