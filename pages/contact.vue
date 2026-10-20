@@ -39,6 +39,19 @@ const form = reactive({
   botcheck: false,
 })
 
+// Zonder JS post het formulier rechtstreeks naar Web3Forms (action/method
+// + hidden velden hieronder) en redirect Web3Forms naar /bedankt; mét JS
+// neemt onSubmit het over. Tot hydratatie laten we de browser zelf
+// valideren (geen novalidate), daarna onze eigen meldingen.
+const hydrated = ref(false)
+onMounted(() => { hydrated.value = true })
+const bedanktUrl = `${config.public.siteUrl}/bedankt`
+const MAX = { naam: 100, email: 254, telefoonnummer: 30, bericht: 5000 }
+
+const subject = computed(() =>
+  `Contactformulier: ${form.onderwerp || 'algemene vraag'} – ${form.naam.trim() || 'onbekend'}`
+)
+
 const errors = reactive<{ naam?: string; email?: string; bericht?: string }>({})
 const status = ref<'idle' | 'sending' | 'error'>('idle')
 const errorSummary = ref<HTMLElement | null>(null)
@@ -77,7 +90,7 @@ async function onSubmit() {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         access_key: config.public.web3formsKey,
-        subject: 'Nieuw bericht via het contactformulier',
+        subject: subject.value,
         from_name: 'Belevenisboerderij de Singel',
         naam: form.naam,
         email: form.email,
@@ -123,7 +136,19 @@ useBreadcrumbJsonLd([
         <h2 class="contact-form-heading" id="form-heading">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
         <p class="contact-form-intro">{{ page?.formIntro ?? 'Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.' }}</p>
 
-        <form class="contact-form" novalidate @submit.prevent="onSubmit">
+        <form
+          class="contact-form"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          :novalidate="hydrated"
+          @submit.prevent="onSubmit"
+        >
+          <!-- Alleen gebruikt bij verzenden zonder JS (zie script) -->
+          <input type="hidden" name="access_key" :value="config.public.web3formsKey" />
+          <input type="hidden" name="subject" :value="subject" />
+          <input type="hidden" name="from_name" value="Belevenisboerderij de Singel" />
+          <input type="hidden" name="redirect" :value="bedanktUrl" />
+          <!-- Honeypot: wij checken hem in onSubmit, Web3Forms server-side bij een no-JS-post -->
           <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
           <div
@@ -152,6 +177,8 @@ useBreadcrumbJsonLd([
                 class="form-input"
                 type="text"
                 name="naam"
+                :maxlength="MAX.naam"
+                minlength="2"
                 autocomplete="name"
                 placeholder="Jouw naam"
                 required
@@ -170,6 +197,7 @@ useBreadcrumbJsonLd([
                 class="form-input"
                 type="email"
                 name="email"
+                :maxlength="MAX.email"
                 autocomplete="email"
                 placeholder="jouw@emailadres.nl"
                 required
@@ -185,7 +213,7 @@ useBreadcrumbJsonLd([
               <label class="form-label" for="telefoonnummer">
                 Telefoonnummer <span class="form-optional">– optioneel</span>
               </label>
-              <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
+              <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" :maxlength="MAX.telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
             </div>
             <div class="form-group">
               <label class="form-label" for="onderwerp">Onderwerp</label>
@@ -209,6 +237,8 @@ useBreadcrumbJsonLd([
               v-model="form.bericht"
               class="form-input form-textarea"
               name="bericht"
+              :maxlength="MAX.bericht"
+              minlength="10"
               placeholder="Waar kunnen we je mee helpen?"
               rows="6"
               required
