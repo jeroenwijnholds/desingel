@@ -85,7 +85,32 @@ Zodra ze ingevuld zijn verschijnen ze vanzelf: klikbaar in de footer en de
 noemt het e-mailadres, en de LocalBusiness-JSON-LD neemt ze mee
 (`email`/`telephone`/`sameAs`).
 
+### Na review fase 5 (Studio-herinrichting): stappen in productie
+
+1. Studio deployen (`npm run deploy` in `studio/`): Nederlandse interface,
+   groepen, agenda komend/archief, "Bekijk op website", placeholder-
+   waarschuwingen, eindtijd bij evenementen, mededelingsbalk.
+2. Back-up: `cd studio && npx sanity dataset export production backup.tar.gz`.
+3. `node scripts/eenmalig/migreer-evenement-tijden.mjs` (droog) nalopen,
+   dan met `--apply`. Zet bij de 4 bestaande evenementen het tijdvak om
+   naar begin/eind. De droge run liet zien dat de opgeslagen tijd overal
+   precies 2 uur afwijkt van het getoonde tijdvak (tijdzonefout bij de
+   oorspronkelijke invoer) — het tijdvak is wat bezoekers zien en dus
+   leidend. De site werkt vóór én na de migratie (terugval op het tijdvak).
+4. De verouderde Contact-velden (adres/eigenaren/openingstijden) worden
+   niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
+
 ### Content in de Studio bijwerken (oktober 2026)
+
+- **Placeholderteksten op De Boerderij** (naast die op de homepage): live
+  staan "CTA kop-label", "CTA tekst", "CTA titel", "Hoogtepunten titel",
+  "Hoogtepunten kop-label", "Foto-onderschrift", "Verhaal kop-label" en
+  "Verhaaltitel". Na de Studio-deploy krijgt elk zo'n veld een gele
+  waarschuwing.
+- **Plaatsnaam**: het intro-label op De Boerderij zegt "Heelweg,
+  Gelderland". Als dat klopt: ook in Site-instellingen → Adres zetten
+  (nu alleen "Achterhoek, Gelderland"), dan nemen footer, contactpagina
+  en Google het over.
 
 - **Privacytekst onder het contactformulier** (Contact-pagina →
   "Privacytekst onder het formulier") zegt nu dat gegevens "nooit gedeeld

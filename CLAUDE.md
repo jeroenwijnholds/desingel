@@ -123,6 +123,26 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   de homepage leest alléén daaruit. (Het verouderde veld
   `homePage.galleryImages` is op 10 juli 2026 geleegd en uit het schema
   verwijderd.)
+- Studio-conventies (`studio/schemas/lib.ts`): `ctaFields()` en
+  `seoFields()` voor het "Kom langs"-blok en Google-titel/-beschrijving
+  (de site leest `seoTitle`/`seoDescription` met fallback),
+  `withPlaceholderWarnings` (in `schemas/index.ts`) op alle paginateksten,
+  `imageField({ recommended })` voor een niet-blokkerende foto-waarschuwing.
+  Gebruik **groepen** zodra een document meer dan ~8 velden heeft, en wijs
+  dan élk veld een groep toe (een `default`-groep verbergt velden zonder
+  groep). Vervangen velden: `deprecated` + `readOnly` + verborgen als ze
+  leeg zijn, i.p.v. verwijderen (geen dataverlies). `SITE_URL` in
+  `sanity.config.ts` bij de domeinomzetting aanpassen.
+- Eén bron voor praktische gegevens: adres, eigenaren, openingstijden,
+  telefoon en e-mail komen uit Site-instellingen (`useSiteSettings`);
+  de Contact-velden daarvoor zijn verouderd.
+- Evenementen hebben `date` (begin) + `endDate`; het oude `timeRange` is
+  alleen nog terugval (`eventTimeLabel`, `getEventTimes`). Filter
+  "voorbij" altijd op `eventLastDate(e)` / `coalesce(endDate, date)`.
+- `AppAnnouncement`: tijdelijke mededeling bovenaan; zet `has-announcement`
+  op `<html>`, waardoor `--nav-height` (= `--nav-base` + balk) groeit en
+  alle offsets meeschuiven. Reken dus altijd met `--nav-height`, nooit
+  met een vaste 72px.
 - `scripts/generate-sitemap.mjs` draait als onderdeel van `npm run build`
   en schrijft sitemap.xml + robots.txt op basis van de echt geprerenderde
   routes (site-URL uit `NUXT_PUBLIC_SITE_URL`).
