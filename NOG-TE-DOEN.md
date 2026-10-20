@@ -45,15 +45,26 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
 
 ### Dependency-beheer (periodiek, geen haast)
 
-Stand 13 juli 2026, na `npm update` + CI-modernisering (Actions op hun
-Node 24-releases, build op Node 22):
+Stand 20 oktober 2026, na `npm update` in root én `studio/` (nuxt 4.6.2,
+vue 3.5.44, sanity 5.31). Tussen juli en oktober was dit opgelopen naar
+35 meldingen (5 critical, o.a. een RCE in `@nuxt/devtools` tijdens
+`npm run dev` en een SSR-XSS in vue) — periodiek updaten loont dus echt.
 
-- **5× moderate in `npm audit`** — allemaal dezelfde wortel: `uuid <11.1.1`
-  zit vastgepind via `@sanity/uuid` diep in `@nuxtjs/sanity`. Het kwetsbare
-  codepad (buf-argument, alleen in preview-tooling) raken wij niet, en de
-  enige npm-"fix" is een breaking downgrade. **Actie: niets** — bij een
-  volgende periodieke `npm update` lost dit vanzelf op zodra Sanity
-  upstream released.
+- **Root: 14× high in `npm audit --omit=dev`**, allemaal build-tooling:
+  `braces`/`micromatch` (DoS bij kwaadaardige glob-patronen, via
+  nitropack/`@sanity/codegen`) en `node-forge` (via de dev-server
+  `listhen`). Niets daarvan belandt op de statische site en we voeren
+  geen glob-patronen van buitenaf in. **Actie: niets**, lost op met een
+  volgende upstream-release.
+- **Studio: 16 (10 high, 0 critical)**, ook allemaal CLI-tooling
+  (`adm-zip`, `js-yaml`, `braces`). Sanity 6 (major) bewust nog niet.
+- **GitHub Actions** staan sinds oktober op commit-SHA vastgepind;
+  Dependabot opent maandelijks een PR als er nieuwe versies zijn.
+- **Let op**: GitHub schakelt de dagelijkse `schedule`-build uit na 60
+  dagen zonder repo-activiteit (krijgt een mail). Dan weer aanzetten via
+  het Actions-tabblad. (Bezoekers merken het nauwelijks — de browser
+  filtert verlopen evenementen ook zelf — maar de statische HTML,
+  sitemap en detailpagina's lopen dan achter tot de volgende publish.)
 - **`@types/node` blijft bewust op 22.x**: de types horen de Node-versie
   van de CI-build te volgen (nu 22). Pas samen verhogen met een
   Node-bump in `.github/workflows/deploy.yml`.
