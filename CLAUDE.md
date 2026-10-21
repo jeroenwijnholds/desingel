@@ -148,6 +148,10 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   elk afbeeldingsveld hotspot + alt-veld — gebruik die voor nieuwe velden.
   **Na elke schemawijziging opnieuw deployen** (`npm run deploy` in
   `studio/`), anders werkt de gehoste Studio met het oude schema.
+  **Nieuw documenttype?** Voeg het ook toe aan het filter van de webhook
+  "GitHub Pages rebuild" (sanity.io/manage → API → Webhooks). Dat filter is
+  een vaste `_type in [...]`-lijst; zonder het type komt een publicatie pas
+  bij de dagelijkse rebuild live. Zo ging het eerst met `privacyPage`.
 - De fotogalerij is een eigen document (`fotoGalerij`, id `fotoGalerij`);
   de homepage leest alléén daaruit. (Het verouderde veld
   `homePage.galleryImages` is op 10 juli 2026 geleegd en uit het schema
