@@ -291,7 +291,7 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   `npx -y npm@10 ci --dry-run --ignore-scripts` draaien. De PR-check vangt
   het nu, maar alleen als je via een PR werkt.
 - **Nog open**: cookiebanner + privacyverklaring (Google Maps laadt
-  bewust direct), placeholderteksten en alt-teksten in de Studio, eigen
+  bewust direct), alt-teksten bij de galerij in de Studio, eigen
   domein (zie `NOG-TE-DOEN.md`).
 
 ### Eerder (13 juli 2026)
@@ -314,8 +314,7 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   nog naar de oude Webflow-site) en periodiek dependency-beheer (npm
   audit-findings wachten op een upstream Sanity-release; majors bewust
   uitgesteld).
-- **Bekend, content**: er staan nog Sanity-placeholderteksten live op de
-  homepage én De Boerderij ("Diensten titel", "Verhaaltitel", "CTA titel"
-  e.d.) — invullen in de Studio, niet in code "fixen" (de code-fallbacks
-  zijn wél echte teksten). De Studio toont er sinds oktober een
-  waarschuwing bij.
+- **Content**: de placeholderteksten zijn op 21 oktober 2026 vervangen
+  door voorbeeldteksten (Webflow-origineel + terugvalteksten). Nieuwe
+  placeholders: invullen in de Studio (die waarschuwt), niet in code
+  "fixen" — de code-fallbacks zijn wél echte teksten.
