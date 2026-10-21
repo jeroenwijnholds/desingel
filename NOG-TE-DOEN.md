@@ -136,22 +136,29 @@ worden niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
   **Pas de tekst aan** als er een dienst bijkomt of afgaat, en zet dan
   "Laatst bijgewerkt" op de datum van die dag.
 
-### Bezoekersstatistiek (Umami Cloud) aanzetten
+### Bezoekersstatistiek (Umami Cloud) ✅ ingesteld 21 oktober 2026
 
-De code staat klaar (`plugins/analytics.ts`), maar is **uit** zolang er
-geen website-ID is. De privacyverklaring noemt Umami al. Aanzetten:
+Het account is van Jeroen (Umami Cloud, gratis Hobby-plan: tot 100.000
+events per maand, 6 maanden bewaard, geen teamleden). De website staat erin
+met het domein `jeroenwijnholds.github.io`. Hoe het werkt:
 
-1. Account aanmaken op https://cloud.umami.is (Hobby-plan: gratis, tot
-   100.000 events per maand, 6 maanden bewaard). Kies de EU-regio als die
-   wordt aangeboden.
-2. Website toevoegen. Domein: `jeroenwijnholds.github.io` (na de
-   domeinomzetting `belevenisboerderij-desingel.nl`).
-3. Het **website-ID** (een UUID) en de **script-URL** uit de trackingcode
-   als repo-variabelen zetten (GitHub → Settings → Secrets and variables →
-   Actions → Variables): `UMAMI_WEBSITE_ID` en `UMAMI_SCRIPT_URL`. De
-   script-URL mag leeg blijven, dan geldt `https://cloud.umami.is/script.js`.
-4. Een deploy draaien. De CSP neemt het scriptdomein automatisch op. Bij
-   Umami Cloud gaan de tellingen naar `gateway.umami.is`, ook die staat erin.
+- **Tellen**: de repo-variabele `UMAMI_WEBSITE_ID` (GitHub → Settings →
+  Secrets and variables → Actions → Variables) zet `plugins/analytics.ts`
+  aan. `UMAMI_SCRIPT_URL` is niet gezet, dus het script komt van
+  `https://cloud.umami.is/script.js`. De CSP neemt dat domein automatisch
+  op, plus `gateway.umami.is`, waar het Cloud-script de tellingen naartoe stuurt.
+- **Meekijken (Victor & Mari)**: via een deellink van Umami (alleen-lezen,
+  zonder login). De Studio heeft een tabblad **Bezoekersstatistiek** dat de
+  deellink opent. De link staat bewust **niet** in de repo, want die is
+  openbaar. Hij staat in `studio/.env` als `SANITY_STUDIO_UMAMI_SHARE_URL`
+  en wordt bij `npm run deploy` in de Studio gebakken. **Deploy je de Studio
+  vanaf een andere computer, zet dan eerst dat bestand neer**, anders
+  verdwijnt het tabblad. De link vind je in Umami → website → Edit → Share
+  URL.
+- Lekt de deellink uit, klik dan in Umami op "Regenerate". Zet daarna de
+  nieuwe link in `studio/.env` en deploy de Studio opnieuw.
+- Wil je dat Victor & Mari eigen logins krijgen (teamleden), dan heb je het
+  Pro-plan nodig ($20 per maand).
 
 Alleen bezoeken op het domein uit `NUXT_PUBLIC_SITE_URL` tellen mee
 (`data-domains`), dus lokaal testen vervuilt de cijfers niet. Wie

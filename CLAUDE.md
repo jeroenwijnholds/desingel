@@ -79,6 +79,10 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   Let op: een script kan naar een **ander** domein verzenden dan waar het
   vandaan komt. Het Umami Cloud-script komt van `cloud.umami.is`, maar
   verstuurt naar `gateway.umami.is`. Kijk dus in het script zelf.
+- **De repo is openbaar**: zet nooit iets in de code dat niet iedereen mag
+  zien. De Umami-deellink (`SANITY_STUDIO_UMAMI_SHARE_URL`) staat daarom in
+  `studio/.env` (gitignored). Zonder dat bestand verdwijnt bij een
+  Studio-deploy het tabblad Bezoekersstatistiek.
 - **Toestemming/cookies**: alleen de Google Maps-kaart plaatst cookies en
   laadt pas na toestemming (`useConsent().mapsAllowed`). Een nieuwe
   externe dienst die cookies zet of persoonsgegevens verwerkt, vraagt
@@ -307,9 +311,10 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   het nu, maar alleen als je via een PR werkt.
 - **Cookiebanner + privacyverklaring + statistiek** (21 oktober): Maps pas
   na toestemming, `/privacy` vanuit het CMS, en Umami Cloud klaar in de code.
-  Umami staat **uit** tot de repo-variabele `UMAMI_WEBSITE_ID` gezet is
-  (stappen in `NOG-TE-DOEN.md`).
-- **Nog open**: Umami-account aanmaken en het eigen domein (zie `NOG-TE-DOEN.md`).
+  Umami telt via de repo-variabele `UMAMI_WEBSITE_ID`. Victor & Mari kijken
+  mee via het Studio-tabblad Bezoekersstatistiek (zie `NOG-TE-DOEN.md`).
+- **Nog open**: het eigen domein (zie `NOG-TE-DOEN.md`; daarbij ook het
+  domein in Umami aanpassen).
 
 ### Eerder (13 juli 2026)
 

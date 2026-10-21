@@ -18,6 +18,7 @@ import {
   LockIcon,
 } from '@sanity/icons'
 import { schemaTypes } from './schemas'
+import { statistiekTools } from './tools/statistiek'
 
 /**
  * Adres van de live website. Bij de DNS-omzetting naar het eigen domein
@@ -170,6 +171,10 @@ export default defineConfig({
     // in Vision niet stilletjes verandert.
     ...(isDev ? [visionTool({ defaultApiVersion: '2024-01-01' })] : []),
   ],
+
+  // Tabblad met de link naar het Umami-dashboard (alleen als
+  // SANITY_STUDIO_UMAMI_SHARE_URL in studio/.env staat)
+  tools: (prev) => [...prev, ...statistiekTools],
 
   schema: {
     types: schemaTypes,
