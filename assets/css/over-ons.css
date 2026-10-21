@@ -3,16 +3,6 @@
    Alleen paginaspecifiek; gedeelde opbouw in page-shared.css
    ============================================ */
 
-.about-story-columns p em {
-  font-style: italic;
-  font-weight: 600;
-  color: var(--green-dark);
-}
-
-.about-farm-photo img {
-  object-position: center 60%;
-}
-
 /* Waardenkaart: tekst zonder foto */
 .about-value {
   gap: var(--space-3);

@@ -54,7 +54,7 @@ for (const route of routes) {
     }
 
     if (process.env.SHOTS) {
-      const name = route.replace(/[\/\[\]]/g, '_') || '_home'
+      const name = route.replace(/[/[\]]/g, '_') || '_home'
       await page.screenshot({ path: join(shotDir, `${name}-${width}.png`), fullPage: true })
     }
     await context.close()

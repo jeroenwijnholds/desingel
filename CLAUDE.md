@@ -9,10 +9,13 @@ Jeroen ook in het Nederlands.
 
 ```bash
 npm run dev                      # dev-server
-npm run build                    # nuxt generate + sitemap.xml/robots.txt → .output/public (DE verificatie)
-npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI vóór de deploy)
+npm run build                    # nuxt generate + sitemap/robots/llms.txt + CSP-meta → .output/public (DE verificatie)
+npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI)
+npm run lint                     # @nuxt/eslint (CI); na typecheck/prepare, want leest .nuxt/eslint.config.mjs
+npm test                         # Vitest: pure logica in composables, in TZ=UTC zoals CI (tests/)
+npm run typegen                  # schema → types/sanity.types.ts; na élke schemawijziging (CI controleert het)
 npx serve -l 4173 .output/public # gebouwde site lokaal serveren
-npm run viewport-check           # Playwright: overflow-check + screenshots (zie Verificatie)
+npm run viewport-check           # Playwright: overflow + axe + screenshots (zie Verificatie)
 ```
 
 `.env` bevat `SANITY_PROJECT_ID`/`SANITY_DATASET` (nodig voor build; nooit committen).
@@ -68,6 +71,17 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   (negatieve marges/overhang). Zet geen `overflow: hidden` op `.service-item`
   of `.card-container` — dat knipt de overlays af. De overhang-maten zijn
   gekoppeld via `--card-hang` en `--card-overhang` op `.intro-section`.
+- **Content-Security-Policy** (`scripts/add-csp.mjs`, na de build): hasht de
+  inline scripts van Nuxt; script-src staat géén `'unsafe-inline'` toe. Laad
+  je een nieuwe externe bron (script, iframe, font, API), voeg het domein dan
+  daar toe — anders blokkeert de browser het stil (controleer de console).
+  Nooit `v-html` gebruiken (er is er nu geen enkele).
+- **Types komen uit het schema** (`types/sanity.types.ts`): gebruik die (of
+  een `Pick<>` bij een projectie) i.p.v. eigen interfaces; afbeeldingen zijn
+  `SanityImageField` (uit `useImageUrl`). Na een schemawijziging
+  `npm run typegen`, anders faalt de CI-job "studio".
+- **Pagina's hebben één root-element** (een `<div>` om de template): nodig
+  voor Nuxt-paginatransities; lint (`vue/no-multiple-template-root`) bewaakt het.
 - **Hydration-mismatch-warning in de console is bekend en geaccepteerd**: SSR
   rendert mét data, de client hydrateert kort zonder (non-awaited queries).
   Visueel onzichtbaar. Niet "fixen" door overal `await` toe te voegen zonder
@@ -90,7 +104,9 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   LocalBusiness-JSON-LD), `AppLightbox` (pijltjes/swipe/focus-trap/teller),
   `PageHeader` (dé paginakop; props label/title/subtitle/image — image is
   een Sanity-afbeelding als achtergrond met gradient-overlay),
-  `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared).
+  `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared),
+  `PageIntroSplit`/`PageStory`/`PageQuote`/`PageWidePhoto` (de gedeelde
+  secties van Over Ons en De Boerderij), `AppAnnouncement` (mededelingsbalk).
 - `composables/` — `useContentQuery` (zie Valkuilen), `useImageUrl` (ruwe
   Sanity image-builder; exporteert ook `hasImage()` — **gebruik die in elke
   `v-if` op een afbeeldingsveld**, een object met alleen een alt-tekst is
@@ -106,6 +122,8 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   in Europe/Amsterdam — de build draait in UTC; `isPastDay` voor
   "is dit evenement voorbij?"),
   `usePortableTextComponents` (gedeelde body-afbeelding- en citaatrenderer),
+  `useFocusTrap` (`trapFocus` + `useScrollLock` met teller, voor menu en
+  lightbox),
   `useSiteSettings` (**dé** bron voor Site-instellingen in componenten — geen
   eigen siteSettings-query meer schrijven; plus `openingHoursParts`/
   `formatOpeningHours`, `telHref`, `routeHref`), `useEventTimes`

@@ -3,10 +3,6 @@
    Alleen paginaspecifiek; gedeelde opbouw in page-shared.css
    ============================================ */
 
-.boerderij-farm-photo img {
-  object-position: center 55%;
-}
-
 /* Highlightkaart: foto bovenaan */
 .boerderij-card {
   overflow: hidden;

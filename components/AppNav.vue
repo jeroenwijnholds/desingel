@@ -7,15 +7,17 @@ const isHome = computed(() => route.path === '/')
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 const navEl = ref<HTMLElement | null>(null)
+const scroll = useScrollLock()
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
-  document.body.style.overflow = isMenuOpen.value ? 'hidden' : ''
+  if (isMenuOpen.value) scroll.lock()
+  else scroll.unlock()
 }
 
 function closeMenu() {
   isMenuOpen.value = false
-  document.body.style.overflow = ''
+  scroll.unlock()
 }
 
 // Menu sluit bij elke navigatie (vangt ook browser-terugknop)
@@ -27,21 +29,8 @@ function onKeydown(e: KeyboardEvent) {
     closeMenu()
     return
   }
-  if (e.key === 'Tab') {
-    // Focus-trap binnen de nav zolang het menu open is
-    const focusables = navEl.value?.querySelectorAll<HTMLElement>('a, button') ?? []
-    if (!focusables.length) return
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-    if (!first || !last) return
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault()
-      last.focus()
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault()
-      first.focus()
-    }
-  }
+  // Focus blijft binnen de nav zolang het menu open is
+  trapFocus(e, navEl.value)
 }
 
 const onScroll = () => {
@@ -62,7 +51,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
 })
 </script>
 
@@ -84,9 +72,9 @@ onUnmounted(() => {
       :aria-label="isMenuOpen ? 'Menu sluiten' : 'Menu openen'"
       @click="toggleMenu"
     >
-      <span></span>
-      <span></span>
-      <span></span>
+      <span/>
+      <span/>
+      <span/>
     </button>
 
     <div id="hoofdmenu" class="nav-menu">

@@ -1,23 +1,11 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
-
-interface Event {
-  title: string
-  slug: { current: string }
-  category: string
-  date: string
-  endDate?: string
-  timeRange?: string
-  location?: string
-  description?: string
-  featuredImage?: any
-  body?: any[]
-  externalLink?: string
-}
+// Types uit het Sanity-schema (types/sanity.types.ts, `npm run typegen`)
+import type { Event as SanityEvent } from '~/types/sanity.types'
 
 const route = useRoute()
-const QUERY = `*[_type == "event" && slug.current == $slug && !(_id in path("drafts.**"))][0]`
-const query = useContentQuery<Event>(QUERY, { slug: route.params.slug as string })
+const QUERY = `*[_type == "event" && slug.current == $slug][0]`
+const query = useContentQuery<SanityEvent>(QUERY, { slug: route.params.slug as string })
 const { data } = query
 const event = computed(() => data.value)
 
@@ -109,7 +97,7 @@ useJsonLd(() => event.value
           class="detail-hero-img event-hero-img"
           loading="eager"
           fetchpriority="high"
-        />
+        >
       </div>
       <div class="detail-hero-content">
         <NuxtLink to="/agenda" class="breadcrumb">

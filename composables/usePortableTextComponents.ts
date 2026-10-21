@@ -12,10 +12,10 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
 
   const PortableTextImage = defineComponent({
     props: {
-      value: { type: Object as PropType<Record<string, any> | null>, default: null },
+      value: { type: Object as PropType<SanityImageField | null>, default: null },
       index: { type: Number, default: 0 },
       isInline: { type: Boolean, default: false },
-      renderNode: { type: Function as PropType<(...args: any[]) => any>, default: undefined },
+      renderNode: { type: Function as PropType<(...args: unknown[]) => unknown>, default: undefined },
     },
     setup(props) {
       return () => {

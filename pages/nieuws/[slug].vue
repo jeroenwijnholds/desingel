@@ -1,28 +1,14 @@
 <script setup lang="ts">
 import { PortableText } from '@portabletext/vue'
+// Types uit het Sanity-schema (types/sanity.types.ts, `npm run typegen`)
+import type { NieuwsArtikel as SanityArtikel } from '~/types/sanity.types'
 
-interface RelatedArticle {
-  _id: string
-  title: string
-  slug: { current: string }
-  featuredImage?: any
-}
-interface NieuwsArtikel {
-  title: string
-  slug: { current: string }
-  category: string
-  publishedAt: string
-  _updatedAt: string
-  author?: string
-  excerpt: string
-  readTime?: number
-  featuredImage?: any
-  body?: any[]
-  relatedArticles?: RelatedArticle[]
-}
+// relatedArticles komen gederefereerd terug (relatedArticles[]->{…})
+type RelatedArticle = Pick<SanityArtikel, '_id' | 'title' | 'slug' | 'featuredImage'>
+type NieuwsArtikel = Omit<SanityArtikel, 'relatedArticles'> & { relatedArticles?: RelatedArticle[] }
 
 const route = useRoute()
-const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug && !(_id in path("drafts.**"))][0]{
+const QUERY = `*[_type == "nieuwsArtikel" && slug.current == $slug][0]{
   title, slug, category, publishedAt, _updatedAt, author, excerpt, readTime, featuredImage, body,
   relatedArticles[]->{_id, title, slug, featuredImage}
 }`
@@ -40,7 +26,7 @@ query.then(() => {
 
 // Teksten van het blok onderaan, gedeeld door alle artikelen (Studio → Nieuws pagina)
 const { data: nieuwsPage } = useContentQuery<{ articleCtaLabel?: string; articleCtaTitle?: string; articleCtaText?: string } | null>(
-  `*[_type == "nieuwsPage" && !(_id in path("drafts.**"))][0]{ articleCtaLabel, articleCtaTitle, articleCtaText }`
+  `*[_type == "nieuwsPage"][0]{ articleCtaLabel, articleCtaTitle, articleCtaText }`
 )
 
 // Leestijd: ingevuld in de Studio, anders berekend (≈200 woorden per minuut)
@@ -48,8 +34,8 @@ const readTime = computed(() => {
   if (!article.value) return null
   if (article.value.readTime) return article.value.readTime
   const words = (article.value.body ?? [])
-    .flatMap((block: any) => block?.children ?? [])
-    .map((child: any) => String(child?.text ?? ''))
+    .flatMap(block => ('children' in block ? block.children ?? [] : []))
+    .map(child => child.text ?? '')
     .join(' ')
     .split(/\s+/)
     .filter(Boolean).length
@@ -115,7 +101,7 @@ useJsonLd(() => article.value
           class="detail-hero-img"
           loading="eager"
           fetchpriority="high"
-        />
+        >
       </div>
       <div class="detail-hero-content">
         <NuxtLink to="/nieuws" class="breadcrumb">
@@ -185,7 +171,7 @@ useJsonLd(() => article.value
                     v-bind="img(related.featuredImage, { widths: [120, 200], sizes: '72px' })"
                     :alt="related.featuredImage.alt ?? related.title"
                     loading="lazy"
-                  />
+                  >
                 </div>
                 <h3 class="article-related-title">{{ related.title }}</h3>
               </NuxtLink>

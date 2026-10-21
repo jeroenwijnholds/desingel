@@ -1,7 +1,8 @@
 /* ============================================
    PAGE SHARED — page-shared.css
-   Gedeelde paginapatronen voor over-ons en de-boerderij (gegroepeerde
-   selectors), plus het CTA-blok en de lege staat. Generieke UI-patronen
+   Secties van over-ons en de-boerderij (<PageIntroSplit>, <PageStory>,
+   <PageQuote>, <PageWidePhoto> + de kaartsecties), het CTA-blok en de
+   lege staat. Generieke UI-patronen
    (koppen, kaarten, knoppen, stack) staan in components.css.
    ============================================ */
 
@@ -25,15 +26,13 @@
 
 /* ==================== INTRO SPLIT ==================== */
 
-.about-intro,
-.boerderij-intro {
+.split-intro {
   background-color: var(--white);
   padding: calc(var(--nav-height) + var(--space-12)) var(--page-pad) var(--section-pad);
 }
 
 /* Volgt --page-pad (max 1280px), net als homepage en footer */
-.about-intro-inner,
-.boerderij-intro-inner {
+.split-intro-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-20);
@@ -41,30 +40,26 @@
 }
 
 /* Zonder introfoto: één kolom met een leesbare regellengte */
-.about-intro-inner--no-photo,
-.boerderij-intro-inner--no-photo {
+.split-intro-inner--no-photo {
   grid-template-columns: 1fr;
   max-width: var(--container-text);
 }
 
-.about-lead,
-.boerderij-lead {
+.split-intro-lead {
   max-width: 52ch;
   font-size: var(--text-lg);
   line-height: 1.75;
   color: var(--text);
 }
 
-.about-intro-meta,
-.boerderij-intro-meta {
+.split-intro-meta {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.about-intro-meta li,
-.boerderij-intro-meta li {
+.split-intro-meta li {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -74,16 +69,14 @@
   color: var(--green-text);
 }
 
-.about-intro-meta svg,
-.boerderij-intro-meta svg {
+.split-intro-meta svg {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
 }
 
 /* --- Fotokolom --- */
-.about-photo-wrap,
-.boerderij-photo-wrap {
+.split-intro-photo {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -91,8 +84,7 @@
 }
 
 /* Accentvlak achter de foto */
-.about-photo-wrap::before,
-.boerderij-photo-wrap::before {
+.split-intro-photo::before {
   content: '';
   position: absolute;
   top: var(--space-5);
@@ -104,8 +96,7 @@
   background-color: var(--green-accent);
 }
 
-.about-photo-frame,
-.boerderij-photo-frame {
+.split-intro-frame {
   position: relative;
   z-index: 1;
   margin: 0;
@@ -115,8 +106,7 @@
   box-shadow: var(--shadow-lg);
 }
 
-.about-photo-frame img,
-.boerderij-photo-frame img {
+.split-intro-frame img {
   display: block;
   width: 100%;
   height: 100%;
@@ -124,8 +114,7 @@
   object-position: center;
 }
 
-.about-photo-caption,
-.boerderij-photo-caption {
+.split-intro-caption {
   position: relative;
   z-index: 1;
   font-size: var(--text-sm);
@@ -137,32 +126,33 @@
 
 /* ==================== VERHAAL ==================== */
 
-.about-story,
-.boerderij-story {
+.story {
   background-color: var(--surface-soft);
   padding: var(--section-pad) var(--page-pad);
 }
 
-.about-story-inner,
-.boerderij-story-inner {
+.story-inner {
   max-width: var(--container-mid);
   margin: 0 auto;
 }
 
-.about-story-inner .section-title,
-.boerderij-story-inner .section-title {
+.story-inner .section-title {
   margin-bottom: var(--space-10);
 }
 
-.about-story-columns,
-.boerderij-story-columns {
+.story-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-10);
 }
 
-.about-story-columns p,
-.boerderij-story-columns p {
+.story-columns p em {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+.story-columns p {
   font-size: var(--text-base);
   line-height: 1.8;
   color: var(--text);
@@ -170,14 +160,12 @@
 
 /* ==================== CITAAT ==================== */
 
-.about-quote-section,
-.boerderij-quote-section {
+.quote-band {
   background-color: var(--green-dark);
   padding: var(--section-pad) var(--page-pad);
 }
 
-.about-quote-inner,
-.boerderij-quote-inner {
+.quote-band-inner {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -186,8 +174,7 @@
   text-align: center;
 }
 
-.about-quote,
-.boerderij-quote {
+.quote-band-text {
   margin: 0;
   font-family: var(--font-display);
   font-size: var(--text-2xl);
@@ -198,8 +185,7 @@
   color: var(--white);
 }
 
-.about-quote-author,
-.boerderij-quote-author {
+.quote-band-author {
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -267,21 +253,19 @@
 
 /* ==================== BREDE FOTO ==================== */
 
-.about-farm-photo,
-.boerderij-farm-photo {
+.wide-photo {
   height: clamp(240px, 30vw, 420px);
   overflow: hidden;
 }
 
-.about-farm-photo img,
-.boerderij-farm-photo img {
+.wide-photo img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* object-position per pagina */
+/* uitsnede: hotspot uit de Studio, anders de focus-prop van <PageWidePhoto> */
 
 /* ==================== CTA (gedeeld <CtaBlock>-component) ==================== */
 
@@ -345,21 +329,18 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .about-intro-inner,
-  .boerderij-intro-inner {
+  .split-intro-inner {
     grid-template-columns: 1fr;
     gap: var(--space-12);
   }
 
-  .about-photo-wrap,
-  .boerderij-photo-wrap {
+  .split-intro-photo {
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
   }
 
-  .about-photo-wrap::before,
-  .boerderij-photo-wrap::before {
+  .split-intro-photo::before {
     top: var(--space-3);
     right: calc(-1 * var(--space-3));
     bottom: calc(-1 * var(--space-3));
@@ -379,8 +360,7 @@
     margin-bottom: var(--space-8);
   }
 
-  .about-story-columns,
-  .boerderij-story-columns {
+  .story-columns {
     grid-template-columns: 1fr;
     gap: var(--space-4);
   }
@@ -396,8 +376,7 @@
 }
 
 @media screen and (max-width: 479px) {
-  .about-photo-wrap::before,
-  .boerderij-photo-wrap::before {
+  .split-intro-photo::before {
     display: none;
   }
 }

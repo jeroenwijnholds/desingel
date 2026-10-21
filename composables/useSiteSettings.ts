@@ -5,26 +5,20 @@
  * component).
  */
 
-export interface NavItem { label: string; href: string; isButton: boolean }
-export interface Owner { name: string; role?: string }
-export interface SocialLink { platform: string; url: string }
-export interface OpeningHoursRule { days: string[]; opens: string; closes: string }
-export interface SiteSettings {
-  siteName: string
-  tagline?: string
-  footerCopyright?: string
-  navigation?: NavItem[]
-  owners?: Owner[]
-  address?: string
-  coordinates?: { lat: number; lng: number }
-  telephone?: string
-  email?: string
-  socialLinks?: SocialLink[]
-  openingHours?: OpeningHoursRule[]
-  announcement?: { text?: string; link?: string; until?: string }
-}
+import type { SiteSettings as SanitySiteSettings } from '~/types/sanity.types'
 
-const QUERY = `*[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{
+// Afgeleid van het Sanity-schema (types/sanity.types.ts), zodat een
+// schemawijziging hier een typefout oplevert i.p.v. stilletjes te breken
+export type SiteSettings = Pick<
+  SanitySiteSettings,
+  'siteName' | 'tagline' | 'footerCopyright' | 'navigation' | 'owners' | 'address' | 'coordinates'
+  | 'telephone' | 'email' | 'socialLinks' | 'openingHours' | 'announcement'
+>
+export type NavItem = NonNullable<SanitySiteSettings['navigation']>[number]
+export type Owner = NonNullable<SanitySiteSettings['owners']>[number]
+export type OpeningHoursRule = NonNullable<SanitySiteSettings['openingHours']>[number]
+
+const QUERY = `*[_type == "siteSettings"][0]{
   siteName, tagline, footerCopyright, navigation, owners, address, coordinates,
   telephone, email, socialLinks, openingHours, announcement
 }`
@@ -85,6 +79,12 @@ export function formatOwners(owners?: Owner[]): string {
 /** tel:-link zonder spaties/streepjes; "+31 6 12345678" → "tel:+31612345678" */
 export const telHref = (tel: string) => `tel:${tel.replace(/[^\d+]/g, '')}`
 
-/** Google Maps-routebeschrijving naar de coördinaten (opent de app op mobiel) */
-export const routeHref = (c: { lat: number; lng: number }) =>
-  `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}`
+/** Volledige coördinaten, of null als lat of lng ontbreekt (beide zijn los invulbaar in de Studio) */
+export const validCoordinates = (c?: { lat?: number; lng?: number } | null) =>
+  typeof c?.lat === 'number' && typeof c?.lng === 'number' ? { lat: c.lat, lng: c.lng } : null
+
+/** Google Maps-routebeschrijving naar de coördinaten (opent de app op mobiel); undefined zonder volledige coördinaten */
+export function routeHref(c?: { lat?: number; lng?: number } | null) {
+  const v = validCoordinates(c)
+  return v ? `https://www.google.com/maps/dir/?api=1&destination=${v.lat},${v.lng}` : undefined
+}

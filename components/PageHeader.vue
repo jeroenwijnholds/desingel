@@ -4,7 +4,7 @@ const props = defineProps<{
   title: string
   subtitle?: string
   /** Sanity-afbeelding als achtergrond; de gradient-overlay houdt de tekst leesbaar */
-  image?: any
+  image?: SanityImageField
 }>()
 
 const img = useSanityImg()
@@ -23,7 +23,7 @@ const imageAttrs = computed(() =>
         class="page-header-img"
         loading="eager"
         fetchpriority="high"
-      />
+      >
     </div>
     <div class="page-header-inner">
       <p v-if="label" class="section-label bright-green">{{ label }}</p>

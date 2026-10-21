@@ -24,14 +24,14 @@ interface SanityImgOptions {
 export function useSanityImg() {
   const imageUrl = useImageUrl()
 
-  return (source: unknown, opts: SanityImgOptions) => {
+  return (source: SanityImageField | null | undefined, opts: SanityImgOptions) => {
     const build = (w: number) => {
-      let b = imageUrl(source as any).width(w).auto('format').quality(75)
+      let b = imageUrl(source).width(w).auto('format').quality(75)
       if (opts.aspect) b = b.height(Math.round(w / opts.aspect))
       return b.url()
     }
     const maxW = Math.max(...opts.widths)
-    const hotspot = (source as any)?.hotspot
+    const hotspot = source?.hotspot
     const objectPosition = !opts.aspect && hotspot
       ? `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
       : undefined
@@ -41,7 +41,7 @@ export function useSanityImg() {
       sizes: opts.sizes,
       width: maxW,
       height: opts.aspect ? Math.round(maxW / opts.aspect) : undefined,
-      ...(objectPosition ? { style: { objectPosition } } : {}),
+      style: objectPosition ? { objectPosition } : undefined,
     }
   }
 }

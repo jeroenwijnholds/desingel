@@ -2,7 +2,7 @@
 // Reactietijd uit het CMS (Contact-pagina), zodat hij niet uit de pas loopt
 // met de contactpagina — stond hier eerder hardcoded.
 const { data } = useContentQuery<{ infoResponseTime?: string } | null>(
-  `*[_type == "contactPage" && !(_id in path("drafts.**"))][0]{ infoResponseTime }`
+  `*[_type == "contactPage"][0]{ infoResponseTime }`
 )
 const responseTime = computed(() => {
   const t = data.value?.infoResponseTime?.trim() || 'Binnen 2 werkdagen'

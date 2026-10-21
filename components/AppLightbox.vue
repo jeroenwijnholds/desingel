@@ -6,17 +6,18 @@ const props = defineProps<{
 const activeIndex = ref<number | null>(null)
 const modalEl = ref<HTMLElement | null>(null)
 const thumbEls = ref<HTMLButtonElement[]>([])
+const scroll = useScrollLock()
 
 function open(index: number) {
   activeIndex.value = index
-  document.body.style.overflow = 'hidden'
+  scroll.lock()
   nextTick(() => modalEl.value?.focus())
 }
 
 function close() {
   const restoreIndex = activeIndex.value
   activeIndex.value = null
-  document.body.style.overflow = ''
+  scroll.unlock()
   if (restoreIndex !== null) thumbEls.value[restoreIndex]?.focus()
 }
 
@@ -35,21 +36,8 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') close()
   else if (e.key === 'ArrowLeft') prev()
   else if (e.key === 'ArrowRight') next()
-  else if (e.key === 'Tab') {
-    // Focus-trap: cycle binnen de dialog
-    const focusables = modalEl.value?.querySelectorAll<HTMLElement>('button') ?? []
-    if (!focusables.length) return
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-    if (!first || !last) return
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault()
-      last.focus()
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault()
-      first.focus()
-    }
-  }
+  // Focus blijft binnen de dialoog
+  else trapFocus(e, modalEl.value, 'button')
 }
 
 // Swipe-navigatie
@@ -73,7 +61,6 @@ const activeImage = computed(() =>
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
 })
 </script>
 
@@ -96,7 +83,7 @@ onUnmounted(() => {
         :style="img.style"
         class="gallery-image"
         loading="lazy"
-      />
+      >
     </button>
   </div>
 
@@ -129,7 +116,7 @@ onUnmounted(() => {
         :alt="activeImage.alt || ''"
         class="modal-img"
         @click.stop
-      />
+      >
 
       <button
         v-if="images.length > 1"
