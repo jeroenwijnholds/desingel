@@ -101,11 +101,12 @@ worden niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
 
 ### Content in de Studio bijwerken (oktober 2026)
 
-- **Placeholderteksten op De Boerderij** (naast die op de homepage): live
-  staan "CTA kop-label", "CTA tekst", "CTA titel", "Hoogtepunten titel",
-  "Hoogtepunten kop-label", "Foto-onderschrift", "Verhaal kop-label" en
-  "Verhaaltitel". Na de Studio-deploy krijgt elk zo'n veld een gele
-  waarschuwing.
+- ~~**Placeholderteksten op homepage en De Boerderij**~~ ✅ 21 oktober
+  2026: alle 13 vervangen door teksten van de originele Webflow-site
+  (diensten- en galerijkop) en de bestaande terugvalteksten
+  (`scripts/eenmalig/vul-placeholderteksten.mjs`, back-up vooraf in
+  `../desingel-backups/`). Het zijn voorbeeldteksten: Victor & Mari kunnen
+  ze in de Studio naar eigen smaak aanpassen.
 - **Plaatsnaam**: het intro-label op De Boerderij zegt "Heelweg,
   Gelderland". Als dat klopt: ook in Site-instellingen → Adres zetten
   (nu alleen "Achterhoek, Gelderland"), dan nemen footer, contactpagina
