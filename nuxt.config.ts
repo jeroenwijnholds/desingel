@@ -1,13 +1,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-08',
 
-  modules: ['@nuxtjs/sanity'],
+  modules: ['@nuxtjs/sanity', '@nuxt/eslint'],
 
   sanity: {
     projectId: process.env.SANITY_PROJECT_ID,
     dataset: process.env.SANITY_DATASET || 'production',
     apiVersion: '2024-01-01',
     useCdn: false,
+    // Alleen gepubliceerde content (de API laat concepten dan weg); vervangt
+    // de losse !(_id in path("drafts.**"))-filters die in elke query stonden
+    perspective: 'published',
   },
 
   runtimeConfig: {
@@ -27,7 +30,12 @@ export default defineNuxtConfig({
     '@fontsource/source-sans-3/400.css',
     '@fontsource/source-sans-3/600.css',
     '@fontsource/source-sans-3/700.css',
+    // echte cursieven voor <em> in CMS-teksten, bijschriften en het verhaal
+    // (anders maakt de browser een scheve nep-cursief); laden pas bij gebruik
+    '@fontsource/source-sans-3/400-italic.css',
+    '@fontsource/source-sans-3/600-italic.css',
     '~/assets/css/style.css',
+    '~/assets/css/components.css',
     '~/assets/css/page-header.css',
     '~/assets/css/page-shared.css',
     '~/assets/css/agenda.css',
@@ -46,6 +54,8 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'theme-color', content: '#364838' },
+        // Externe sites (Google Maps, Web3Forms, links) zien alleen het domein, niet de volledige URL
+        { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],
       link: [
         // alle contentfoto's (incl. LCP-hero's) komen van de Sanity-CDN

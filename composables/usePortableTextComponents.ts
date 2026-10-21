@@ -1,5 +1,5 @@
 import type { PortableTextVueComponents } from '@portabletext/vue'
-import { defineComponent, h, type PropType } from 'vue'
+import { defineComponent, h, type FunctionalComponent, type PropType } from 'vue'
 
 /**
  * Gedeelde PortableText-componenten voor artikel- en evenement-body's
@@ -12,16 +12,16 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
 
   const PortableTextImage = defineComponent({
     props: {
-      value: { type: Object as PropType<Record<string, any> | null>, default: null },
+      value: { type: Object as PropType<SanityImageField | null>, default: null },
       index: { type: Number, default: 0 },
       isInline: { type: Boolean, default: false },
-      renderNode: { type: Function as PropType<(...args: any[]) => any>, default: undefined },
+      renderNode: { type: Function as PropType<(...args: unknown[]) => unknown>, default: undefined },
     },
     setup(props) {
       return () => {
         const val = props.value
-        if (!val) return null
-        return h('figure', { class: 'article-figure' }, [
+        if (!hasImage(val)) return null
+        return h('figure', { class: 'prose-figure' }, [
           h('img', {
             ...img(val, { widths: [500, 900, 1400], sizes: '(max-width: 900px) 100vw, 800px' }),
             alt: val.alt ?? '',
@@ -33,7 +33,14 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
     },
   })
 
+  // De Studio-stijl "Citaat" kwam als kale <blockquote> zonder styling
+  // binnen; de citaatstijl was nergens aan gekoppeld (stijl: .prose-quote
+  // in components.css).
+  const Blockquote: FunctionalComponent = (_, { slots }) =>
+    h('blockquote', { class: 'prose-quote' }, slots.default?.())
+
   return {
     types: { image: PortableTextImage },
+    block: { blockquote: Blockquote },
   } as Partial<PortableTextVueComponents>
 }

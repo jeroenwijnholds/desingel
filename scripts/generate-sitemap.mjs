@@ -7,10 +7,11 @@
  * De site-URL komt uit NUXT_PUBLIC_SITE_URL (door CI gezet, incl. het
  * /desingel/-subpad zolang de site op github.io draait).
  *
- * <lastmod> komt uit Sanity's _updatedAt per document, opgehaald via de
- * publieke CDN read-API (geen auth nodig). Lukt dat niet (geen
- * SANITY_PROJECT_ID, netwerkfout, ...), dan wordt de sitemap zonder
- * <lastmod> geschreven — de build mag hier nooit op falen.
+ * <lastmod> komt uit Sanity's _updatedAt per document, en de kernfeiten in
+ * llms.txt (locatie, openingstijden, eigenaren) uit Site-instellingen —
+ * beide via de publieke CDN read-API (geen auth nodig). Lukt dat niet (geen
+ * SANITY_PROJECT_ID, netwerkfout, ...), dan zonder <lastmod> en met de
+ * standaardteksten — de build mag hier nooit op falen.
  */
 import { readdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -74,35 +75,51 @@ function buildLastmodMap(result) {
   return map
 }
 
-async function fetchLastmodMap() {
+async function fetchSanityData() {
   const projectId = env.SANITY_PROJECT_ID
   if (!projectId) {
     console.warn('generate-sitemap: SANITY_PROJECT_ID ontbreekt — sitemap wordt geschreven zonder <lastmod>')
-    return new Map()
+    return { lastmod: new Map(), settings: null }
   }
   const dataset = env.SANITY_DATASET || 'production'
   const query = `{
     "singletons": *[_type in ["homePage","boerderijPage","overOnsPage","contactPage","agendaPage","nieuwsPage"]]{_type, _updatedAt},
     "articles": *[_type == "nieuwsArtikel" && !(_id in path("drafts.**"))]{"slug": slug.current, _updatedAt},
-    "events": *[_type == "event" && !(_id in path("drafts.**"))]{"slug": slug.current, _updatedAt}
+    "events": *[_type == "event" && !(_id in path("drafts.**"))]{"slug": slug.current, _updatedAt},
+    "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ tagline, address, owners, openingHours }
   }`
   const url = `https://${projectId}.apicdn.sanity.io/v2024-01-01/data/query/${dataset}?query=${encodeURIComponent(query)}`
   try {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const { result } = await res.json()
-    return buildLastmodMap(result)
+    return { lastmod: buildLastmodMap(result), settings: result.settings ?? null }
   } catch (err) {
-    console.warn(`generate-sitemap: kon lastmod-data niet ophalen (${err.message}) — sitemap wordt geschreven zonder <lastmod>`)
-    return new Map()
+    console.warn(`generate-sitemap: kon Sanity-data niet ophalen (${err.message}) — sitemap zonder <lastmod>, llms.txt met standaardteksten`)
+    return { lastmod: new Map(), settings: null }
   }
+}
+
+// Zelfde opmaak als formatOpeningHours in composables/useSiteSettings.ts
+// (hier inline: dit script hoort bij de productiebuild en importeert geen TS)
+const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+const DAY_NL = { monday: 'maandag', tuesday: 'dinsdag', wednesday: 'woensdag', thursday: 'donderdag', friday: 'vrijdag', saturday: 'zaterdag', sunday: 'zondag' }
+function formatHours(rules) {
+  return (rules ?? []).map(rule => {
+    const days = [...(rule.days ?? [])].sort((a, b) => DAYS.indexOf(a) - DAYS.indexOf(b))
+    const idx = days.map(d => DAYS.indexOf(d))
+    const names = days.map(d => DAY_NL[d] ?? d)
+    const run = names.length >= 3 && idx.every((v, i) => i === 0 || v === idx[i - 1] + 1)
+    const label = run ? `${names[0]} t/m ${names.at(-1)}` : names.length > 1 ? `${names.slice(0, -1).join(', ')} en ${names.at(-1)}` : names[0] ?? ''
+    return `${label} ${rule.opens}–${rule.closes}`
+  }).join('; ')
 }
 
 const routes = collectRoutes(OUT)
   .filter(r => !EXCLUDE.has(r))
   .sort()
 
-const lastmodMap = await fetchLastmodMap()
+const { lastmod: lastmodMap, settings } = await fetchSanityData()
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -121,13 +138,18 @@ Disallow: /bedankt
 Sitemap: ${SITE_URL}/sitemap.xml
 `
 
+const owners = (settings?.owners ?? []).map(o => o.name).filter(Boolean)
+const ownersText = owners.length ? owners.join(' en ') : 'Victor en Mari Duurland'
+const location = (settings?.address || 'Achterhoek, Gelderland').replace(/\n/g, ', ')
+const hoursText = formatHours(settings?.openingHours) || 'zaterdag en zondag 10:00–17:00'
+
 const llmsTxt = `# Belevenisboerderij de Singel
 
-> Kleinschalige belevenisboerderij in de Achterhoek (Gelderland), gerund door Victor en Mari Duurland. Waar kleinschalige landbouw en wilde natuur samenkomen: Wagyu-runderen, loopvogels en een farmshop met ambachtelijke producten.
+> Kleinschalige belevenisboerderij in de Achterhoek (Gelderland), gerund door ${ownersText}. ${settings?.tagline ? `${settings.tagline}: ` : ''}Wagyu-runderen, loopvogels en een farmshop met ambachtelijke producten.
 
 ## Kernfeiten
-- Locatie: Achterhoek, Gelderland, Nederland
-- Farmshop geopend: zaterdag en zondag, 10:00–17:00
+- Locatie: ${location}, Nederland
+- Farmshop geopend: ${hoursText}
 - Aanbod: verse producten van eigen boerderij (Wagyu-vlees, Poule de Bresse kip, zachtfruit, groenten), "Boerderij op Locatie" voor markten, braderieën, evenementen, zorgcentra en scholen
 
 ## Pagina's

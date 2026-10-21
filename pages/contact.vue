@@ -1,31 +1,31 @@
 ﻿<script setup lang="ts">
-interface ContactPage {
-  headerLabel?: string
-  headerTitle?: string
-  headerSubtitle?: string
-  headerImage?: any
-  formTitle?: string
-  formIntro?: string
-  infoOwners?: string
-  infoAddress?: string
-  infoHours?: string
-  infoResponseTime?: string
-  subjectOptions?: string[]
-  privacyNotice?: string
-}
+// Types uit het Sanity-schema (types/sanity.types.ts, `npm run typegen`)
+import type { ContactPage } from '~/types/sanity.types'
 
 const QUERY = `{
-  "page": *[_type == "contactPage" && !(_id in path("drafts.**"))][0],
-  "settings": *[_type == "siteSettings" && !(_id in path("drafts.**"))][0]{ coordinates }
+  "page": *[_type == "contactPage"][0]
 }`
-const { data } = useSanityQuery<{ page: ContactPage; settings?: { coordinates?: { lat: number; lng: number } } }>(QUERY)
+const { data } = useContentQuery<{ page: ContactPage }>(QUERY)
 const page = computed(() => data.value?.page)
+const { data: settings } = useSiteSettings()
 
-// Kaart volgt de coördinaten uit Site-instellingen; fallback = huidige locatie
+// Kaart en routelink volgen de coördinaten uit Site-instellingen; fallback = huidige locatie
+const coordinates = computed(() => validCoordinates(settings.value?.coordinates) ?? { lat: 51.9479284, lng: 6.5100125 })
 const mapSrc = computed(() => {
-  const { lat = 51.9479284, lng = 6.5100125 } = data.value?.settings?.coordinates ?? {}
+  const { lat, lng } = coordinates.value
   return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`
 })
+
+// Eén bron: adres, eigenaren en openingstijden uit Site-instellingen (net als
+// footer en homepage). De oude Contact-velden alleen nog als terugval.
+const infoAddress = computed(() => settings.value?.address || page.value?.infoAddress || 'Achterhoek, Gelderland')
+const infoOwners = computed(() => formatOwners(settings.value?.owners) || page.value?.infoOwners || 'Victor & Mari Duurland')
+const infoHours = computed(() =>
+  formatOpeningHours(settings.value?.openingHours).join('\n') || page.value?.infoHours || 'Zaterdag & zondag, 10:00 – 17:00'
+)
+
+const DEFAULT_SUBJECTS = ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders']
+const subjectOptions = computed(() => page.value?.subjectOptions?.length ? page.value.subjectOptions : DEFAULT_SUBJECTS)
 
 const config = useRuntimeConfig()
 
@@ -37,6 +37,30 @@ const form = reactive({
   onderwerp: '',
   bericht: '',
   botcheck: false,
+})
+
+// Zonder JS post het formulier rechtstreeks naar Web3Forms (action/method
+// + hidden velden hieronder) en redirect Web3Forms naar /bedankt; mét JS
+// neemt onSubmit het over. Tot hydratatie laten we de browser zelf
+// valideren (geen novalidate), daarna onze eigen meldingen.
+const hydrated = ref(false)
+onMounted(() => { hydrated.value = true })
+const bedanktUrl = `${config.public.siteUrl}/bedankt`
+const MAX = { naam: 100, email: 254, telefoonnummer: 30, bericht: 5000 }
+
+const subject = computed(() =>
+  `Contactformulier: ${form.onderwerp || 'algemene vraag'} – ${form.naam.trim() || 'onbekend'}`
+)
+
+// Vooraf invullen vanaf een evenementpagina (/contact?over=<titel>): onderwerp
+// = de evenement-optie uit het CMS, bericht begint met de titel. Pas na mount,
+// want de statische HTML kent geen query-string.
+const route = useRoute()
+onMounted(() => {
+  const over = typeof route.query.over === 'string' ? route.query.over.slice(0, 120) : ''
+  if (!over) return
+  form.onderwerp = subjectOptions.value.find(o => /evenement/i.test(o)) ?? ''
+  if (!form.bericht) form.bericht = `Ik heb een vraag over ${over}:\n\n`
 })
 
 const errors = reactive<{ naam?: string; email?: string; bericht?: string }>({})
@@ -77,7 +101,7 @@ async function onSubmit() {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         access_key: config.public.web3formsKey,
-        subject: 'Nieuw bericht via het contactformulier',
+        subject: subject.value,
         from_name: 'Belevenisboerderij de Singel',
         naam: form.naam,
         email: form.email,
@@ -97,9 +121,10 @@ async function onSubmit() {
   }
 }
 
+// Titel/beschrijving voor Google: uit de Studio-groep "Google (SEO)", anders standaard
 useSeo({
-  title: 'Contact – Belevenisboerderij De Singel',
-  description: 'Neem contact op met Belevenisboerderij de Singel: stel je vraag over de farmshop, evenementen of de boerderij op locatie.',
+  title: () => page.value?.seoTitle || 'Contact – Belevenisboerderij De Singel',
+  description: () => page.value?.seoDescription || 'Neem contact op met Belevenisboerderij de Singel: stel je vraag over de farmshop, evenementen of de boerderij op locatie.',
 })
 
 useBreadcrumbJsonLd([
@@ -109,22 +134,34 @@ useBreadcrumbJsonLd([
 </script>
 
 <template>
-  <PageHeader
-    :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
-    :title="page?.headerTitle ?? 'Contact'"
-    :subtitle="page?.headerSubtitle ?? 'We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken.'"
-    :image="page?.headerImage"
-  />
+  <div>
+    <PageHeader
+      :label="page?.headerLabel ?? 'Belevenisboerderij de Singel'"
+      :title="page?.headerTitle ?? 'Contact'"
+      :subtitle="page?.headerSubtitle ?? 'We horen graag van je – stel je vraag of laat ons weten wat je wil bespreken.'"
+      :image="page?.headerImage"
+    />
 
-  <main class="contact-main" id="contact-form">
-    <div class="contact-layout">
+    <div id="contact-form" class="sidebar-layout">
 
       <section class="contact-form-section" aria-labelledby="form-heading">
-        <h2 class="contact-form-heading" id="form-heading">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
+        <h2 id="form-heading" class="subsection-title">{{ page?.formTitle ?? 'Stuur een bericht' }}</h2>
         <p class="contact-form-intro">{{ page?.formIntro ?? 'Heb je een vraag over de farmshop, een evenement of de boerderij op locatie? Vul het formulier in – we reageren normaal gesproken binnen 2 werkdagen.' }}</p>
 
-        <form class="contact-form" novalidate @submit.prevent="onSubmit">
-          <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <form
+          class="contact-form"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+          :novalidate="hydrated"
+          @submit.prevent="onSubmit"
+        >
+          <!-- Alleen gebruikt bij verzenden zonder JS (zie script) -->
+          <input type="hidden" name="access_key" :value="config.public.web3formsKey" >
+          <input type="hidden" name="subject" :value="subject" >
+          <input type="hidden" name="from_name" value="Belevenisboerderij de Singel" >
+          <input type="hidden" name="redirect" :value="bedanktUrl" >
+          <!-- Honeypot: wij checken hem in onSubmit, Web3Forms server-side bij een no-JS-post -->
+          <input v-model="form.botcheck" type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" >
 
           <div
             v-if="errorList.length"
@@ -152,12 +189,14 @@ useBreadcrumbJsonLd([
                 class="form-input"
                 type="text"
                 name="naam"
+                :maxlength="MAX.naam"
+                minlength="2"
                 autocomplete="name"
                 placeholder="Jouw naam"
                 required
                 :aria-invalid="errors.naam ? 'true' : undefined"
                 :aria-describedby="errors.naam ? 'naam-error' : undefined"
-              />
+              >
               <p v-if="errors.naam" id="naam-error" class="form-error">{{ errors.naam }}</p>
             </div>
             <div class="form-group">
@@ -170,12 +209,13 @@ useBreadcrumbJsonLd([
                 class="form-input"
                 type="email"
                 name="email"
+                :maxlength="MAX.email"
                 autocomplete="email"
                 placeholder="jouw@emailadres.nl"
                 required
                 :aria-invalid="errors.email ? 'true' : undefined"
                 :aria-describedby="errors.email ? 'email-error' : undefined"
-              />
+              >
               <p v-if="errors.email" id="email-error" class="form-error">{{ errors.email }}</p>
             </div>
           </div>
@@ -185,14 +225,14 @@ useBreadcrumbJsonLd([
               <label class="form-label" for="telefoonnummer">
                 Telefoonnummer <span class="form-optional">– optioneel</span>
               </label>
-              <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" />
+              <input id="telefoonnummer" v-model="form.telefoonnummer" class="form-input" type="tel" name="telefoonnummer" :maxlength="MAX.telefoonnummer" autocomplete="tel" placeholder="+31 6 12 34 56 78" >
             </div>
             <div class="form-group">
               <label class="form-label" for="onderwerp">Onderwerp</label>
               <select id="onderwerp" v-model="form.onderwerp" class="form-input form-select" name="onderwerp">
                 <option value="">Kies een onderwerp</option>
                 <option
-                  v-for="option in (page?.subjectOptions ?? ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders'])"
+                  v-for="option in subjectOptions"
                   :key="option"
                   :value="option"
                 >{{ option }}</option>
@@ -209,12 +249,14 @@ useBreadcrumbJsonLd([
               v-model="form.bericht"
               class="form-input form-textarea"
               name="bericht"
+              :maxlength="MAX.bericht"
+              minlength="10"
               placeholder="Waar kunnen we je mee helpen?"
               rows="6"
               required
               :aria-invalid="errors.bericht ? 'true' : undefined"
               :aria-describedby="errors.bericht ? 'bericht-error' : undefined"
-            ></textarea>
+            />
             <p v-if="errors.bericht" id="bericht-error" class="form-error">{{ errors.bericht }}</p>
           </div>
 
@@ -222,66 +264,88 @@ useBreadcrumbJsonLd([
             <button type="submit" class="btn btn-green contact-submit" :disabled="status === 'sending'">
               {{ status === 'sending' ? 'Versturen…' : 'Verstuur bericht' }}
             </button>
-            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens worden alleen gebruikt om je vraag te beantwoorden en nooit gedeeld met derden.' }}</p>
+            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}</p>
           </div>
 
           <p v-if="status === 'error'" class="form-error form-error--submit" role="alert">
-            Het versturen is helaas niet gelukt. Probeer het later opnieuw, of mail ons rechtstreeks.
+            Het versturen is helaas niet gelukt.
+            <template v-if="settings?.email">Probeer het later opnieuw, of mail ons op <a :href="`mailto:${settings.email}`">{{ settings.email }}</a>.</template>
+            <template v-else>Probeer het later opnieuw.</template>
           </p>
         </form>
       </section>
 
-      <aside class="contact-info-col">
-        <div class="contact-info-card">
-          <h2 class="contact-info-heading">Praktisch</h2>
-          <ul class="contact-info-list">
+      <aside class="sidebar-layout-aside">
+        <div class="info-card info-card--reflow">
+          <h2 class="section-label section-label--sm bright-green">Praktisch</h2>
+          <ul class="info-card-list">
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <div>
-                <span class="contact-info-label">Adres</span>
-                <span class="contact-info-value">{{ page?.infoAddress ?? 'Achterhoek, Gelderland' }}</span>
+                <span class="info-card-label">Adres</span>
+                <span class="info-card-value">{{ infoAddress }}</span>
+                <a :href="routeHref(coordinates)" class="contact-info-route" target="_blank" rel="noopener noreferrer">
+                  Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+            </li>
+            <li v-if="settings?.telephone">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <div>
+                <span class="info-card-label">Telefoon</span>
+                <a :href="telHref(settings.telephone)" class="info-card-value contact-info-value--link">{{ settings.telephone }}</a>
+              </div>
+            </li>
+            <li v-if="settings?.email">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
+              <div>
+                <span class="info-card-label">E-mail</span>
+                <a :href="`mailto:${settings.email}`" class="info-card-value contact-info-value--link">{{ settings.email }}</a>
               </div>
             </li>
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <div>
-                <span class="contact-info-label">Eigenaren</span>
-                <span class="contact-info-value">{{ page?.infoOwners ?? 'Victor & Mari Duurland' }}</span>
+                <span class="info-card-label">Eigenaren</span>
+                <span class="info-card-value">{{ infoOwners }}</span>
               </div>
             </li>
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               <div>
-                <span class="contact-info-label">Reactietijd</span>
-                <span class="contact-info-value">{{ page?.infoResponseTime ?? 'Binnen 2 werkdagen' }}</span>
+                <span class="info-card-label">Reactietijd</span>
+                <span class="info-card-value">{{ page?.infoResponseTime ?? 'Binnen 2 werkdagen' }}</span>
               </div>
             </li>
             <li>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               <div>
-                <span class="contact-info-label">Farmshop open</span>
-                <span class="contact-info-value">{{ page?.infoHours ?? 'Zaterdag & zondag\n10:00 – 17:00' }}</span>
+                <span class="info-card-label">Farmshop open</span>
+                <span class="info-card-value">{{ infoHours }}</span>
               </div>
             </li>
           </ul>
-          <NuxtLink to="/agenda" class="contact-info-link">
-            Bekijk alle evenementen
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </NuxtLink>
+          <div class="info-card-actions">
+            <NuxtLink to="/agenda" class="link-arrow link-arrow--on-dark">
+              Bekijk alle evenementen
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </NuxtLink>
+          </div>
         </div>
       </aside>
 
     </div>
-  </main>
 
-  <section class="contact-map-section" aria-label="Locatie op de kaart">
-    <iframe
-      :src="mapSrc"
-      class="contact-map"
-      title="Locatie Belevenisboerderij de Singel"
-      loading="lazy"
-      allowfullscreen
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
-  </section>
+    <section class="contact-map-section" aria-label="Locatie op de kaart">
+      <iframe
+        :src="mapSrc"
+        class="contact-map"
+        title="Locatie Belevenisboerderij de Singel"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+      />
+    </section>
+  </div>
 </template>

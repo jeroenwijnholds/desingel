@@ -45,15 +45,26 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
 
 ### Dependency-beheer (periodiek, geen haast)
 
-Stand 13 juli 2026, na `npm update` + CI-modernisering (Actions op hun
-Node 24-releases, build op Node 22):
+Stand 20 oktober 2026, na `npm update` in root én `studio/` (nuxt 4.6.2,
+vue 3.5.44, sanity 5.31). Tussen juli en oktober was dit opgelopen naar
+35 meldingen (5 critical, o.a. een RCE in `@nuxt/devtools` tijdens
+`npm run dev` en een SSR-XSS in vue) — periodiek updaten loont dus echt.
 
-- **5× moderate in `npm audit`** — allemaal dezelfde wortel: `uuid <11.1.1`
-  zit vastgepind via `@sanity/uuid` diep in `@nuxtjs/sanity`. Het kwetsbare
-  codepad (buf-argument, alleen in preview-tooling) raken wij niet, en de
-  enige npm-"fix" is een breaking downgrade. **Actie: niets** — bij een
-  volgende periodieke `npm update` lost dit vanzelf op zodra Sanity
-  upstream released.
+- **Root: 14× high in `npm audit --omit=dev`**, allemaal build-tooling:
+  `braces`/`micromatch` (DoS bij kwaadaardige glob-patronen, via
+  nitropack/`@sanity/codegen`) en `node-forge` (via de dev-server
+  `listhen`). Niets daarvan belandt op de statische site en we voeren
+  geen glob-patronen van buitenaf in. **Actie: niets**, lost op met een
+  volgende upstream-release.
+- **Studio: 16 (10 high, 0 critical)**, ook allemaal CLI-tooling
+  (`adm-zip`, `js-yaml`, `braces`). Sanity 6 (major) bewust nog niet.
+- **GitHub Actions** staan sinds oktober op commit-SHA vastgepind;
+  Dependabot opent maandelijks een PR als er nieuwe versies zijn.
+- **Let op**: GitHub schakelt de dagelijkse `schedule`-build uit na 60
+  dagen zonder repo-activiteit (krijgt een mail). Dan weer aanzetten via
+  het Actions-tabblad. (Bezoekers merken het nauwelijks — de browser
+  filtert verlopen evenementen ook zelf — maar de statische HTML,
+  sitemap en detailpagina's lopen dan achter tot de volgende publish.)
 - **`@types/node` blijft bewust op 22.x**: de types horen de Node-versie
   van de CI-build te volgen (nu 22). Pas samen verhogen met een
   Node-bump in `.github/workflows/deploy.yml`.
@@ -64,14 +75,66 @@ Node 24-releases, build op Node 22):
   daarna altijd lokaal `npm ci` vóór het committen van de lockfile (zie
   de valkuil in CLAUDE.md — dit brak op 13 juli de deploy).
 
-### Contactgegevens aanvullen voor structured data
+### Contactgegevens aanvullen (Studio → Site-instellingen)
 
-Sinds de SEO/GEO-optimalisatieronde (20 juli 2026) heeft Site-instellingen
-lege velden voor `telephone` en `socialLinks` (Instagram/Facebook e.d.). Ze
-staan bewust leeg — structured data mag geen verzonnen telefoonnummer of
-social-link bevatten. Vul ze in via de Studio zodra de gegevens bekend
-zijn; `components/AppFooter.vue` neemt ze dan automatisch mee in de
-LocalBusiness-JSON-LD (`telephone`/`sameAs`).
+Site-instellingen heeft lege velden voor `email` (sinds oktober 2026),
+`telephone` en `socialLinks` (Instagram/Facebook e.d.). Ze staan bewust
+leeg — de site en structured data mogen geen verzonnen gegevens bevatten.
+Zodra ze ingevuld zijn verschijnen ze vanzelf: klikbaar in de footer en de
+"Praktisch"-kaart op de contactpagina, de foutmelding van het formulier
+noemt het e-mailadres, en de LocalBusiness-JSON-LD neemt ze mee
+(`email`/`telephone`/`sameAs`).
+
+### Na review fase 5 (Studio-herinrichting): stappen in productie
+
+1. Studio deployen (`npm run deploy` in `studio/`): Nederlandse interface,
+   groepen, agenda komend/archief, "Bekijk op website", placeholder-
+   waarschuwingen, eindtijd bij evenementen, mededelingsbalk.
+2. Back-up: `cd studio && npx sanity dataset export production backup.tar.gz`.
+3. `node scripts/eenmalig/migreer-evenement-tijden.mjs` (droog) nalopen,
+   dan met `--apply`. Zet bij de 4 bestaande evenementen het tijdvak om
+   naar begin/eind. De droge run liet zien dat de opgeslagen tijd overal
+   precies 2 uur afwijkt van het getoonde tijdvak (tijdzonefout bij de
+   oorspronkelijke invoer) — het tijdvak is wat bezoekers zien en dus
+   leidend. De site werkt vóór én na de migratie (terugval op het tijdvak).
+4. De verouderde Contact-velden (adres/eigenaren/openingstijden) worden
+   niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
+
+### Content in de Studio bijwerken (oktober 2026)
+
+- **Placeholderteksten op De Boerderij** (naast die op de homepage): live
+  staan "CTA kop-label", "CTA tekst", "CTA titel", "Hoogtepunten titel",
+  "Hoogtepunten kop-label", "Foto-onderschrift", "Verhaal kop-label" en
+  "Verhaaltitel". Na de Studio-deploy krijgt elk zo'n veld een gele
+  waarschuwing.
+- **Plaatsnaam**: het intro-label op De Boerderij zegt "Heelweg,
+  Gelderland". Als dat klopt: ook in Site-instellingen → Adres zetten
+  (nu alleen "Achterhoek, Gelderland"), dan nemen footer, contactpagina
+  en Google het over.
+
+- **Privacytekst onder het contactformulier** (Contact-pagina →
+  "Privacytekst onder het formulier") zegt nu dat gegevens "nooit gedeeld
+  met derden" worden. Dat klopt niet: berichten lopen via Web3Forms.
+  Voorstel: *"Je gegevens gebruiken we alleen om je vraag te beantwoorden.
+  Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet
+  voor andere doelen gebruikt."*
+- **Alt-teksten bij de 12 galerijfoto's** (Fotogalerij): ontbreken nu,
+  waardoor schermlezers alleen "Foto 1 vergroten" horen.
+- **Tijdvak vs. tijd in het datumveld bij evenementen**: bij het
+  Kerstcircus staat 15:00 opgeslagen en "14:00 – 21:00" als tijdvak. De
+  site gebruikt het tijdvak (voor "Zet in je agenda" en Google); de
+  Studio-herinrichting (fase 5) maakt hier één invoer van.
+
+### Cookiebanner + privacyverklaring (besloten 20 oktober 2026)
+
+De Google Maps-kaart op de contactpagina blijft bewust direct laden
+(keuze Jeroen). Die zet Google-cookies zonder toestemming; daarvoor komt
+later een cookiebanner. Neem daarin mee:
+- de kaart pas laden na toestemming (anders heeft de banner geen effect),
+  met de "Plan je route"-link als altijd-werkend alternatief;
+- een korte privacy- en cookieverklaring (wie is verantwoordelijk,
+  Web3Forms voor het formulier, Google Maps, Sanity-CDN voor foto's),
+  gelinkt vanuit de banner, de footer en de tekst onder het formulier.
 
 ### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 

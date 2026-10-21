@@ -9,10 +9,13 @@ Jeroen ook in het Nederlands.
 
 ```bash
 npm run dev                      # dev-server
-npm run build                    # nuxt generate + sitemap.xml/robots.txt → .output/public (DE verificatie)
-npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI vóór de deploy)
+npm run build                    # nuxt generate + sitemap/robots/llms.txt + CSP-meta → .output/public (DE verificatie)
+npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI)
+npm run lint                     # @nuxt/eslint (CI); na typecheck/prepare, want leest .nuxt/eslint.config.mjs
+npm test                         # Vitest: pure logica in composables, in TZ=UTC zoals CI (tests/)
+npm run typegen                  # schema → types/sanity.types.ts; na élke schemawijziging (CI controleert het)
 npx serve -l 4173 .output/public # gebouwde site lokaal serveren
-npm run viewport-check           # Playwright: overflow-check + screenshots (zie Verificatie)
+npm run viewport-check           # Playwright: overflow + axe + screenshots (zie Verificatie)
 ```
 
 `.env` bevat `SANITY_PROJECT_ID`/`SANITY_DATASET` (nodig voor build; nooit committen).
@@ -44,6 +47,12 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   live op belevenisboerderij-desingel.nl (tot de DNS-omzetting). Bij
   twijfel over hoe iets "hoort": haal daar de markup/CSS op (stylesheet
   op cdn.prod.website-files.com) in plaats van te gissen vanaf screenshots.
+- **Query's gaan via `useContentQuery`**, niet rechtstreeks via
+  `useSanityQuery`: de wrapper laat de prerender falen (500 → `nuxt
+  generate` stopt) als Sanity een fout geeft. Zonder die wrapper slikt
+  `useAsyncData` de fout in en werd een lege site gedeployd (getest met een
+  ongeldig project-ID: exit 0, 16 routes). Verder identiek aan
+  `useSanityQuery`, dus onderstaande regel geldt ook voor de wrapper.
 - **`useSanityQuery` zonder `await`** (bewuste keuze, tegen hydration-flash):
   de `status`-ref wordt `'success'` **vóórdat** de `data`-ref gevuld is (dat
   gebeurt een microtask later in de module). Voor "bestaat dit document?"-checks
@@ -62,6 +71,17 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   (negatieve marges/overhang). Zet geen `overflow: hidden` op `.service-item`
   of `.card-container` — dat knipt de overlays af. De overhang-maten zijn
   gekoppeld via `--card-hang` en `--card-overhang` op `.intro-section`.
+- **Content-Security-Policy** (`scripts/add-csp.mjs`, na de build): hasht de
+  inline scripts van Nuxt; script-src staat géén `'unsafe-inline'` toe. Laad
+  je een nieuwe externe bron (script, iframe, font, API), voeg het domein dan
+  daar toe — anders blokkeert de browser het stil (controleer de console).
+  Nooit `v-html` gebruiken (er is er nu geen enkele).
+- **Types komen uit het schema** (`types/sanity.types.ts`): gebruik die (of
+  een `Pick<>` bij een projectie) i.p.v. eigen interfaces; afbeeldingen zijn
+  `SanityImageField` (uit `useImageUrl`). Na een schemawijziging
+  `npm run typegen`, anders faalt de CI-job "studio".
+- **Pagina's hebben één root-element** (een `<div>` om de template): nodig
+  voor Nuxt-paginatransities; lint (`vue/no-multiple-template-root`) bewaakt het.
 - **Hydration-mismatch-warning in de console is bekend en geaccepteerd**: SSR
   rendert mét data, de client hydrateert kort zonder (non-awaited queries).
   Visueel onzichtbaar. Niet "fixen" door overal `await` toe te voegen zonder
@@ -84,8 +104,13 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   LocalBusiness-JSON-LD), `AppLightbox` (pijltjes/swipe/focus-trap/teller),
   `PageHeader` (dé paginakop; props label/title/subtitle/image — image is
   een Sanity-afbeelding als achtergrond met gradient-overlay),
-  `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared).
-- `composables/` — `useImageUrl` (ruwe Sanity image-builder),
+  `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared),
+  `PageIntroSplit`/`PageStory`/`PageQuote`/`PageWidePhoto` (de gedeelde
+  secties van Over Ons en De Boerderij), `AppAnnouncement` (mededelingsbalk).
+- `composables/` — `useContentQuery` (zie Valkuilen), `useImageUrl` (ruwe
+  Sanity image-builder; exporteert ook `hasImage()` — **gebruik die in elke
+  `v-if` op een afbeeldingsveld**, een object met alleen een alt-tekst is
+  truthy maar heeft geen foto),
   `useSanityImg` (**gebruik deze voor elke afbeelding**: levert
   src/srcset/sizes/width/height met WebP via `auto=format`; mét `aspect`
   snijdt Sanity server-side rond de hotspot, zónder `aspect` komt de hotspot
@@ -93,8 +118,18 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   redacteuren sturen de uitsnede dus via "Edit hotspot" in Studio),
   `useSeo` (title/description/canonical/OG per pagina; accepteert getters;
   `type: 'article'` + `publishedTime` voor artikelen), `useJsonLd`
-  (structured data), `useDateFormat` (alle nl-NL-datumformattering),
-  `usePortableTextComponents` (gedeelde body-afbeelding-renderer).
+  (structured data), `useDateFormat` (alle nl-NL-datumformattering, altijd
+  in Europe/Amsterdam — de build draait in UTC; `isPastDay` voor
+  "is dit evenement voorbij?"),
+  `usePortableTextComponents` (gedeelde body-afbeelding- en citaatrenderer),
+  `useFocusTrap` (`trapFocus` + `useScrollLock` met teller, voor menu en
+  lightbox),
+  `useSiteSettings` (**dé** bron voor Site-instellingen in componenten — geen
+  eigen siteSettings-query meer schrijven; plus `openingHoursParts`/
+  `formatOpeningHours`, `telHref`, `routeHref`), `useEventTimes`
+  (`getEventTimes`: begin/eind in NL-tijd uit het getoonde tijdvak — dat is
+  leidend, de tijd in het datumveld wijkt in de praktijk af; plus
+  `isoAmsterdam`, `icsHref`, `googleCalendarHref`).
 - `studio/` — Sanity Studio (v5). Deskstructuur in `sanity.config.ts`:
   singletons (Homepage, De Boerderij, Over Ons, Contact, Fotogalerij,
   Site-instellingen) zijn niet aan te maken/verwijderen; documentnieuws en
@@ -106,6 +141,26 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   de homepage leest alléén daaruit. (Het verouderde veld
   `homePage.galleryImages` is op 10 juli 2026 geleegd en uit het schema
   verwijderd.)
+- Studio-conventies (`studio/schemas/lib.ts`): `ctaFields()` en
+  `seoFields()` voor het "Kom langs"-blok en Google-titel/-beschrijving
+  (de site leest `seoTitle`/`seoDescription` met fallback),
+  `withPlaceholderWarnings` (in `schemas/index.ts`) op alle paginateksten,
+  `imageField({ recommended })` voor een niet-blokkerende foto-waarschuwing.
+  Gebruik **groepen** zodra een document meer dan ~8 velden heeft, en wijs
+  dan élk veld een groep toe (een `default`-groep verbergt velden zonder
+  groep). Vervangen velden: `deprecated` + `readOnly` + verborgen als ze
+  leeg zijn, i.p.v. verwijderen (geen dataverlies). `SITE_URL` in
+  `sanity.config.ts` bij de domeinomzetting aanpassen.
+- Eén bron voor praktische gegevens: adres, eigenaren, openingstijden,
+  telefoon en e-mail komen uit Site-instellingen (`useSiteSettings`);
+  de Contact-velden daarvoor zijn verouderd.
+- Evenementen hebben `date` (begin) + `endDate`; het oude `timeRange` is
+  alleen nog terugval (`eventTimeLabel`, `getEventTimes`). Filter
+  "voorbij" altijd op `eventLastDate(e)` / `coalesce(endDate, date)`.
+- `AppAnnouncement`: tijdelijke mededeling bovenaan; zet `has-announcement`
+  op `<html>`, waardoor `--nav-height` (= `--nav-base` + balk) groeit en
+  alle offsets meeschuiven. Reken dus altijd met `--nav-height`, nooit
+  met een vaste 72px.
 - `scripts/generate-sitemap.mjs` draait als onderdeel van `npm run build`
   en schrijft sitemap.xml + robots.txt op basis van de echt geprerenderde
   routes (site-URL uit `NUXT_PUBLIC_SITE_URL`).
@@ -114,8 +169,11 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   (optionele waarde = vertraging in ms; slaat elementen over die al in beeld
   zijn en respecteert reduced-motion).
 - `assets/css/` — globaal geladen (volgorde in `nuxt.config.ts`):
-  `style.css` (tokens + home + nav/footer/modal), `page-header.css`,
-  `page-shared.css` (over-ons + de-boerderij patronen), rest per pagina.
+  `style.css` (tokens + home + nav/footer/modal), **`components.css`**
+  (gedeelde UI-patronen, zie Designsysteem), `page-header.css`,
+  `page-shared.css` (over-ons + de-boerderij patronen, CTA-blok, lege
+  staat), rest per pagina — paginabestanden bevatten alleen nog wat écht
+  paginaspecifiek is.
   **Alle CSS is globaal** — geef nieuwe selectors unieke, paginaspecifieke
   prefixes en definieer nooit dezelfde class in twee bestanden (dat was de
   `.page-header`-bug: laadvolgorde bepaalde stilletjes de styling).
@@ -124,7 +182,7 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
 
 Identiteit: donkergroen `#364838`, lichtgroen `#658457`, accentgroen
 `#d1f2c2`, geel `#f6c204`, Playfair Display (koppen, 400/700/900 + italic)
-en Source Sans 3 (body, 400/600/700), self-hosted via @fontsource —
+en Source Sans 3 (body, 400/600/700 + italic 400/600), self-hosted via @fontsource —
 **geen Google Fonts-links terugzetten** en geen gewichten gebruiken die niet
 in `nuxt.config.ts` geladen worden (geeft faux bold).
 
@@ -135,10 +193,48 @@ Tokens in `:root` (`style.css`) — bouw hierop, geen losse px-waarden:
   content op schermen breder dan ~1520px op `--container-max` (1280px).
   Het percentage in die term klopt alleen als horizontale padding op
   full-bleed secties — gebruik het token nergens anders voor),
-  `--section-pad`, `--nav-height`, `--container-max`
-- Vorm: `--radius-*`, `--shadow-*`
+  `--section-pad`, `--nav-height`, `--container-max`, `--sticky-top`
+- **Eén raster**: links uitgelijnde layouts (grids, intro-splits,
+  detailpagina's, contact) volgen allemaal `--page-pad`, zodat ze op
+  dezelfde linkerrand staan als homepage, nav en footer — geen eigen
+  `max-width: 1100px` e.d. Gecentreerde composities kiezen één van
+  `--container-text` (760), `--container-mid` (960) of
+  `--container-narrow` (600).
+- Vorm: `--radius-*` (`--radius-card` = 16px voor alle UI-kaarten),
+  `--shadow-*`, `--shadow-card-hover` + `--lift-card-hover` (overal
+  dezelfde kaart-hover), `--overlay-hero`/`-header`/`-card` (foto-overlays,
+  alle in het merkgroen).
+- **Hoekig vs. rond** (bewust): de foto-collage op de homepage (diensten-
+  en kaartfoto's met overlappende tekstblokken) is hoekig, zoals in het
+  Webflow-origineel. Alle UI-kaarten (info-, nieuws-, waardenkaarten)
+  zijn `--radius-card`, knoppen pill-vormig.
 - Kleur-extra's: `--surface-soft` (zachte groene sectie-achtergrond),
   `--error`/`--error-bg` (formulierfouten)
+- **Contrast**: lichtgroen `#658457` haalt met wit maar 4,2:1 (onder AA).
+  Gebruik voor kleine groene tekst `--green-text` en als knopvlak met
+  witte tekst `--green-button`; `--green-light` alleen voor vlakken,
+  iconen en grote tekst. Nieuwe kleurcombinaties narekenen (axe doet het
+  in de viewport-check).
+- **Focus**: één ring via `--focus-ring` + de globale `:focus-visible`-regel
+  in `style.css`. Op een nieuwe donkere container zet je alleen
+  `--focus-ring: var(--white)` in diens eigen regel; nooit een losse
+  outline-kleur per component (zo was de ring van `.btn-green` wit, dus
+  onzichtbaar op licht).
+- **Landmarks**: `layouts/default.vue` levert de enige `<main>` (+ skip-link,
+  route-aankondiging, focus na navigatie). Pagina's gebruiken dus géén
+  eigen `<main>`; alleen `error.vue` (rendert buiten de layout).
+
+Gedeelde componenten in `components.css` — **gebruik deze, maak geen
+paginakopie**: `.display-title` (+`--on-dark`; de h1 van elke subpagina),
+`.subsection-title`, `.section-label--sm`, `.list-heading`, `.stack`
+(verticale gap + automatische label→titel-afstand; vervangt negatieve
+marges), `.btn-outline` (+`--on-dark`), `.btn-sm`, `.link-arrow`
+(+`--on-dark`), `.breadcrumb`, `.date-tile`, `.info-card`
+(+`--reflow` voor tablet), `.sidebar-layout`, `.detail-hero*`, `.prose`
+(+ `.prose-quote`/`.prose-figure` voor Portable Text), `.status-page`.
+Let op specificiteit: `components.css` laadt ná `style.css`; een
+homepage-verfijning op zo'n component heeft een dubbele class nodig
+(zie `.info-card.upcoming-card`).
 
 Conventies: sectielabels zijn uppercase met `letter-spacing: 0.14em`
 (`.section-label`, kies `dark-green` op licht en `bright-green` op donker —
@@ -154,15 +250,20 @@ targets minimaal ~44px op mobiel.
 ```powershell
 # PowerShell (Git Bash verhaspelt de routes naar Windows-paden!)
 $env:ROUTES = "/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt"
-node scripts/viewport-check.mjs          # overflow-check 6 breedtes per route
-$env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots
+node scripts/viewport-check.mjs          # overflow 6 breedtes + axe (WCAG AA) op 375/1440
+$env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots (→ %TEMP%\desingel-shots, of SHOT_DIR)
 ```
+
+Axe-bevindingen van ernst serious/critical laten het script falen
+(`$env:AXE = "0"` slaat axe over). De Google Maps-iframe is uitgesloten.
 
 Bij frontend-wijzigingen minimaal: build groen → overflow-check → screenshots
 op 375/1440 bekijken (Read op de PNG's) → toetsenbord-walkthrough voor
 interactieve elementen (menu, lightbox, formulier: Tab/Escape/pijltjes).
 Het script zet `reducedMotion: 'reduce'` zodat scroll-reveals screenshots
-niet verstoren.
+niet verstoren. Let op bij eigen Playwright-checks onder reduced motion: de
+globale guard geeft élke property een transitie van 0,01ms, dus lees
+berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
 
 ## Werkwijze
 

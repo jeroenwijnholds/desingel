@@ -1,5 +1,5 @@
 import { defineType, defineField } from 'sanity'
-import { imageField } from './lib'
+import { imageField, ctaFields, seoFields, SEO_GROUP } from './lib'
 
 const serviceCard = {
   type: 'object',
@@ -20,8 +20,10 @@ export default defineType({
   groups: [
     { name: 'hero', title: 'Hero (bovenaan)', default: true },
     { name: 'diensten', title: 'Diensten' },
+    { name: 'binnenkort', title: 'Binnenkort (agenda)' },
     { name: 'galerij', title: 'Galerij-kop' },
     { name: 'cta', title: 'Blok onderaan' },
+    SEO_GROUP,
   ],
   fields: [
     defineField({
@@ -91,6 +93,27 @@ export default defineType({
       validation: Rule => Rule.max(3),
     }),
     defineField({
+      name: 'upcomingLabel',
+      title: 'Binnenkort kop-label',
+      type: 'string',
+      group: 'binnenkort',
+      description: 'Klein label boven het blok met de eerstvolgende evenementen, bijv. "Agenda". De evenementen zelf komen automatisch uit de Agenda; de openingstijden uit Site-instellingen.',
+    }),
+    defineField({
+      name: 'upcomingTitle',
+      title: 'Binnenkort titel',
+      type: 'string',
+      group: 'binnenkort',
+      description: 'Bijv. "Binnenkort op de Singel".',
+    }),
+    defineField({
+      name: 'upcomingEmptyText',
+      title: 'Tekst als er geen evenementen gepland zijn',
+      type: 'text',
+      rows: 2,
+      group: 'binnenkort',
+    }),
+    defineField({
       name: 'galleryLabel',
       title: 'Galerij kop-label',
       type: 'string',
@@ -98,37 +121,8 @@ export default defineType({
       description: 'Klein label boven de fotogalerij, bijv. "De boerderij in beeld". De foto\'s zelf staan onder "Fotogalerij".',
     }),
     defineField({ name: 'galleryTitle', title: 'Galerij titel', type: 'string', group: 'galerij' }),
-    defineField({
-      name: 'ctaLabel',
-      title: 'CTA kop-label',
-      type: 'string',
-      group: 'cta',
-      description: 'Klein label boven het blok onderaan, bijv. "Kom langs".',
-    }),
-    defineField({ name: 'ctaTitle', title: 'CTA titel', type: 'string', group: 'cta' }),
-    defineField({ name: 'ctaText', title: 'CTA tekst', type: 'text', rows: 3, group: 'cta' }),
-    defineField({
-      name: 'ctaPrimaryLabel',
-      title: 'CTA primaire knoptekst',
-      type: 'string',
-      group: 'cta',
-      description: 'Tekst op de groene knop in het "Kom langs"-blok onderaan.',
-    }),
-    defineField({
-      name: 'ctaPrimaryHref',
-      title: 'CTA primaire URL',
-      type: 'string',
-      group: 'cta',
-      description: 'Interne link zoals /agenda of een volledige URL.',
-    }),
-    defineField({ name: 'ctaSecondaryLabel', title: 'CTA secundaire knoptekst', type: 'string', group: 'cta' }),
-    defineField({
-      name: 'ctaSecondaryHref',
-      title: 'CTA secundaire URL',
-      type: 'string',
-      group: 'cta',
-      description: 'Interne link zoals /over-ons of een volledige URL.',
-    }),
+    ...ctaFields({ group: 'cta', primaryExample: '/agenda', secondaryExample: '/over-ons' }),
+    ...seoFields(),
   ],
   preview: { prepare: () => ({ title: 'Homepage' }) },
 })

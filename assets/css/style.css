@@ -8,12 +8,21 @@
   /* Colors */
   --green-dark:             #364838;
   --green-light:            #658457;
+  /* AA-veilige varianten van --green-light (dat zelf maar 4,2:1 haalt met
+     wit). Zo licht mogelijk gehouden, zodat het merkgroen herkenbaar blijft:
+     --green-text  voor kleine groene tekst/labels; ≥4,5:1 op wit,
+                   --surface-soft én de groene introband (#e5e9d6)
+     --green-button als knopvlak met witte tekst (4,6:1; 4,5% donkerder)
+     --green-light zelf alleen nog voor vlakken, iconen en grote tekst. */
+  --green-text:             #556f49;
+  --green-button:           #607e53;
   --green-dark-transparent: #364838cc;
   --green-transparent:      #d4dbba99;
   --green-accent:           #d1f2c2;
   --brown-transparent:      #cfb8a0e6;
   --card-text:              #290707;
-  --card-heading:           #5d624d;
+  --card-heading:           #4e5241; /* was #5d624d: 3,6:1 op de bruine dienstenkaart, nu 4,5:1 */
+  --quote-text:             #6b6156; /* testimonial op de homepage (Webflow-origineel) */
   --yellow:                 #f6c204;
   --white:                  #ffffff;
   --black:                  #000000;
@@ -22,6 +31,8 @@
   --surface-soft:           #f0f5ec; /* zachte groene sectie-achtergrond */
   --error:                  #b3261e;
   --error-bg:               #fdf1f0;
+  /* Focusring: donkergroen op licht; donkere secties zetten hem op wit */
+  --focus-ring:             var(--green-dark);
 
   /* Fonts */
   --font-display: 'Playfair Display', Georgia, serif;
@@ -51,9 +62,18 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
+  --radius-card: 16px; /* standaard kaartradius (infokaarten, nieuwskaarten) */
   --shadow-sm: 0 2px 8px rgba(41, 31, 15, 0.08);
   --shadow-md: 0 8px 24px rgba(41, 31, 15, 0.12);
   --shadow-lg: 0 16px 56px rgba(54, 72, 56, 0.18);
+  /* Kaart-hover overal gelijk (was 3 schaduwen en 3 lift-afstanden) */
+  --shadow-card-hover: 0 8px 32px rgba(54, 72, 56, 0.12);
+  --lift-card-hover: -4px;
+
+  /* Foto-overlays, alle drie in het merkgroen (was deels bijna-zwart) */
+  --overlay-hero:   linear-gradient(to bottom, rgba(54, 72, 56, 0.45) 0%, rgba(54, 72, 56, 0.25) 40%, rgba(54, 72, 56, 0.88) 100%);
+  --overlay-header: linear-gradient(to bottom, rgba(54, 72, 56, 0.5) 0%, rgba(54, 72, 56, 0.85) 100%);
+  --overlay-card:   linear-gradient(to bottom, rgba(54, 72, 56, 0.05) 0%, rgba(54, 72, 56, 0.25) 35%, rgba(54, 72, 56, 0.85) 75%, rgba(54, 72, 56, 0.95) 100%);
 
   /* Layout */
   --container-max: 1280px;
@@ -63,7 +83,21 @@
      dus uitsluitend als horizontale padding op sectie-niveau. */
   --page-pad: max(clamp(16px, calc(10vw - 32px), 120px), calc((100% - var(--container-max)) / 2));
   --section-pad: clamp(64px, 9vw, 112px);
-  --nav-height: 72px;
+  --nav-base: 72px; /* hoogte van de nav zelf */
+  --nav-height: var(--nav-base); /* alles wat onder de vaste kop moet beginnen */
+  /* Links uitgelijnde layouts volgen --page-pad (max 1280px, gelijk aan
+     homepage en footer). Gecentreerde composities kiezen één van deze: */
+  --container-text:   760px; /* agenda, citaat, paginakop, lopende tekst */
+  --container-mid:    960px; /* tweekoloms verhaal */
+  --container-narrow: 600px; /* CTA-blok, lege staat, statuspagina */
+  --sticky-top: calc(var(--nav-height) + var(--space-4)); /* zijkolommen onder de vaste nav */
+  --announcement-height: 44px; /* tijdelijke mededeling (AppAnnouncement), max 2 regels */
+}
+
+/* Met een mededelingsbalk schuift alles wat met --nav-height rekent
+   (paginakoppen, sticky kolommen, scroll-padding) vanzelf mee */
+html.has-announcement {
+  --nav-height: calc(var(--nav-base) + var(--announcement-height));
 }
 
 /* --- Reset & Base --- */
@@ -99,6 +133,51 @@ img {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* --- Toegankelijkheid --- */
+
+/* Eén focusring voor de hele site; specifieke componenten verfijnen alleen
+   offset/radius. Kleur via --focus-ring (wit binnen donkere secties). */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* <main> krijgt na een routewissel programmatisch focus (layouts/default.vue);
+   dat hoort geen zichtbare ring rond de hele pagina te geven. */
+main:focus {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 10000; /* boven de vaste nav (9999) */
+  padding: var(--space-3) var(--space-5);
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--green-dark);
 }
 
 /* --- Typography --- */
@@ -161,17 +240,13 @@ h3 { font-size: var(--text-xl); }
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--green-dark);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .btn-green {
-  background-color: var(--green-light);
+  background-color: var(--green-button);
   color: var(--white);
-}
-
-.btn-green:focus-visible {
-  outline-color: var(--white);
 }
 
 .btn-yellow {
@@ -206,7 +281,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .section-label.dark-green {
-  color: var(--green-light);
+  color: var(--green-text);
 }
 
 /* --- Hero link --- */
@@ -243,9 +318,54 @@ h3 { font-size: var(--text-xl); }
 }
 
 /* ============================================
+   MEDEDELING (AppAnnouncement)
+   ============================================ */
+.announcement {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000; /* boven de nav (9999) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--announcement-height);
+  padding: 0 var(--space-4);
+  background-color: var(--yellow);
+  color: var(--black);
+  text-align: center;
+}
+
+.announcement-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.announcement-text--link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.has-announcement .nav {
+  top: var(--announcement-height);
+}
+
+@media screen and (max-width: 479px) {
+  .announcement-text {
+    font-size: var(--text-xs);
+  }
+}
+
+/* ============================================
    NAV
    ============================================ */
 .nav {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: fixed;
   top: 0;
   left: 0;
@@ -282,7 +402,9 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-logo:focus-visible {
-  outline: 2px solid var(--white);
+  /* op de homepage is het logo vóór scrollen onzichtbaar, maar wel focusbaar */
+  opacity: 1;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -330,7 +452,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-links a:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -353,7 +475,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .nav-hamburger:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -381,6 +503,7 @@ h3 { font-size: var(--text-xl); }
    HERO
    ============================================ */
 .hero {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   position: relative;
   display: flex;
   min-height: 80vh;
@@ -909,7 +1032,7 @@ h3 { font-size: var(--text-xl); }
 /* Styling volgt het originele Webflow-ontwerp (.quoteblock/.quotetext):
    rechts uitgelijnd, Playfair 24px vet, afzender licht en ingetogen */
 .quote-block {
-  color: #6b6156;
+  color: var(--quote-text);
   text-align: right;
 }
 
@@ -930,6 +1053,122 @@ h3 { font-size: var(--text-xl); }
 @media screen and (max-width: 479px) {
   .quote-text {
     font-size: var(--text-base);
+  }
+}
+
+/* ============================================
+   BINNENKORT (komende evenementen + farmshop)
+   ============================================ */
+.upcoming-section {
+  padding: var(--space-16) var(--page-pad) 0;
+}
+
+.upcoming-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.upcoming-list {
+  list-style: none;
+  margin: var(--space-6) 0 var(--space-4);
+  padding: 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--green-dark);
+}
+
+.upcoming-item:hover .upcoming-title {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.upcoming-item:hover .upcoming-arrow {
+  transform: translateX(4px);
+}
+
+.upcoming-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.upcoming-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.upcoming-meta {
+  font-size: var(--text-sm);
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.upcoming-arrow {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--green-text);
+  transition: transform var(--transition-fast);
+}
+
+.upcoming-empty {
+  max-width: 60ch;
+  margin: var(--space-6) 0 var(--space-4);
+}
+
+/* Basis = .info-card (components.css, laadt later → dubbele class voor specificiteit) */
+.info-card.upcoming-card {
+  gap: var(--space-2);
+}
+
+.info-card.upcoming-card > .section-label {
+  margin-bottom: var(--space-1);
+}
+
+.upcoming-hours {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.upcoming-hours-time {
+  white-space: nowrap; /* "10:00 – 17:00" nooit midden afbreken */
+}
+
+.upcoming-address {
+  font-size: var(--text-sm);
+  opacity: 0.85;
+}
+
+.upcoming-route {
+  align-self: flex-start;
+  margin-top: var(--space-4);
+}
+
+@media screen and (max-width: 991px) {
+  .upcoming-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .upcoming-item {
+    gap: var(--space-4);
   }
 }
 
@@ -962,7 +1201,7 @@ h3 { font-size: var(--text-xl); }
 }
 
 .gallery-thumb:focus-visible {
-  outline: 3px solid var(--green-dark);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -996,6 +1235,7 @@ h3 { font-size: var(--text-xl); }
    MODAL
    ============================================ */
 .modal {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   display: none;
   position: fixed;
   inset: 0;
@@ -1040,7 +1280,7 @@ h3 { font-size: var(--text-xl); }
 
 .modal-close:focus-visible,
 .modal-nav:focus-visible {
-  outline: 2px solid var(--white);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
   border-radius: 4px;
   opacity: 1;
@@ -1093,6 +1333,7 @@ h3 { font-size: var(--text-xl); }
    FOOTER
    ============================================ */
 .footer {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
   background-color: var(--green-dark);
   color: var(--white);
   padding: var(--space-16) var(--page-pad) 0;
@@ -1166,10 +1407,35 @@ h3 { font-size: var(--text-xl); }
   line-height: 1.8;
 }
 
+.footer-contact-link {
+  display: inline-block;
+  padding: var(--space-2) 0; /* tap target ~44px */
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--transition-fast);
+}
+
+.footer-contact-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.footer-social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-5);
+  font-size: 15px;
+  opacity: 0.8;
+}
+
 .footer-bottom {
   padding: 20px 0;
   font-size: 13px;
-  opacity: 0.5;
+  opacity: 0.75; /* 0.5 gaf 3,8:1 op donkergroen; 0.75 = 6,3:1 */
 }
 
 /* ============================================
@@ -1182,12 +1448,18 @@ h3 { font-size: var(--text-xl); }
   z-index: 999;
   display: none;
   opacity: 0;
+  /* onzichtbaar = ook niet tikbaar en niet focusbaar (anders vangt hij
+     rechtsonder tikken af en krijgt hij toetsenbordfocus) */
+  visibility: hidden;
+  pointer-events: none;
   transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
 }
 
 .cta-fixed--visible {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
 }
 

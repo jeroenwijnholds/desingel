@@ -3,28 +3,38 @@ name: Deploy naar GitHub Pages
 on:
   push:
     branches: [master]
+  # PR's krijgen dezelfde checks (typecheck, lint, tests, build), maar
+  # worden niet gedeployd
+  pull_request:
+    branches: [master]
   repository_dispatch:
     types: [sanity-publish]
   workflow_dispatch:
+  # Dagelijkse rebuild (05:00 NL-wintertijd) zodat verlopen evenementen ook
+  # zonder Sanity-publish van de agenda verdwijnen.
+  schedule:
+    - cron: '0 4 * * *'
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Bij snel opeenvolgende Sanity-publishes wordt een lopende build
-# geannuleerd en vervangen door de nieuwste — scheelt Actions-minuten.
-concurrency:
-  group: pages
-  cancel-in-progress: true
+# Standaard niets; elke job krijgt alleen wat hij nodig heeft. De build
+# draait third-party code (npm ci) en hoeft dus niet naar Pages te kunnen.
+permissions: {}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read # configure-pages leest de Pages-config (base_path/base_url)
+    # Bij snel opeenvolgende Sanity-publishes wordt een lopende build
+    # geannuleerd en vervangen door de nieuwste — scheelt Actions-minuten.
+    # Per ref, zodat een PR-build nooit een master-build annuleert.
+    concurrency:
+      group: pages-build-${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           # Node 20 is sinds april 2026 EOL; 22 is LTS tot april 2027
           node-version: 22
@@ -33,14 +43,21 @@ jobs:
       - run: npm ci
 
       - name: Typecheck
+        # genereert ook .nuxt/ (nodig voor de lint-config hieronder)
         run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit-tests
+        run: npm test
 
       - name: Configure Pages
         id: pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Build static site
-        # npm run build = nuxt generate + sitemap.xml/robots.txt-generatie
+        # npm run build = nuxt generate + sitemap.xml/robots.txt/llms.txt
         run: npm run build
         env:
           SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
@@ -51,16 +68,64 @@ jobs:
 
       # NB: sinds v4 gaan verborgen bestanden (dotfiles) niet meer mee in
       # het artifact; onze Nuxt-output bevat er geen (gecontroleerd)
-      - uses: actions/upload-pages-artifact@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: .output/public
 
+  # Studio en gegenereerde types controleren. Alleen bij codewijzigingen:
+  # een Sanity-publish of de dagelijkse rebuild verandert het schema niet.
+  # Blokkeert de site-deploy niet (die hangt alleen van `build` af).
+  studio:
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+
+      - run: npm ci
+
+      - name: Schema valideren
+        run: npx sanity schema validate
+
+      - name: Typecheck Studio
+        run: npx tsc --noEmit
+
+      - name: Studio bouwen
+        run: npx sanity build --yes
+
+      - name: Types up-to-date met het schema
+        # Faalt als iemand het schema wijzigde zonder `npm run typegen`
+        run: |
+          npx sanity schema extract --enforce-required-fields --path ../types/schema.json
+          npx sanity typegen generate
+          git diff --exit-code -- ../types/sanity.types.ts
+
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    # Een lopende Pages-deploy nooit afbreken (advies van GitHub): dat kan
+    # een half uitgerolde site achterlaten.
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

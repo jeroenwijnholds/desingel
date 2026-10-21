@@ -4,13 +4,13 @@ const props = defineProps<{
   title: string
   subtitle?: string
   /** Sanity-afbeelding als achtergrond; de gradient-overlay houdt de tekst leesbaar */
-  image?: any
+  image?: SanityImageField
 }>()
 
 const img = useSanityImg()
 
 const imageAttrs = computed(() =>
-  props.image ? img(props.image, { widths: [768, 1280, 1920], sizes: '100vw' }) : null
+  hasImage(props.image) ? img(props.image, { widths: [768, 1280, 1920], sizes: '100vw' }) : null
 )
 </script>
 
@@ -23,11 +23,11 @@ const imageAttrs = computed(() =>
         class="page-header-img"
         loading="eager"
         fetchpriority="high"
-      />
+      >
     </div>
     <div class="page-header-inner">
       <p v-if="label" class="section-label bright-green">{{ label }}</p>
-      <h1 class="page-header-title">{{ title }}</h1>
+      <h1 class="display-title display-title--on-dark">{{ title }}</h1>
       <p v-if="subtitle" class="page-header-sub">{{ subtitle }}</p>
     </div>
   </header>

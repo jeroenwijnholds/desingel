@@ -24,3 +24,6 @@ studio/.sanity/
 studio/.output/
 studio/dist/
 shots/
+
+# Tussenproduct van npm run typegen (alleen sanity.types.ts wordt gecommit)
+types/schema.json

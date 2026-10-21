@@ -1,24 +1,5 @@
 ﻿<script setup lang="ts">
-const QUERY = `*[_type == "siteSettings"][0]{ siteName, tagline, footerCopyright, navigation, owners, address, coordinates, telephone, socialLinks, openingHours }`
-
-interface NavItem { label: string; href: string; isButton: boolean }
-interface Owner { name: string; role: string }
-interface SocialLink { platform: string; url: string }
-interface OpeningHoursRule { days: string[]; opens: string; closes: string }
-interface SiteSettings {
-  siteName: string
-  tagline: string
-  footerCopyright: string
-  navigation: NavItem[]
-  owners: Owner[]
-  address: string
-  coordinates?: { lat: number; lng: number }
-  telephone?: string
-  socialLinks?: SocialLink[]
-  openingHours?: OpeningHoursRule[]
-}
-
-const { data } = useSanityQuery<SiteSettings>(QUERY)
+const { data } = useSiteSettings()
 
 const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
 
@@ -51,6 +32,7 @@ useJsonLd(() => data.value
         ? { geo: { '@type': 'GeoCoordinates', latitude: data.value.coordinates.lat, longitude: data.value.coordinates.lng } }
         : {}),
       ...(data.value.telephone ? { telephone: data.value.telephone } : {}),
+      ...(data.value.email ? { email: data.value.email } : {}),
       ...(data.value.socialLinks?.length ? { sameAs: data.value.socialLinks.map(s => s.url) } : {}),
       ...(data.value.openingHours?.length
         ? {
@@ -87,6 +69,16 @@ useJsonLd(() => data.value
         <p class="footer-heading">Contact</p>
         <p v-for="owner in data?.owners" :key="owner.name">{{ owner.name }}</p>
         <p v-if="data?.address" style="white-space: pre-line">{{ data.address }}</p>
+        <!-- Telefoon/e-mail/socials verschijnen zodra ze in Site-instellingen staan -->
+        <p v-if="data?.telephone"><a :href="telHref(data.telephone)" class="footer-contact-link">{{ data.telephone }}</a></p>
+        <p v-if="data?.email"><a :href="`mailto:${data.email}`" class="footer-contact-link">{{ data.email }}</a></p>
+        <ul v-if="data?.socialLinks?.length" class="footer-social">
+          <li v-for="social in data.socialLinks" :key="social.url">
+            <a :href="social.url" class="footer-contact-link" target="_blank" rel="noopener noreferrer">
+              {{ social.platform }}<span class="visually-hidden"> (opent in nieuw tabblad)</span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
 
