@@ -112,18 +112,16 @@ worden niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
   (nu alleen "Achterhoek, Gelderland"), dan nemen footer, contactpagina
   en Google het over.
 
-- **Privacytekst onder het contactformulier** (Contact-pagina →
-  "Privacytekst onder het formulier") zegt nu dat gegevens "nooit gedeeld
-  met derden" worden. Dat klopt niet: berichten lopen via Web3Forms.
-  Voorstel: *"Je gegevens gebruiken we alleen om je vraag te beantwoorden.
-  Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet
-  voor andere doelen gebruikt."*
-- **Alt-teksten bij de 12 galerijfoto's** (Fotogalerij): ontbreken nu,
-  waardoor schermlezers alleen "Foto 1 vergroten" horen.
-- **Tijdvak vs. tijd in het datumveld bij evenementen**: bij het
-  Kerstcircus staat 15:00 opgeslagen en "14:00 – 21:00" als tijdvak. De
-  site gebruikt het tijdvak (voor "Zet in je agenda" en Google); de
-  Studio-herinrichting (fase 5) maakt hier één invoer van.
+- ~~**Privacytekst onder het contactformulier**~~ ✅ 21 oktober 2026:
+  vermeldt nu dat berichten via Web3Forms lopen (de oude tekst beloofde
+  "nooit gedeeld met derden").
+- ~~**Alt-teksten bij de 12 galerijfoto's**~~ ✅ 21 oktober 2026: per foto
+  beschreven (personen niet bij naam). Victor & Mari kunnen ze in de
+  Studio aanvullen, bijv. met namen of de diersoort.
+  Beide via `scripts/eenmalig/vul-alt-en-privacytekst.mjs`, back-up vooraf
+  in `../desingel-backups/`.
+- ~~**Tijdvak vs. tijd in het datumveld bij evenementen**~~ ✅ opgelost
+  door de migratie van 21 oktober (begin- en eindtijd).
 
 ### Cookiebanner + privacyverklaring (besloten 20 oktober 2026)
 
