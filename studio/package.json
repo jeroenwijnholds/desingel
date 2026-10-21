@@ -10,6 +10,7 @@
   "dependencies": {
     "@sanity/icons": "^3.8.0",
     "@sanity/locale-nl-nl": "^1.1.40",
+    "@sanity/ui": "^3.5.5",
     "@sanity/vision": "^5.27.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

@@ -15,8 +15,10 @@ import {
   DocumentTextIcon,
   CogIcon,
   LaunchIcon,
+  LockIcon,
 } from '@sanity/icons'
 import { schemaTypes } from './schemas'
+import { statistiekTools } from './tools/statistiek'
 
 /**
  * Adres van de live website. Bij de DNS-omzetting naar het eigen domein
@@ -35,6 +37,7 @@ const singletonTypes = new Set([
   'contactPage',
   'agendaPage',
   'nieuwsPage',
+  'privacyPage',
   'fotoGalerij',
   'siteSettings',
 ])
@@ -52,6 +55,7 @@ function sitePath(doc: SanityDocument | null | undefined): string | null {
     case 'contactPage': return '/contact'
     case 'agendaPage': return '/agenda'
     case 'nieuwsPage': return '/nieuws'
+    case 'privacyPage': return '/privacy'
     case 'event': return slug ? `/evenement/${slug}` : null
     case 'nieuwsArtikel': return slug ? `/nieuws/${slug}` : null
     default: return null
@@ -112,6 +116,7 @@ export default defineConfig({
                     singleton(S, 'contactPage', 'Contact', EnvelopeIcon),
                     singleton(S, 'agendaPage', 'Agenda', CalendarIcon),
                     singleton(S, 'nieuwsPage', 'Nieuws', DocumentTextIcon),
+                    singleton(S, 'privacyPage', 'Privacyverklaring', LockIcon),
                   ])
               ),
             singleton(S, 'fotoGalerij', 'Fotogalerij', ImagesIcon),
@@ -166,6 +171,10 @@ export default defineConfig({
     // in Vision niet stilletjes verandert.
     ...(isDev ? [visionTool({ defaultApiVersion: '2024-01-01' })] : []),
   ],
+
+  // Tabblad met de link naar het Umami-dashboard (alleen als
+  // SANITY_STUDIO_UMAMI_SHARE_URL in studio/.env staat)
+  tools: (prev) => [...prev, ...statistiekTools],
 
   schema: {
     types: schemaTypes,

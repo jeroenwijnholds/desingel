@@ -19,6 +19,10 @@ export default defineNuxtConfig({
       web3formsKey: '',
       // absolute site-URL voor canonical/OG; NUXT_PUBLIC_SITE_URL in CI
       siteUrl: 'https://jeroenwijnholds.github.io/desingel',
+      // Umami-statistiek (plugins/analytics.ts); leeg = uit.
+      // NUXT_PUBLIC_UMAMI_WEBSITE_ID / NUXT_PUBLIC_UMAMI_SCRIPT_URL in CI
+      umamiWebsiteId: '',
+      umamiScriptUrl: '',
     },
   },
 

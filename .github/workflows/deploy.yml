@@ -65,6 +65,9 @@ jobs:
           NUXT_APP_BASE_URL: ${{ steps.pages.outputs.base_path }}/
           NUXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url }}
           NUXT_PUBLIC_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_ACCESS_KEY }}
+          # Umami-statistiek; zolang de variabelen leeg zijn staat die uit
+          NUXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
+          NUXT_PUBLIC_UMAMI_SCRIPT_URL: ${{ vars.UMAMI_SCRIPT_URL }}
 
       # NB: sinds v4 gaan verborgen bestanden (dotfiles) niet meer mee in
       # het artifact; onze Nuxt-output bevat er geen (gecontroleerd)

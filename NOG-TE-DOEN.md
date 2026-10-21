@@ -42,6 +42,8 @@ Webflow-site** (DNS bij TransIP: apex → 198.202.211.1, `www` →
    en bouwt dan zonder `/desingel/`-padvoorvoegsel; sitemap.xml en
    robots.txt volgen automatisch mee via `NUXT_PUBLIC_SITE_URL`).
 4. Daarna het Webflow-abonnement opzeggen (staat anders door te lopen).
+5. In Umami het domein van de website wijzigen (zie Bezoekersstatistiek).
+   `data-domains` volgt vanzelf `NUXT_PUBLIC_SITE_URL`.
 
 ### Dependency-beheer (periodiek, geen haast)
 
@@ -123,16 +125,44 @@ worden niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
 - ~~**Tijdvak vs. tijd in het datumveld bij evenementen**~~ ✅ opgelost
   door de migratie van 21 oktober (begin- en eindtijd).
 
-### Cookiebanner + privacyverklaring (besloten 20 oktober 2026)
+### ~~Cookiebanner + privacyverklaring~~ ✅ 21 oktober 2026
 
-De Google Maps-kaart op de contactpagina blijft bewust direct laden
-(keuze Jeroen). Die zet Google-cookies zonder toestemming; daarvoor komt
-later een cookiebanner. Neem daarin mee:
-- de kaart pas laden na toestemming (anders heeft de banner geen effect),
-  met de "Plan je route"-link als altijd-werkend alternatief;
-- een korte privacy- en cookieverklaring (wie is verantwoordelijk,
-  Web3Forms voor het formulier, Google Maps, Sanity-CDN voor foto's),
-  gelinkt vanuit de banner, de footer en de tekst onder het formulier.
+- Eigen lichte banner (`AppConsent`): de enige cookies komen van de
+  Google Maps-kaart, die pas laadt na "Kaart toestaan" (op de banner of
+  op de kaart-placeholder). De keuze staat een jaar in `localStorage`
+  (`desingel-cookiekeuze`). Wijzigen kan via "Cookie-instellingen" in de footer.
+- Privacyverklaring op `/privacy`: Studio → Pagina's → Privacyverklaring.
+  De eerste versie komt uit `scripts/eenmalig/maak-privacyverklaring.mjs`.
+  **Pas de tekst aan** als er een dienst bijkomt of afgaat, en zet dan
+  "Laatst bijgewerkt" op de datum van die dag.
+
+### Bezoekersstatistiek (Umami Cloud) ✅ ingesteld 21 oktober 2026
+
+Het account is van Jeroen (Umami Cloud, gratis Hobby-plan: tot 100.000
+events per maand, 6 maanden bewaard, geen teamleden). De website staat erin
+met het domein `jeroenwijnholds.github.io`. Hoe het werkt:
+
+- **Tellen**: de repo-variabele `UMAMI_WEBSITE_ID` (GitHub → Settings →
+  Secrets and variables → Actions → Variables) zet `plugins/analytics.ts`
+  aan. `UMAMI_SCRIPT_URL` is niet gezet, dus het script komt van
+  `https://cloud.umami.is/script.js`. De CSP neemt dat domein automatisch
+  op, plus `gateway.umami.is`, waar het Cloud-script de tellingen naartoe stuurt.
+- **Meekijken (Victor & Mari)**: via een deellink van Umami (alleen-lezen,
+  zonder login). De Studio heeft een tabblad **Bezoekersstatistiek** dat de
+  deellink opent. De link staat bewust **niet** in de repo, want die is
+  openbaar. Hij staat in `studio/.env` als `SANITY_STUDIO_UMAMI_SHARE_URL`
+  en wordt bij `npm run deploy` in de Studio gebakken. **Deploy je de Studio
+  vanaf een andere computer, zet dan eerst dat bestand neer**, anders
+  verdwijnt het tabblad. De link vind je in Umami → website → Edit → Share
+  URL.
+- Lekt de deellink uit, klik dan in Umami op "Regenerate". Zet daarna de
+  nieuwe link in `studio/.env` en deploy de Studio opnieuw.
+- Wil je dat Victor & Mari eigen logins krijgen (teamleden), dan heb je het
+  Pro-plan nodig ($20 per maand).
+
+Alleen bezoeken op het domein uit `NUXT_PUBLIC_SITE_URL` tellen mee
+(`data-domains`), dus lokaal testen vervuilt de cijfers niet. Wie
+Do Not Track aan heeft staan, wordt niet geteld.
 
 ### ~~Oude galerijdata opruimen~~ ✅ afgerond 10 juli 2026
 

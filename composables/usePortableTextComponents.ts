@@ -1,5 +1,6 @@
 import type { PortableTextVueComponents } from '@portabletext/vue'
 import { defineComponent, h, type FunctionalComponent, type PropType } from 'vue'
+import { NuxtLink } from '#components'
 
 /**
  * Gedeelde PortableText-componenten voor artikel- en evenement-body's
@@ -39,8 +40,17 @@ export function usePortableTextComponents(): Partial<PortableTextVueComponents> 
   const Blockquote: FunctionalComponent = (_, { slots }) =>
     h('blockquote', { class: 'prose-quote' }, slots.default?.())
 
+  // Links: interne paden via NuxtLink, anders kloppen ze niet onder het
+  // /desingel/-subpad van GitHub Pages; externe links in een nieuw tabblad.
+  const Link: FunctionalComponent<{ value?: { href?: string } }> = (props, { slots }) => {
+    const href = props.value?.href?.trim() ?? ''
+    if (href.startsWith('/')) return h(NuxtLink, { to: href }, slots.default)
+    return h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, slots.default?.())
+  }
+
   return {
     types: { image: PortableTextImage },
     block: { blockquote: Blockquote },
+    marks: { link: Link },
   } as Partial<PortableTextVueComponents>
 }

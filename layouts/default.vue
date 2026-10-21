@@ -19,6 +19,8 @@ onBeforeUnmount(off)
   <div>
     <a href="#inhoud" class="skip-link">Direct naar de inhoud</a>
     <NuxtRouteAnnouncer />
+    <!-- Vooraan in de tabvolgorde (staat visueel onderaan, position: fixed) -->
+    <AppConsent />
     <AppAnnouncement />
     <AppNav />
     <main id="inhoud" ref="mainEl" tabindex="-1">

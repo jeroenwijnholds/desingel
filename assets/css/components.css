@@ -559,3 +559,96 @@
   gap: var(--space-4) var(--space-6);
   margin-top: var(--space-4);
 }
+
+/* ==================== COOKIEKEUZE (AppConsent) ==================== */
+
+.consent {
+  --focus-ring: var(--white); /* donkere achtergrond: witte focusring */
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  left: var(--space-4);
+  z-index: 10000; /* boven de nav (9999) en de vaste CTA-knop */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  max-width: var(--container-text);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-card);
+  background-color: var(--green-dark);
+  color: var(--white);
+  box-shadow: var(--shadow-lg);
+}
+
+.consent-text {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.consent-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--white);
+}
+
+.consent-link {
+  color: var(--green-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* De vaste "Neem contact op"-knop (homepage, mobiel) zou eronder vallen */
+body:has(.consent) .cta-fixed {
+  visibility: hidden;
+}
+
+/* Open menu of lightbox: de banner zou erover liggen, buiten hun focus-trap */
+body:has(.nav--open, [aria-modal="true"]) .consent {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .consent-enter-active,
+  .consent-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .consent-enter-from,
+  .consent-leave-to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .consent {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: var(--space-5) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+  }
+
+  /* Knoppen naast elkaar: onder elkaar nam de banner ruim een derde van het scherm in */
+  .consent-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+}
