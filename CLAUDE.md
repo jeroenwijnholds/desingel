@@ -291,7 +291,7 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   `npx -y npm@10 ci --dry-run --ignore-scripts` draaien. De PR-check vangt
   het nu, maar alleen als je via een PR werkt.
 - **Nog open**: cookiebanner + privacyverklaring (Google Maps laadt
-  bewust direct), alt-teksten bij de galerij in de Studio, eigen
+  bewust direct), eigen
   domein (zie `NOG-TE-DOEN.md`).
 
 ### Eerder (13 juli 2026)
