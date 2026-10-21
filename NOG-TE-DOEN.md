@@ -85,20 +85,19 @@ Zodra ze ingevuld zijn verschijnen ze vanzelf: klikbaar in de footer en de
 noemt het e-mailadres, en de LocalBusiness-JSON-LD neemt ze mee
 (`email`/`telephone`/`sameAs`).
 
-### Na review fase 5 (Studio-herinrichting): stappen in productie
+### ~~Verbetervoorstel oktober 2026 uitrollen~~ ✅ afgerond 21 oktober 2026
 
-1. Studio deployen (`npm run deploy` in `studio/`): Nederlandse interface,
-   groepen, agenda komend/archief, "Bekijk op website", placeholder-
-   waarschuwingen, eindtijd bij evenementen, mededelingsbalk.
-2. Back-up: `cd studio && npx sanity dataset export production backup.tar.gz`.
-3. `node scripts/eenmalig/migreer-evenement-tijden.mjs` (droog) nalopen,
-   dan met `--apply`. Zet bij de 4 bestaande evenementen het tijdvak om
-   naar begin/eind. De droge run liet zien dat de opgeslagen tijd overal
-   precies 2 uur afwijkt van het getoonde tijdvak (tijdzonefout bij de
-   oorspronkelijke invoer) — het tijdvak is wat bezoekers zien en dus
-   leidend. De site werkt vóór én na de migratie (terugval op het tijdvak).
-4. De verouderde Contact-velden (adres/eigenaren/openingstijden) worden
-   niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
+Fase 1–6 gemerged (#5–#10, merge-commit 24edff8) en live; CI groen.
+Studio gedeployd met het nieuwe schema. Back-up van de dataset vóór de
+migratie (alleen documenten, 15 stuks) staat buiten de repo in
+`../desingel-backups/production-2026-10-21-voor-migratie.tar.gz`.
+`migreer-evenement-tijden.mjs --apply` gedraaid: de 4 evenementen hebben
+nu begin- én eindtijd (het tijdvak was leidend; de opgeslagen tijd week
+overal 2 uur af door een tijdzonefout bij de oorspronkelijke invoer).
+Live gecontroleerd: tijden, structured data en agendabestand kloppen.
+
+Nog over: de verouderde Contact-velden (adres/eigenaren/openingstijden)
+worden niet meer gelezen; ze kunnen blijven staan of later opgeruimd worden.
 
 ### Content in de Studio bijwerken (oktober 2026)
 

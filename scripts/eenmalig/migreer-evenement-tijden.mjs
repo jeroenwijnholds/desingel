@@ -1,5 +1,8 @@
 /**
- * Eenmalig — NOG NIET GEDRAAID (oktober 2026, wacht op review van fase 5).
+ * Eenmalig — GEDRAAID op 21 oktober 2026 (4 evenementen, transactie
+ * 0M97uMbla6JWGHe6t4606G), na een back-up in ../desingel-backups/.
+ * Alleen ter naslag; opnieuw draaien doet niets (filtert op een
+ * aanwezig timeRange zonder endDate).
  *
  * Zet het oude vrije tijdvak van evenementen ("14:00 – 21:00") om naar de
  * nieuwe velden: `date` = echte begintijd, `endDate` = eindtijd (beide in

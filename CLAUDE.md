@@ -276,7 +276,25 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   gevonden nevenproblemen benoemen (de onbereikbare nieuwsartikelen vonden we
   ook "en passant" — dat soort vondsten altijd melden en meenemen).
 
-## Status & openstaande punten (13 juli 2026)
+## Status & openstaande punten (21 oktober 2026)
+
+- **Verbetervoorstel oktober 2026 uitgevoerd en live** (#5–#10): build
+  faalt bij Sanity-storing, NL-tijdzone, agenda zonder verlopen
+  evenementen + dagelijkse rebuild, WCAG AA (axe 0 bevindingen),
+  "Binnenkort"-blok, contact/route/agenda-knoppen, één raster +
+  `components.css`, Nederlandse Studio met groepen/archief/waarschuwingen,
+  eindtijd bij evenementen (data gemigreerd), mededelingsbalk, typegen,
+  Vitest, ESLint, CI op PR's (incl. Studio-job), CSP. Plan:
+  `~/.claude/plans/analyseer-de-hele-applicatie-structured-pine.md`.
+- **CI-les**: lokaal (Node 24) schrijft npm 11 een lockfile die npm 10 in
+  CI (Node 22) kan weigeren. Na een lockfile-wijziging ook
+  `npx -y npm@10 ci --dry-run --ignore-scripts` draaien. De PR-check vangt
+  het nu, maar alleen als je via een PR werkt.
+- **Nog open**: cookiebanner + privacyverklaring (Google Maps laadt
+  bewust direct), placeholderteksten en alt-teksten in de Studio, eigen
+  domein (zie `NOG-TE-DOEN.md`).
+
+### Eerder (13 juli 2026)
 
 - **Migratie afgerond**: site live op GitHub Pages, Studio gehost op
   desingel.sanity.studio, Web3Forms werkt, Sanity-publish triggert een
@@ -297,6 +315,7 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   audit-findings wachten op een upstream Sanity-release; majors bewust
   uitgesteld).
 - **Bekend, content**: er staan nog Sanity-placeholderteksten live op de
-  homepage ("Diensten titel", "CTA titel", "Galerij titel" e.d.) —
-  invullen in de Studio, niet in code "fixen" (de code-fallbacks zijn wél
-  echte teksten).
+  homepage én De Boerderij ("Diensten titel", "Verhaaltitel", "CTA titel"
+  e.d.) — invullen in de Studio, niet in code "fixen" (de code-fallbacks
+  zijn wél echte teksten). De Studio toont er sinds oktober een
+  waarschuwing bij.
