@@ -76,6 +76,14 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   je een nieuwe externe bron (script, iframe, font, API), voeg het domein dan
   daar toe — anders blokkeert de browser het stil (controleer de console).
   Nooit `v-html` gebruiken (er is er nu geen enkele).
+  Let op: een script kan naar een **ander** domein verzenden dan waar het
+  vandaan komt. Het Umami Cloud-script komt van `cloud.umami.is`, maar
+  verstuurt naar `gateway.umami.is`. Kijk dus in het script zelf.
+- **Toestemming/cookies**: alleen de Google Maps-kaart plaatst cookies en
+  laadt pas na toestemming (`useConsent().mapsAllowed`). Een nieuwe
+  externe dienst die cookies zet of persoonsgegevens verwerkt, vraagt
+  hetzelfde. **Werk daarna ook de privacyverklaring bij** (Studio → Pagina's →
+  Privacyverklaring).
 - **Types komen uit het schema** (`types/sanity.types.ts`): gebruik die (of
   een `Pick<>` bij een projectie) i.p.v. eigen interfaces; afbeeldingen zijn
   `SanityImageField` (uit `useImageUrl`). Na een schemawijziging
@@ -97,7 +105,7 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
 
 ## Architectuur
 
-- `pages/` — index, agenda, contact, de-boerderij, over-ons, bedankt,
+- `pages/` — index, agenda, contact, de-boerderij, over-ons, bedankt, privacy,
   `nieuws/index` + `nieuws/[slug]`, `evenement/[slug]`; `error.vue` in de root.
 - `components/` — `AppNav` (focus-trap, escape, sluit bij navigatie;
   logo-tekst uit `siteSettings.siteName`), `AppFooter` (incl. site-brede
@@ -106,7 +114,10 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   een Sanity-afbeelding als achtergrond met gradient-overlay),
   `CtaBlock` (het "Kom langs"-blok; styling `.cta-block*` in page-shared),
   `PageIntroSplit`/`PageStory`/`PageQuote`/`PageWidePhoto` (de gedeelde
-  secties van Over Ons en De Boerderij), `AppAnnouncement` (mededelingsbalk).
+  secties van Over Ons en De Boerderij), `AppAnnouncement` (mededelingsbalk),
+  `AppConsent` (cookiekeuze. Staat vooraan in de tabvolgorde en wordt
+  verborgen zolang het menu of de lightbox open is. Bij heropenen via de
+  footer krijgt hij de focus).
 - `composables/` — `useContentQuery` (zie Valkuilen), `useImageUrl` (ruwe
   Sanity image-builder; exporteert ook `hasImage()` — **gebruik die in elke
   `v-if` op een afbeeldingsveld**, een object met alleen een alt-tekst is
@@ -249,7 +260,7 @@ targets minimaal ~44px op mobiel.
 
 ```powershell
 # PowerShell (Git Bash verhaspelt de routes naar Windows-paden!)
-$env:ROUTES = "/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt"
+$env:ROUTES = "/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt,/privacy"
 node scripts/viewport-check.mjs          # overflow 6 breedtes + axe (WCAG AA) op 375/1440
 $env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots (→ %TEMP%\desingel-shots, of SHOT_DIR)
 ```
@@ -290,8 +301,11 @@ berekende stijlen (bv. outline-kleur na focus) pas een frame later uit.
   CI (Node 22) kan weigeren. Na een lockfile-wijziging ook
   `npx -y npm@10 ci --dry-run --ignore-scripts` draaien. De PR-check vangt
   het nu, maar alleen als je via een PR werkt.
-- **Nog open**: cookiebanner + privacyverklaring (Google Maps laadt
-  bewust direct) en het eigen domein (zie `NOG-TE-DOEN.md`).
+- **Cookiebanner + privacyverklaring + statistiek** (21 oktober): Maps pas
+  na toestemming, `/privacy` vanuit het CMS, en Umami Cloud klaar in de code.
+  Umami staat **uit** tot de repo-variabele `UMAMI_WEBSITE_ID` gezet is
+  (stappen in `NOG-TE-DOEN.md`).
+- **Nog open**: Umami-account aanmaken en het eigen domein (zie `NOG-TE-DOEN.md`).
 
 ### Eerder (13 juli 2026)
 
