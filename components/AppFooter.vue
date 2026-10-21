@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 const { data } = useSiteSettings()
+const consent = useConsent()
 
 const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
 
@@ -84,6 +85,11 @@ useJsonLd(() => data.value
 
     <div class="footer-bottom">
       <p>{{ data?.footerCopyright }}</p>
+      <ul class="footer-legal">
+        <li><NuxtLink to="/privacy">Privacyverklaring</NuxtLink></li>
+        <!-- Wist de cookiekeuze; de banner verschijnt dan opnieuw -->
+        <li><button type="button" @click="consent.reset">Cookie-instellingen</button></li>
+      </ul>
     </div>
   </footer>
 </template>

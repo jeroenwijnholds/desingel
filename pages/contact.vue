@@ -24,6 +24,9 @@ const infoHours = computed(() =>
   formatOpeningHours(settings.value?.openingHours).join('\n') || page.value?.infoHours || 'Zaterdag & zondag, 10:00 – 17:00'
 )
 
+// Google Maps plaatst cookies: de kaart laadt pas na toestemming (useConsent)
+const { mapsAllowed, accept: allowMaps } = useConsent()
+
 const DEFAULT_SUBJECTS = ['Farmshop', 'Boerderij op Locatie', 'Evenement / Agenda', 'Anders']
 const subjectOptions = computed(() => page.value?.subjectOptions?.length ? page.value.subjectOptions : DEFAULT_SUBJECTS)
 
@@ -264,7 +267,10 @@ useBreadcrumbJsonLd([
             <button type="submit" class="btn btn-green contact-submit" :disabled="status === 'sending'">
               {{ status === 'sending' ? 'Versturen…' : 'Verstuur bericht' }}
             </button>
-            <p class="form-privacy">{{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}</p>
+            <p class="form-privacy">
+              {{ page?.privacyNotice ?? 'Je gegevens gebruiken we alleen om je vraag te beantwoorden. Je bericht wordt verstuurd via onze formulierdienst (Web3Forms) en niet voor andere doelen gebruikt.' }}
+              <NuxtLink to="/privacy">Privacyverklaring</NuxtLink>
+            </p>
           </div>
 
           <p v-if="status === 'error'" class="form-error form-error--submit" role="alert">
@@ -339,6 +345,7 @@ useBreadcrumbJsonLd([
 
     <section class="contact-map-section" aria-label="Locatie op de kaart">
       <iframe
+        v-if="mapsAllowed"
         :src="mapSrc"
         class="contact-map"
         title="Locatie Belevenisboerderij de Singel"
@@ -346,6 +353,19 @@ useBreadcrumbJsonLd([
         allowfullscreen
         referrerpolicy="no-referrer-when-downgrade"
       />
+      <div v-else class="contact-map-placeholder">
+        <div class="contact-map-placeholder-inner">
+          <p class="contact-map-placeholder-title">Kaart van Google Maps</p>
+          <p>De kaart komt van Google, dat daarbij cookies plaatst. Daarom laden we hem pas als je dat wilt.</p>
+          <div class="contact-map-placeholder-actions">
+            <button type="button" class="btn btn-green btn-sm" @click="allowMaps">Kaart tonen</button>
+            <a :href="routeHref(coordinates)" class="link-arrow" target="_blank" rel="noopener noreferrer">
+              Plan je route<span class="visually-hidden"> (opent Google Maps in nieuw tabblad)</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 </template>
