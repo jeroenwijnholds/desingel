@@ -1,0 +1,21 @@
+{
+  // Eigen tsconfig voor de Studio. Zonder dit bestand pakt de Sanity CLI de
+  // tsconfig van de site (../tsconfig.json), die naar ../.nuxt/ verwijst — en
+  // die map bestaat niet in de CI-job "studio" (brak schema validate).
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowJs": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

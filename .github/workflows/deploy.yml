@@ -98,6 +98,9 @@ jobs:
       - name: Schema valideren
         run: npx sanity schema validate
 
+      - name: Typecheck Studio
+        run: npx tsc --noEmit
+
       - name: Studio bouwen
         run: npx sanity build --yes
 
