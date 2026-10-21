@@ -17,6 +17,15 @@ import { join } from 'node:path'
 
 const OUT = '.output/public'
 
+// Umami-statistiek (plugins/analytics.ts): het scriptdomein mag scripts
+// leveren. De (cookieloze) paginaweergaven gaan bij Umami Cloud naar een
+// aparte gateway (staat hardcoded in cloud.umami.is/script.js); bij een eigen
+// Umami-server naar het scriptdomein zelf.
+const umami = process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID
+  ? new URL(process.env.NUXT_PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami.is/script.js').origin
+  : ''
+const umamiSend = umami === 'https://cloud.umami.is' ? 'https://gateway.umami.is' : umami
+
 const STATIC_DIRECTIVES = [
   "default-src 'self'",
   // Inline style-attributen (hero-achtergrond, hotspot-uitsnede) vereisen 'unsafe-inline'
@@ -24,7 +33,7 @@ const STATIC_DIRECTIVES = [
   "img-src 'self' data: https://cdn.sanity.io",
   "font-src 'self' data:",
   // Sanity-API (alleen als er geen payload is) en het contactformulier
-  "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://api.web3forms.com",
+  `connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://api.web3forms.com${umamiSend ? ` ${umamiSend}` : ''}`,
   // Google Maps-kaart op de contactpagina
   'frame-src https://maps.google.com https://www.google.com',
   // Contactformulier zonder JS post rechtstreeks naar Web3Forms
@@ -57,7 +66,7 @@ for (const file of htmlFiles(OUT)) {
     allHashes.add(hash)
   }
 
-  const policy = [`script-src 'self' ${[...hashes].join(' ')}`.trim(), ...STATIC_DIRECTIVES].join('; ')
+  const policy = [`script-src 'self' ${[...hashes].join(' ')}${umami ? ` ${umami}` : ''}`.trim(), ...STATIC_DIRECTIVES].join('; ')
   const meta = `<meta http-equiv="Content-Security-Policy" content="${policy}">`
   const charset = html.match(/<meta charset="[^"]*">/i)
   if (!charset) {
