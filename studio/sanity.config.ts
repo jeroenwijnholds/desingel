@@ -15,6 +15,7 @@ import {
   DocumentTextIcon,
   CogIcon,
   LaunchIcon,
+  LockIcon,
 } from '@sanity/icons'
 import { schemaTypes } from './schemas'
 
@@ -35,6 +36,7 @@ const singletonTypes = new Set([
   'contactPage',
   'agendaPage',
   'nieuwsPage',
+  'privacyPage',
   'fotoGalerij',
   'siteSettings',
 ])
@@ -52,6 +54,7 @@ function sitePath(doc: SanityDocument | null | undefined): string | null {
     case 'contactPage': return '/contact'
     case 'agendaPage': return '/agenda'
     case 'nieuwsPage': return '/nieuws'
+    case 'privacyPage': return '/privacy'
     case 'event': return slug ? `/evenement/${slug}` : null
     case 'nieuwsArtikel': return slug ? `/nieuws/${slug}` : null
     default: return null
@@ -112,6 +115,7 @@ export default defineConfig({
                     singleton(S, 'contactPage', 'Contact', EnvelopeIcon),
                     singleton(S, 'agendaPage', 'Agenda', CalendarIcon),
                     singleton(S, 'nieuwsPage', 'Nieuws', DocumentTextIcon),
+                    singleton(S, 'privacyPage', 'Privacyverklaring', LockIcon),
                   ])
               ),
             singleton(S, 'fotoGalerij', 'Fotogalerij', ImagesIcon),

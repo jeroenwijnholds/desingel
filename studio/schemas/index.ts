@@ -8,13 +8,14 @@ import nieuwsPage from './nieuwsPage'
 import fotoGalerij from './fotoGalerij'
 import event from './event'
 import nieuwsArtikel from './nieuwsArtikel'
+import privacyPage from './privacyPage'
 import { withPlaceholderWarnings } from './lib'
 
 export const schemaTypes = [
   siteSettings,
   // Paginateksten: waarschuwing als een veld nog zijn eigen veldnaam als
   // inhoud heeft ("Diensten titel") — zo stonden er placeholders live.
-  ...[homePage, boerderijPage, overOnsPage, contactPage, agendaPage, nieuwsPage].map(withPlaceholderWarnings),
+  ...[homePage, boerderijPage, overOnsPage, contactPage, agendaPage, nieuwsPage, privacyPage].map(withPlaceholderWarnings),
   fotoGalerij,
   event,
   nieuwsArtikel,

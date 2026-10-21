@@ -13,7 +13,7 @@
     "test": "vitest run",
     "lint": "eslint .",
     "viewport-check": "node scripts/viewport-check.mjs",
-    "typegen": "cd studio && sanity schema extract --enforce-required-fields --path ../types/schema.json && sanity typegen generate"
+    "typegen": "cd studio && npx sanity schema extract --enforce-required-fields --path ../types/schema.json && npx sanity typegen generate"
   },
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",
