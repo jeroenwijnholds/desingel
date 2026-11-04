@@ -5,6 +5,33 @@ Nuxt 4 + Sanity CMS, volledig statisch gegenereerd (`nuxt generate`), gehost op
 GitHub Pages. Alle content en teksten zijn **Nederlands**; communiceer met
 Jeroen ook in het Nederlands.
 
+## Eerste keer openen (nieuwe laptop / verse clone) — doe dit eerst
+
+De repo bevat geen `node_modules` of build-uitvoer. **Ontbreekt
+`node_modules/` of `studio/node_modules/`? Voer dan meteen, zonder het te
+vragen, de stappen hieronder uit** vóór je aan de taak begint. Meld daarna kort
+wat je gedaan hebt en wat Jeroen nog zelf moet doen.
+
+1. **Node controleren**: `node -v` moet ≥ 22 zijn (`.nvmrc` = 22; CI bouwt op
+   Node 22). Te oud of afwezig → stop en vraag Jeroen Node 22 LTS te
+   installeren (`winget install OpenJS.NodeJS.LTS`).
+2. **Dependencies**: `npm ci` in de root én in `studio/` (beide hebben een
+   eigen lockfile). Gebruik `npm ci`, niet `npm install`: dat volgt de
+   lockfile exact en wijzigt hem niet (zie de lockfile-valkuil hieronder).
+3. **Nuxt voorbereiden**: `npx nuxt prepare` (maakt `.nuxt/`; nodig voor
+   lint en typecheck).
+4. **Env-bestanden**: `.env` en `studio/.env` staan niet in git. Ontbreken
+   ze, kopieer dan `.env.example` → `.env` en `studio/.env.example` →
+   `studio/.env` en vraag Jeroen om de echte waarden (van de oude laptop,
+   sanity.io/manage, Web3Forms en Umami). **Verzin nooit waarden** en commit
+   ze nooit. Zonder `SANITY_PROJECT_ID` faalt de build.
+5. **Playwright-browser** voor de viewport-check:
+   `npx playwright install chromium`.
+6. **Logins** (alleen als ze nodig zijn, Jeroen doet ze zelf in de browser):
+   `gh auth status` (voor PR's) en in `studio/`
+   `npx sanity login` (voor Studio-deploy en webhookbeheer).
+7. **Verifiëren**: `npm run build` moet groen zijn en `npm test` slagen.
+
 ## Commando's
 
 ```bash
@@ -18,7 +45,10 @@ npx serve -l 4173 .output/public # gebouwde site lokaal serveren
 npm run viewport-check           # Playwright: overflow + axe + screenshots (zie Verificatie)
 ```
 
-`.env` bevat `SANITY_PROJECT_ID`/`SANITY_DATASET` (nodig voor build; nooit committen).
+`.env` bevat `SANITY_PROJECT_ID`/`SANITY_DATASET` (nodig voor build; nooit committen),
+`studio/.env` de Umami-deellink. Welke variabelen er zijn en waarvoor ze dienen:
+`.env.example` en `studio/.env.example`. Voeg je een variabele toe, werk dan
+ook het bijbehorende voorbeeldbestand bij.
 
 ## Kritieke regels
 
