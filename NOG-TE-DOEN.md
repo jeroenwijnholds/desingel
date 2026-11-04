@@ -9,7 +9,7 @@ deployt automatisch. Alle eerdere handmatige stappen zijn gedaan:
 | Studio-deploy (nieuwe CMS-indeling) | ✅ live op https://desingel.sanity.studio |
 | Web3Forms (contactformulier) | ✅ key ingesteld als repo-variabele `WEB3FORMS_ACCESS_KEY`; end-to-end getest |
 | Sanity-webhook → GitHub rebuild | ✅ webhook "GitHub Pages rebuild" (repository_dispatch `sanity-publish`); getest |
-| Netlify | ✅ build hook + site verwijderd; account is leeg |
+| Netlify | ✅ build hook + site verwijderd; account opgezegd (4 november 2026) |
 | Vercel-restanten in GitHub | ✅ homepage-URL en oud environment opgeruimd |
 
 Een publish in de Studio triggert nu automatisch een rebuild (~2 min).
