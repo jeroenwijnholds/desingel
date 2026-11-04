@@ -21,8 +21,8 @@ Een publish in de Studio triggert nu automatisch een rebuild (~2 min).
   Contents R/W); staat óók in de Sanity-webhook. **Verloopt juli 2027**:
   dan een nieuwe maken en de webhook bijwerken, anders stoppen de
   automatische rebuilds stilletjes.
-- `NETLIFY_TOKEN` — niet meer nodig (Netlify is opgeruimd); staat niet meer in
-  `.env.example`. Uit je `.env` halen en bij Netlify intrekken.
+- `NETLIFY_TOKEN` — opgeruimd (4 november 2026): het token was al ongeldig
+  (API gaf 401) en is uit `.env` en `.env.example` gehaald.
 - Sanity-webhookbeheer en studio-deploys lopen via de lokale CLI-sessie
   (`~/.config/sanity/config.json`).
 
