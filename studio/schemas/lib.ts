@@ -1,7 +1,7 @@
 import { defineField, type StringRule } from 'sanity'
 
 export const HOTSPOT_UITLEG =
-  'Tip: klik op "Edit hotspot" op de foto en sleep de cirkel naar het belangrijkste ' +
+  'Tip: klik op het bijsnij-icoontje rechtsboven op de foto en sleep de cirkel naar het belangrijkste ' +
   'deel (bijv. het dier). De website houdt dat deel dan op elk schermformaat in beeld.'
 
 /**

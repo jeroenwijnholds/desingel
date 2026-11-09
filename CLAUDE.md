@@ -169,7 +169,7 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   src/srcset/sizes/width/height met WebP via `auto=format`; mét `aspect`
   snijdt Sanity server-side rond de hotspot, zónder `aspect` komt de hotspot
   terug als inline `object-position`-style die de CSS-fallback overridet —
-  redacteuren sturen de uitsnede dus via "Edit hotspot" in Studio),
+  redacteuren sturen de uitsnede dus via het bijsnij-icoontje op de foto in Studio, venster "Hotspot en uitsnede bewerken"),
   `useSeo` (title/description/canonical/OG per pagina; accepteert getters;
   `type: 'article'` + `publishedTime` voor artikelen), `useJsonLd`
   (structured data), `useDateFormat` (alle nl-NL-datumformattering, altijd
