@@ -8,29 +8,37 @@ Jeroen ook in het Nederlands.
 ## Eerste keer openen (nieuwe laptop / verse clone) — doe dit eerst
 
 De repo bevat geen `node_modules` of build-uitvoer. **Ontbreekt
-`node_modules/` of `studio/node_modules/`? Voer dan meteen, zonder het te
-vragen, de stappen hieronder uit** vóór je aan de taak begint. Meld daarna kort
-wat je gedaan hebt en wat Jeroen nog zelf moet doen.
+`node_modules/` of `studio/node_modules/`? Draai dan meteen, zonder het te
+vragen, `npm run setup`** (`scripts/setup.sh`, macOS) vóór je aan de taak
+begint. Meld daarna kort wat je gedaan hebt en wat Jeroen nog zelf moet doen
+(het script sluit af met die lijst). Wat het script doet:
 
-1. **Node controleren**: `node -v` moet ≥ 22 zijn (`.nvmrc` = 22; CI bouwt op
-   Node 22). Te oud of afwezig → stop en vraag Jeroen Node 22 LTS te
-   installeren (`winget install OpenJS.NodeJS.LTS`).
+1. **Node**: via `fnm` (Homebrew) de versie uit `.nvmrc` (22, zoals CI)
+   activeren/installeren; minimaal 22. Geen fnm/Node → stop en vraag Jeroen
+   `brew install fnm && fnm install 22`.
 2. **Dependencies**: `npm ci` in de root én in `studio/` (beide hebben een
    eigen lockfile). Gebruik `npm ci`, niet `npm install`: dat volgt de
    lockfile exact en wijzigt hem niet (zie de lockfile-valkuil hieronder).
 3. **Nuxt voorbereiden**: `npx nuxt prepare` (maakt `.nuxt/`; nodig voor
    lint en typecheck).
 4. **Env-bestanden**: `.env` en `studio/.env` staan niet in git. Ontbreken
-   ze, kopieer dan `.env.example` → `.env` en `studio/.env.example` →
-   `studio/.env` en vraag Jeroen om de echte waarden (van de oude laptop,
-   sanity.io/manage, Web3Forms en Umami). **Verzin nooit waarden** en commit
-   ze nooit. Zonder `SANITY_PROJECT_ID` faalt de build.
+   ze, dan kopieert het script de `.example`-bestanden; vraag Jeroen om de
+   echte waarden (van de oude laptop, sanity.io/manage, Web3Forms en Umami).
+   **Verzin nooit waarden** en commit ze nooit. Zonder `SANITY_PROJECT_ID`
+   faalt de build.
 5. **Playwright-browser** voor de viewport-check:
    `npx playwright install chromium`.
-6. **Logins** (alleen als ze nodig zijn, Jeroen doet ze zelf in de browser):
-   `gh auth status` (voor PR's) en in `studio/`
-   `npx sanity login` (voor Studio-deploy en webhookbeheer).
-7. **Verifiëren**: `npm run build` moet groen zijn en `npm test` slagen.
+6. **Logins** controleren: `gh auth status` (voor PR's) en de Sanity-CLI
+   (`npx sanity login` in `studio/`; interactief, Jeroen doet het via
+   `! cd studio && npx sanity login`). Met die login kun je Studio deployen
+   en webhooks/tokens/datasets beheren via de CLI (`npx sanity hook list`,
+   `npx sanity documents query '...'`) i.p.v. via sanity.io/manage.
+7. **Verifiëren**: `npm test` en `npm run build` (overslaan met
+   `SKIP_VERIFY=1`).
+
+Let op: npm 11 meldt dat install-scripts van o.a. `esbuild` en
+`unrs-resolver` worden overgeslagen (niet in `allowScripts`). Dat is
+onschuldig: build, tests en lint werken zonder.
 
 ## Commando's
 
@@ -40,6 +48,7 @@ npm run build                    # nuxt generate + sitemap/robots/llms.txt + CSP
 npm run typecheck                # vue-tsc via nuxt typecheck (draait ook in CI)
 npm run lint                     # @nuxt/eslint (CI); na typecheck/prepare, want leest .nuxt/eslint.config.mjs
 npm test                         # Vitest: pure logica in composables, in TZ=UTC zoals CI (tests/)
+npm run setup                    # eenmalig na een verse clone (zie hierboven)
 npm run typegen                  # schema → types/sanity.types.ts; na élke schemawijziging (CI controleert het)
 npx serve -l 4173 .output/public # gebouwde site lokaal serveren
 npm run viewport-check           # Playwright: overflow + axe + screenshots (zie Verificatie)
@@ -296,15 +305,14 @@ targets minimaal ~44px op mobiel.
 `scripts/viewport-check.mjs` draait met Playwright (lokaal beschikbaar via
 `npx playwright`) tegen een draaiende serve op :4173:
 
-```powershell
-# PowerShell (Git Bash verhaspelt de routes naar Windows-paden!)
-$env:ROUTES = "/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt,/privacy"
-node scripts/viewport-check.mjs          # overflow 6 breedtes + axe (WCAG AA) op 375/1440
-$env:SHOTS = "1"; node scripts/viewport-check.mjs   # + full-page screenshots (→ %TEMP%\desingel-shots, of SHOT_DIR)
+```bash
+export ROUTES="/,/agenda,/nieuws,/contact,/over-ons,/de-boerderij,/bedankt,/privacy"
+npm run viewport-check                # overflow 6 breedtes + axe (WCAG AA) op 375/1440
+SHOTS=1 npm run viewport-check        # + full-page screenshots (→ $TMPDIR/desingel-shots, of SHOT_DIR)
 ```
 
 Axe-bevindingen van ernst serious/critical laten het script falen
-(`$env:AXE = "0"` slaat axe over). De Google Maps-iframe is uitgesloten.
+(`AXE=0 npm run viewport-check` slaat axe over). De Google Maps-iframe is uitgesloten.
 
 Bij frontend-wijzigingen minimaal: build groen → overflow-check → screenshots
 op 375/1440 bekijken (Read op de PNG's) → toetsenbord-walkthrough voor
