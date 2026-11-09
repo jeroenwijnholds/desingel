@@ -13,18 +13,73 @@ export type SiteSettings = Pick<
   SanitySiteSettings,
   'siteName' | 'tagline' | 'footerCopyright' | 'navigation' | 'owners' | 'address' | 'coordinates'
   | 'telephone' | 'email' | 'socialLinks' | 'openingHours' | 'announcement'
->
+> & {
+  /** Aantal gepubliceerde nieuwsartikelen (voor het verbergen van "Nieuws" in het menu) */
+  newsCount?: number
+  /** Evenementen van de afgelopen 24 uur en later; de exacte grens bepaalt isPastDay */
+  recentEvents?: { date: string; endDate?: string }[]
+}
 export type NavItem = NonNullable<SanitySiteSettings['navigation']>[number]
 export type Owner = NonNullable<SanitySiteSettings['owners']>[number]
 export type OpeningHoursRule = NonNullable<SanitySiteSettings['openingHours']>[number]
 
+// newsCount/recentEvents staan in dezelfde query zodat nav en footer zonder
+// extra request weten of "Nieuws" en "Agenda" iets te tonen hebben
 const QUERY = `*[_type == "siteSettings"][0]{
   siteName, tagline, footerCopyright, navigation, owners, address, coordinates,
-  telephone, email, socialLinks, openingHours, announcement
+  telephone, email, socialLinks, openingHours, announcement,
+  "newsCount": count(*[_type == "nieuwsArtikel" && !(_id in path("drafts.**"))]),
+  "recentEvents": *[_type == "event" && !(_id in path("drafts.**"))
+    && dateTime(coalesce(endDate, date)) >= dateTime(now()) - 60*60*24]{ date, endDate }
 }`
 
 export function useSiteSettings() {
   return useContentQuery<SiteSettings>(QUERY)
+}
+
+/** Pad zonder query/hash en zonder slash aan het eind: "/agenda/?x#y" → "/agenda" */
+const navPath = (href?: string) => (href ?? '').split(/[?#]/)[0]!.replace(/(.)\/+$/, '$1')
+
+type ContentAvailability = { hasNews: boolean; hasEvents: boolean }
+
+/**
+ * Is dit een link naar een pagina die op dit moment leeg is? "Nieuws" zonder
+ * artikelen en "Agenda" zonder komende evenementen worden overal verborgen
+ * (menu, footer, knoppen), zodat niemand in de Studio links hoeft bij te
+ * houden; het eerste bericht of evenement zet ze vanzelf terug.
+ */
+export function isHiddenPath(href: string | undefined, content: ContentAvailability) {
+  const path = navPath(href)
+  return (path === '/nieuws' && !content.hasNews) || (path === '/agenda' && !content.hasEvents)
+}
+
+/** Menu-items zonder de links naar lege pagina's */
+export const visibleNavigation = (items: NavItem[] | undefined, content: ContentAvailability) =>
+  (items ?? []).filter(item => !isHiddenPath(item.href, content))
+
+/** Of Nieuws/Agenda iets te tonen hebben, plus isHidden(href) voor losse links en knoppen */
+export function useContentAvailability() {
+  const { data } = useSiteSettings()
+  const { isPastDay } = useDateFormat()
+  const content = computed<ContentAvailability>(() => ({
+    hasNews: (data.value?.newsCount ?? 0) > 0,
+    hasEvents: (data.value?.recentEvents ?? []).some(e => !isPastDay(eventLastDate(e))),
+  }))
+  return {
+    content,
+    isHidden: (href?: string) => isHiddenPath(href, content.value),
+  }
+}
+
+/** Menu voor nav en footer: links en knoppen, met lege pagina's weggelaten */
+export function useNavigation() {
+  const { data } = useSiteSettings()
+  const { content } = useContentAvailability()
+  const items = computed(() => visibleNavigation(data.value?.navigation, content.value))
+  return {
+    links: computed(() => items.value.filter(n => !n.isButton)),
+    buttons: computed(() => items.value.filter(n => n.isButton)),
+  }
 }
 
 const DAY_ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']

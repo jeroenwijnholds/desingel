@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 const { data } = useSiteSettings()
+const { links: navLinks, buttons: navButtons } = useNavigation()
 
 const route = useRoute()
 const isHome = computed(() => route.path === '/')
@@ -80,14 +81,14 @@ onUnmounted(() => {
     <div id="hoofdmenu" class="nav-menu">
       <ul class="nav-links">
         <li
-          v-for="item in (data?.navigation ?? []).filter(n => !n.isButton)"
+          v-for="item in navLinks"
           :key="item.href"
         >
           <NuxtLink :to="item.href" @click="closeMenu">{{ item.label }}</NuxtLink>
         </li>
       </ul>
       <NuxtLink
-        v-for="item in (data?.navigation ?? []).filter(n => n.isButton)"
+        v-for="item in navButtons"
         :key="item.href"
         :to="item.href"
         class="btn btn-green"

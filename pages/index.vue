@@ -196,12 +196,13 @@ useSeo({
       </div>
     </section>
 
-    <section v-reveal class="upcoming-section" aria-labelledby="upcoming-title">
+    <!-- Zonder komende evenementen verdwijnt het hele blok (net als "Agenda" in het menu) -->
+    <section v-if="upcomingEvents.length" v-reveal class="upcoming-section" aria-labelledby="upcoming-title">
       <div class="upcoming-inner">
         <div class="upcoming-main">
           <p class="section-label dark-green">{{ page?.upcomingLabel ?? 'Agenda' }}</p>
           <h2 id="upcoming-title" class="section-title">{{ page?.upcomingTitle ?? 'Binnenkort op de Singel' }}</h2>
-          <ul v-if="upcomingEvents.length" class="upcoming-list">
+          <ul class="upcoming-list">
             <li v-for="event in upcomingEvents" :key="event._id">
               <NuxtLink :to="`/evenement/${event.slug.current}`" class="upcoming-item">
                 <span class="date-tile" aria-hidden="true">
@@ -220,7 +221,6 @@ useSeo({
               </NuxtLink>
             </li>
           </ul>
-          <p v-else class="upcoming-empty">{{ page?.upcomingEmptyText ?? 'Er staan op dit moment geen evenementen gepland. Houd de agenda in de gaten – of kom langs bij de farmshop.' }}</p>
           <NuxtLink to="/agenda" class="link-arrow">
             Bekijk de hele agenda
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

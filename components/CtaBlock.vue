@@ -2,7 +2,7 @@
 // Gedeeld CTA-blok ("Kom langs / Beleef de boerderij zelf") — stond
 // voorheen 3× vrijwel identiek in index, over-ons en de-boerderij (en als
 // afwijkende kopie onder nieuwsartikelen). Styling: .cta-block* in page-shared.css.
-defineProps<{
+const props = defineProps<{
   label: string
   title: string
   text: string
@@ -11,6 +11,14 @@ defineProps<{
   secondaryLabel?: string
   secondaryHref?: string
 }>()
+
+// Knoppen naar een lege pagina (agenda zonder evenementen, nieuws zonder
+// artikelen) vallen weg; blijft alleen de tweede over, dan wordt die de groene
+const { isHidden } = useContentAvailability()
+const buttons = computed(() => [
+  { href: props.primaryHref, label: props.primaryLabel },
+  { href: props.secondaryHref, label: props.secondaryLabel },
+].filter((b): b is { href: string; label: string } => !!b.href && !!b.label && !isHidden(b.href)))
 </script>
 
 <template>
@@ -19,9 +27,14 @@ defineProps<{
       <p class="section-label dark-green">{{ label }}</p>
       <h2 class="section-title">{{ title }}</h2>
       <p class="cta-block-text">{{ text }}</p>
-      <div class="cta-block-btns">
-        <NuxtLink :to="primaryHref" class="btn btn-green">{{ primaryLabel }}</NuxtLink>
-        <NuxtLink v-if="secondaryHref && secondaryLabel" :to="secondaryHref" class="btn btn-yellow">{{ secondaryLabel }}</NuxtLink>
+      <div v-if="buttons.length" class="cta-block-btns">
+        <NuxtLink
+          v-for="(btn, i) in buttons"
+          :key="btn.href"
+          :to="btn.href"
+          class="btn"
+          :class="i === 0 ? 'btn-green' : 'btn-yellow'"
+        >{{ btn.label }}</NuxtLink>
       </div>
     </div>
   </section>

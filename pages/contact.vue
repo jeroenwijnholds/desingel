@@ -8,6 +8,8 @@ const QUERY = `{
 const { data } = useContentQuery<{ page: ContactPage }>(QUERY)
 const page = computed(() => data.value?.page)
 const { data: settings } = useSiteSettings()
+// Link naar de agenda alleen als er komende evenementen zijn
+const { isHidden } = useContentAvailability()
 
 // Kaart en routelink volgen de coördinaten uit Site-instellingen; fallback = huidige locatie
 const coordinates = computed(() => validCoordinates(settings.value?.coordinates) ?? { lat: 51.9479284, lng: 6.5100125 })
@@ -332,7 +334,7 @@ useBreadcrumbJsonLd([
               </div>
             </li>
           </ul>
-          <div class="info-card-actions">
+          <div v-if="!isHidden('/agenda')" class="info-card-actions">
             <NuxtLink to="/agenda" class="link-arrow link-arrow--on-dark">
               Bekijk alle evenementen
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

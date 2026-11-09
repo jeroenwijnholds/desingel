@@ -5,8 +5,8 @@ interface SeoOptions {
   description: MaybeRefOrGetter<string>
   /** Absolute URL van een paginaspecifieke share-afbeelding (1200×630) */
   image?: MaybeRefOrGetter<string | undefined>
-  /** true voor pagina's die niet geïndexeerd moeten worden (bv. /bedankt) */
-  noindex?: boolean
+  /** true voor pagina's die niet geïndexeerd moeten worden (bv. /bedankt, of een lege agenda) */
+  noindex?: MaybeRefOrGetter<boolean | undefined>
   /** 'article' voor nieuwsartikelen (standaard 'website') */
   type?: 'website' | 'article'
   /** Publicatiedatum (ISO) — alleen zinvol bij type 'article' */
@@ -45,7 +45,8 @@ export function useSeo(opts: SeoOptions) {
     ...(opts.type === 'article'
       ? { articlePublishedTime: () => toValue(opts.publishedTime) }
       : {}),
-    ...(opts.noindex ? { robots: 'noindex' } : {}),
+    // undefined → geen robots-tag; generate-sitemap.mjs laat noindex-pagina's uit de sitemap
+    robots: () => (toValue(opts.noindex) ? 'noindex' : undefined),
   })
 
   useHead({
