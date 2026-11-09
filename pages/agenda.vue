@@ -39,6 +39,8 @@ const groupedEvents = computed(() => {
 useSeo({
   title: () => page.value?.seoTitle || 'Agenda – Belevenisboerderij De Singel',
   description: () => page.value?.seoDescription || 'Alle evenementen van Belevenisboerderij de Singel op een rij: van markten en braderieën tot boerderijbezoeken in de Achterhoek.',
+  // Lege agenda: niet indexeren (en dus niet in de sitemap); staat dan ook niet in het menu
+  noindex: () => !groupedEvents.value.length,
 })
 
 useBreadcrumbJsonLd([

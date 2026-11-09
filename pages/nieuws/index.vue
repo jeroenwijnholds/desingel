@@ -25,6 +25,8 @@ const { formatDate, formatDatetime } = useDateFormat()
 useSeo({
   title: () => page.value?.seoTitle || 'Nieuws – Belevenisboerderij De Singel',
   description: () => page.value?.seoDescription || 'Verhalen van het land: nieuws over dieren, seizoenen, de farmshop en het dagelijks leven op Belevenisboerderij de Singel.',
+  // Nog geen artikelen: niet indexeren (en dus niet in de sitemap); staat dan ook niet in het menu
+  noindex: () => !articles.value.length,
 })
 
 useBreadcrumbJsonLd([

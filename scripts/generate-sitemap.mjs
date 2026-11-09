@@ -115,9 +115,15 @@ function formatHours(rules) {
   }).join('; ')
 }
 
+// Pagina's met <meta name="robots" content="noindex"> horen niet in de sitemap
+// (zo vallen een lege agenda en een nieuwspagina zonder artikelen er vanzelf uit)
+const isNoindex = r => /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/.test(
+  readFileSync(join(OUT, r, 'index.html'), 'utf8'))
+
 const routes = collectRoutes(OUT)
-  .filter(r => !EXCLUDE.has(r))
+  .filter(r => !EXCLUDE.has(r) && !isNoindex(r))
   .sort()
+const listed = new Set(routes)
 
 const { lastmod: lastmodMap, settings } = await fetchSanityData()
 
@@ -156,9 +162,7 @@ const llmsTxt = `# Belevenisboerderij de Singel
 - [Home](${SITE_URL}/): overzicht van de boerderij, diensten en fotogalerij
 - [De Boerderij](${SITE_URL}/de-boerderij): de dieren, de gronden en de farmshop
 - [Over Ons](${SITE_URL}/over-ons): het verhaal van Victor en Mari Duurland
-- [Agenda](${SITE_URL}/agenda): aankomende evenementen en boerderijbezoeken op locatie
-- [Nieuws](${SITE_URL}/nieuws): verhalen over dieren, seizoenen en de farmshop
-- [Contact](${SITE_URL}/contact): contactformulier en praktische informatie
+${listed.has('/agenda') ? `- [Agenda](${SITE_URL}/agenda): aankomende evenementen en boerderijbezoeken op locatie\n` : ''}${listed.has('/nieuws') ? `- [Nieuws](${SITE_URL}/nieuws): verhalen over dieren, seizoenen en de farmshop\n` : ''}- [Contact](${SITE_URL}/contact): contactformulier en praktische informatie
 `
 
 writeFileSync(join(OUT, 'sitemap.xml'), sitemap)

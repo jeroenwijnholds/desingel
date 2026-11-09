@@ -2,7 +2,7 @@
 const { data } = useSiteSettings()
 const consent = useConsent()
 
-const navLinks = computed(() => (data.value?.navigation ?? []).filter(n => !n.isButton))
+const { links: navLinks } = useNavigation()
 
 const DAY_URI: Record<string, string> = {
   monday: 'https://schema.org/Monday',
