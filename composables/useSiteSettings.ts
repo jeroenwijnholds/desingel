@@ -40,28 +40,42 @@ export function useSiteSettings() {
 /** Pad zonder query/hash en zonder slash aan het eind: "/agenda/?x#y" → "/agenda" */
 const navPath = (href?: string) => (href ?? '').split(/[?#]/)[0]!.replace(/(.)\/+$/, '$1')
 
+type ContentAvailability = { hasNews: boolean; hasEvents: boolean }
+
 /**
- * Menu-items zonder de pagina's die op dit moment leeg zijn: "Nieuws" zonder
- * artikelen en "Agenda" zonder komende evenementen. Zo hoeft niemand in de
- * Studio het menu bij te houden; het eerste bericht of evenement zet ze terug.
+ * Is dit een link naar een pagina die op dit moment leeg is? "Nieuws" zonder
+ * artikelen en "Agenda" zonder komende evenementen worden overal verborgen
+ * (menu, footer, knoppen), zodat niemand in de Studio links hoeft bij te
+ * houden; het eerste bericht of evenement zet ze vanzelf terug.
  */
-export function visibleNavigation(items: NavItem[] | undefined, content: { hasNews: boolean; hasEvents: boolean }) {
-  return (items ?? []).filter(item => {
-    const path = navPath(item.href)
-    if (path === '/nieuws') return content.hasNews
-    if (path === '/agenda') return content.hasEvents
-    return true
-  })
+export function isHiddenPath(href: string | undefined, content: ContentAvailability) {
+  const path = navPath(href)
+  return (path === '/nieuws' && !content.hasNews) || (path === '/agenda' && !content.hasEvents)
+}
+
+/** Menu-items zonder de links naar lege pagina's */
+export const visibleNavigation = (items: NavItem[] | undefined, content: ContentAvailability) =>
+  (items ?? []).filter(item => !isHiddenPath(item.href, content))
+
+/** Of Nieuws/Agenda iets te tonen hebben, plus isHidden(href) voor losse links en knoppen */
+export function useContentAvailability() {
+  const { data } = useSiteSettings()
+  const { isPastDay } = useDateFormat()
+  const content = computed<ContentAvailability>(() => ({
+    hasNews: (data.value?.newsCount ?? 0) > 0,
+    hasEvents: (data.value?.recentEvents ?? []).some(e => !isPastDay(eventLastDate(e))),
+  }))
+  return {
+    content,
+    isHidden: (href?: string) => isHiddenPath(href, content.value),
+  }
 }
 
 /** Menu voor nav en footer: links en knoppen, met lege pagina's weggelaten */
 export function useNavigation() {
   const { data } = useSiteSettings()
-  const { isPastDay } = useDateFormat()
-  const items = computed(() => visibleNavigation(data.value?.navigation, {
-    hasNews: (data.value?.newsCount ?? 0) > 0,
-    hasEvents: (data.value?.recentEvents ?? []).some(e => !isPastDay(eventLastDate(e))),
-  }))
+  const { content } = useContentAvailability()
+  const items = computed(() => visibleNavigation(data.value?.navigation, content.value))
   return {
     links: computed(() => items.value.filter(n => !n.isButton)),
     buttons: computed(() => items.value.filter(n => n.isButton)),

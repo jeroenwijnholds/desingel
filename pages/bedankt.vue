@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Link naar de agenda alleen als er komende evenementen zijn
+const { isHidden } = useContentAvailability()
 // Reactietijd uit het CMS (Contact-pagina), zodat hij niet uit de pas loopt
 // met de contactpagina — stond hier eerder hardcoded.
 const { data } = useContentQuery<{ infoResponseTime?: string } | null>(
@@ -30,7 +32,7 @@ useSeo({
       <p class="status-page-sub">We hebben je bericht ontvangen en nemen normaal gesproken {{ responseTime }} contact met je op.</p>
       <div class="status-page-actions">
         <NuxtLink to="/" class="btn btn-green">Terug naar de homepage</NuxtLink>
-        <NuxtLink to="/agenda" class="link-arrow">
+        <NuxtLink v-if="!isHidden('/agenda')" to="/agenda" class="link-arrow">
           Bekijk onze evenementen
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </NuxtLink>

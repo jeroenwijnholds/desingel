@@ -180,7 +180,12 @@ Lees deze vóór je aan de betreffende code werkt — elk punt heeft ons debugti
   lightbox),
   `useSiteSettings` (**dé** bron voor Site-instellingen in componenten — geen
   eigen siteSettings-query meer schrijven; plus `openingHoursParts`/
-  `formatOpeningHours`, `telHref`, `routeHref`), `useEventTimes`
+  `formatOpeningHours`, `telHref`, `routeHref`; plus `useNavigation` en
+  `useContentAvailability().isHidden(href)`: "Nieuws" zonder artikelen en
+  "Agenda" zonder komende evenementen verdwijnen uit menu, footer,
+  CtaBlock-knoppen en losse links, het "Binnenkort"-blok op de homepage
+  valt weg, en die pagina's krijgen noindex (dus niet in sitemap/llms.txt)),
+  `useEventTimes`
   (`getEventTimes`: begin/eind in NL-tijd uit het getoonde tijdvak — dat is
   leidend, de tijd in het datumveld wijkt in de praktijk af; plus
   `isoAmsterdam`, `icsHref`, `googleCalendarHref`).

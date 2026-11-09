@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatOpeningHours, formatOwners, openingHoursParts, routeHref, telHref, validCoordinates, visibleNavigation } from '../composables/useSiteSettings'
+import { formatOpeningHours, formatOwners, openingHoursParts, routeHref, telHref, validCoordinates, visibleNavigation, isHiddenPath } from '../composables/useSiteSettings'
 import type { NavItem, OpeningHoursRule, Owner } from '../composables/useSiteSettings'
 
 const rule = (days: string[], opens = '10:00', closes = '17:00') =>
@@ -65,5 +65,13 @@ describe('menu zonder lege pagina\'s', () => {
     expect(visibleNavigation(menu, { hasNews: true, hasEvents: true })).toHaveLength(5)
     expect(visibleNavigation(nav('/agenda?x=1', '/agenda#top'), { hasNews: false, hasEvents: true })).toHaveLength(2)
     expect(visibleNavigation(undefined, { hasNews: true, hasEvents: true })).toEqual([])
+  })
+  it('isHiddenPath raakt alleen lege Nieuws/Agenda', () => {
+    const leeg = { hasNews: false, hasEvents: false }
+    expect(isHiddenPath('/agenda', leeg)).toBe(true)
+    expect(isHiddenPath('/nieuws/', leeg)).toBe(true)
+    expect(isHiddenPath('/nieuws/een-artikel', leeg)).toBe(false)
+    expect(isHiddenPath('/contact', leeg)).toBe(false)
+    expect(isHiddenPath(undefined, leeg)).toBe(false)
   })
 })
