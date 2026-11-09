@@ -24,7 +24,7 @@ export default defineType({
       title: 'Slug (URL)',
       type: 'slug',
       group: 'basis',
-      description: 'Het laatste deel van het webadres. Klik op "Generate" om hem uit de titel te maken.',
+      description: 'Het laatste deel van het webadres. Klik op "Genereren" om hem uit de titel te maken.',
       options: { source: 'title', maxLength: 96 },
       validation: Rule => Rule.required(),
     }),
